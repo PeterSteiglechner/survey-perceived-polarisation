@@ -24,7 +24,7 @@ class C(BaseConstants):
         'The state should take measures to reduce income differences more than before.']
     QUESTIONS =questiontext# [f"{q} (1 agree strongly - 7 disagree strongly)" for q in  questions]
     CHECKTEXT = lambda which: f"To what extent does this actually reflect what you think about {which} political similarities to you?"
-    REASONTEXT ="Briefly describe why you perceive distances in that way (in two to three sentences)" 
+    REASONTEXT ="Please briefly describe why (in two to three sentences)" 
     NFRIENDS = 3
     NPS = 4
 
@@ -198,10 +198,10 @@ class MapTest(Page):
         dFC = np.linalg.norm(pos["F"]-pos["C"])
         dCS = np.linalg.norm(pos["C"]-pos["S"])
         # check conditions
-        player.isTrainingCondFvC = dF<dC  # Rule 2/3
-        player.isTrainingCondSelfvFC = dFC>dC  # Rule 4
-        player.isTrainingCondSvF = dS>dF # Rule 5
-        player.isTrainingCondSvFC = (dFS<dS) & (dCS<dS) # Rule 6.
+        player.isTrainingCondFvC = bool(dF<dC)  # Rule 2/3
+        player.isTrainingCondSelfvFC = bool(dFC>dC)  # Rule 4
+        player.isTrainingCondSvF = bool(dS>dF) # Rule 5
+        player.isTrainingCondSvFC = bool((dFS<dS) and (dCS<dS)) # Rule 6.
         isTrainingPassed = player.isTrainingCondFvC & player.isTrainingCondSelfvFC & player.isTrainingCondSvFC & player.isTrainingCondSvF
         #print("isTrainingPassed", isTrainingPassed, dF, dS, dFS, dCS)
         player.isTrainingPassed = isTrainingPassed
