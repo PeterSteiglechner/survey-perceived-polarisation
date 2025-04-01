@@ -1,4 +1,5 @@
 venv
+otree-env
 staticfiles
 ./db.sqlite3
 .idea
