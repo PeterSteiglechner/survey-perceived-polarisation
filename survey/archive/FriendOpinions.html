@@ -1,0 +1,50 @@
+{{ block title }}
+Political Beliefs of <strong>{{ friend_name }}</strong>
+{{ endblock }}
+{{ block content }}
+
+We now ask you the same political questions as before.
+Please click on the response option that you think
+<strong>
+    {{ friend_name }}
+</strong>
+would probably select.
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th style="width: 55%;">Statement</th>
+            <th style="width: 45%;">{{ friend_name }}'s response</th>
+        </tr>
+        <tr>
+            <th style="width: 55%;"></th>
+            <th style="width: 45%;">0 = Strongly Disagree; 100 = Strongly Agree (-999 = I don't know/refuse)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% comment %}
+        <!-- {% for field, question, field_widget in questions_list %}
+        <tr>
+            <td>{{ question }}</td>
+            <td>{{ field_widget }}</td>
+        </tr>
+        {% endfor %} -->
+        {% endcomment %}
+
+        {{ for field, question in field_question_pairs }}
+        <tr>
+            <td>{{ question }}</td>
+            <td>{% formfield field %}</td>
+        </tr>
+        {{endfor}}
+    </tbody>
+</table>
+
+
+
+
+{{next_button}}
+
+
+{{ endblock }}
