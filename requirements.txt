@@ -1,3 +1,6 @@
 matplotlib==3.10.1
 numpy==2.2.4
 otree==5.11.1
+ipykernel
+pandas 
+matplotlib

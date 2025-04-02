@@ -1,4 +1,5 @@
 venv
+data
 otree-env
 staticfiles
 ./db.sqlite3

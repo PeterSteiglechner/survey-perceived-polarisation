@@ -4,9 +4,8 @@ In this survey, we ask 1) opinions of the participant, 2) the participant's perc
 
 1. cd to the directory
 2. create a virtual environment:
-  a. virtualenv otree-env
+  a. bash create_env.sh
   b. source otree-env/bin/activate
-4. pip install -r requirements.txt
-5. otree devserver
-6. check out http://localhost:8000/
-7. have fun
+3. otree devserver
+4. check out http://localhost:8000/
+5. have fun
