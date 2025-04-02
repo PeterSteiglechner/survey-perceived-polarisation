@@ -9,3 +9,5 @@ pip install --upgrade pip
 
 # install otree >=5.11.1
 pip install "otree>=5.11.1"
+pip install numpy matplotlib pandas scipy
+
