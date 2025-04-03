@@ -1,5 +1,7 @@
 venv
+data
 otree-env
+analysis/analysis-venv
 staticfiles
 ./db.sqlite3
 .idea
