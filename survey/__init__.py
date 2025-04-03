@@ -1,18 +1,20 @@
 from otree.api import *
-import numpy as np
 import json
 
 doc = """
 Your app description
 """
 
+def distance(a,b):
+    return ((a[0]-b[0])**2 + (a[1]-b[1])**2)**0.5
+
 class C(BaseConstants):
     NAME_IN_URL = 'survey'
     PLAYERS_PER_GROUP = None
     NUM_ROUNDS = 1
-    LIKERT11 = list(np.linspace(0,10,11).astype(int)) + [-999]
-    LIKERT7 = list(np.linspace(1,7,7).astype(int)) + [-999]
-    SLIDER = list(np.linspace(1,7,7).astype(int)) 
+    LIKERT11 = list(range(0,11)) + [-999]
+    LIKERT7 = [1,2,3,4,5,6,7] + [-999]
+    SLIDER = list(range(0,101)) +  [-999]
     QUESTIONS_SC =["climate_concern", 
                    "gay_adoption", 
                     "migration_enriches_culture",
@@ -189,14 +191,14 @@ class MapTest(Page):
     def before_next_page(player: Player, timeout_happened):
         player.positionsTest = player.positionsTest
         pos = json.loads(player.positionsTest)
-        pos = {p["label"]: np.array([p["x"], p["y"]]) for p in pos}
+        pos = {p["label"]: [p["x"], p["y"]] for p in pos}
         #calculate distances
-        dF = np.linalg.norm(pos["self"]-pos["F"])
-        dC = np.linalg.norm(pos["self"]-pos["C"])
-        dS = np.linalg.norm(pos["self"]-pos["S"])
-        dFS = np.linalg.norm(pos["F"]-pos["S"])
-        dFC = np.linalg.norm(pos["F"]-pos["C"])
-        dCS = np.linalg.norm(pos["C"]-pos["S"])
+        dF = distance(pos["self"], pos["F"])
+        dC = distance(pos["self"], pos["C"])
+        dS = distance(pos["self"], pos["S"])
+        dFS = distance(pos["F"], pos["S"])
+        dFC = distance(pos["F"], pos["C"])
+        dCS = distance(pos["C"], pos["S"])
         # check conditions
         player.isTrainingCondFvC = bool(dF<dC)  # Rule 2/3
         player.isTrainingCondSelfvFC = bool(dFC>dC)  # Rule 4
@@ -281,9 +283,9 @@ class CheckDistance(Page):
     @staticmethod
     def vars_for_template(player: Player):
         pos = json.loads(getattr(player, f"positions"))
-        pos = {p["label"]: np.array([p["x"], p["y"]]) for p in pos}
-        isDistF1LargerDistF2 = np.linalg.norm(pos["self"] - pos[player.friend1]) > np.linalg.norm(pos["self"] - pos[player.friend2])
-        isDistP1LargerDistP2 = np.linalg.norm(pos["self"] - pos["P1"]) > np.linalg.norm(pos["self"] - pos["P2"])
+        pos = {p["label"]: [p["x"], p["y"]] for p in pos}
+        isDistF1LargerDistF2 = distance(pos["self"], pos[player.friend1]) > distance(pos["self"], pos[player.friend2])
+        isDistP1LargerDistP2 = distance(pos["self"], pos["P1"]) > distance(pos["self"], pos["P2"])
         distantFriend = player.friend1 if isDistF1LargerDistF2 else player.friend2
         similarFriend = player.friend2 if isDistF1LargerDistF2 else player.friend1
         distantP = "P1" if isDistP1LargerDistP2 else "P2"
