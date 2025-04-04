@@ -70,21 +70,27 @@ P_ops = {
 #     "P3": np.array([0.2, 0.1, -0.5, 0.2])*3+4,
 #     "P4": np.array([0.05, -0.05, -1, -1])*3+4,
 # }
+
+#%% 
+def predict_dist(Lenses,id,self, other):
+    D = Lenses[id]
+    d = self - other  # distance vector from observer i
+    percD  = np.sum(np.dot(d, D) * d)**(1/2)
+    euclD = np.sum(d * d)**(1/2)
+    return percD, euclD
+
 #%%
 myOp = np.array([3,3,3,3])
 predictPdist = []
 for P, opP in P_ops.items():
     for id in parties:
-        D = Lenses[id]
-        d = myOp - opP  # distance vector from observer i
-        percD  = np.sum(np.dot(d, D) * d)**(1/2)
-        euclD = np.sum(d * d)**(1/2)
+        percD, euclD = predict_dist(Lenses, id, myOp, opP)
         predictPdist.append([id, P, percD, euclD])
 predictPdist = pd.DataFrame(predictPdist, columns=["party", "observed", "perceived distance", "euclidean distance"], )
 predictPdist.attrs["myOp"] = myOp
 #%%
 
-fig, axs = plt.subplots(1,4, sharex=True, sharey=True)
+fig, axs = plt.subplots(1,4, sharex=True, sharey=True, figsize=(16,9))
 for ax, (P, opP) in zip(axs, P_ops.items()):
     sns.barplot(predictPdist.loc[predictPdist.observed==P], y="perceived distance", x="party", hue="party", palette=partycolsGE, ax=ax)
     ax.set_xticklabels([])
@@ -94,6 +100,8 @@ for ax, (P, opP) in zip(axs, P_ops.items()):
     
     ax.set_title(f"{P}")
     ax.text(0.95, 0.95, f"{', '.join([f'{x:.2f}' for x in opP])})", fontsize=9, va="top", ha="right", transform=ax.transAxes)
+
+fig.suptitle("Prediction of perceived distance between self and P1 - P4\nfor an individual with opinion (3,3,3,3) on a 5-point scale by identity")
 #%%
 
 
@@ -172,3 +180,8 @@ for ax, (P, opP) in zip(axs, P_ops.items()):
 # sns.scatterplot(distances, x="d_subj_het", y="d_obj", style="prototype", hue="identity", marker="s", palette=partycolsGE,ax=ax)
 # ax.set_aspect("equal")
 # ax.plot([0,4], [0,4], color="k", ls="--", zorder=0)
+
+
+
+
+
