@@ -10,9 +10,9 @@ def inferSubjectiveLenses(df, parties, waves, variables):
     Extract the subjective lenses (matrices containing the scaled and rotated axes) for each partisan identity-group from opinion data in different waves.
     
     Parameters:
-        df (pd.DataFrame): Dataframe containing the columns "essround", "identity", and those listed in variables.
+        df (pd.DataFrame): Dataframe containing the columns "wave", "identity", and those listed in variables.
         parties (list): List containing the parties.
-        waves (list): List of the waves (values in df.essround).
+        waves (list): List of the waves (values in df.wave).
         variables (list): List of the opinion columns.
     
     Returns:
@@ -22,7 +22,7 @@ def inferSubjectiveLenses(df, parties, waves, variables):
     
     for r in waves:
         # (1) Lens without considering identites (identity group "None")
-        X = df.loc[df.essround == r, variables].dropna(how="any", axis="index").to_numpy()
+        X = df.loc[df.wave == r, variables].dropna(how="any", axis="index").to_numpy()
         eigval, evec = np.linalg.eig(np.cov(X.T))   # returns w, v: column v[:,i] is the eigenvector corresponding to the  eigenvalue w[i]
         LNone = np.array([eigval[ni]**0.5 * evec[:, ni] for ni, i in enumerate(range(np.cov(X.T).shape[0]))]).T
         LNoneinv = np.linalg.inv(LNone)
@@ -31,7 +31,7 @@ def inferSubjectiveLenses(df, parties, waves, variables):
         # (2) Lenses for each partisan group
         for p in parties:
             if not (p == "None"):
-                X_p = df.loc[(df.essround == r) & (df.identity == p), variables].dropna(how="any", axis="index").to_numpy()
+                X_p = df.loc[(df.wave == r) & (df.identity == p), variables].dropna(how="any", axis="index").to_numpy()
                 if not len(X_p) == 0:
                     eigval, evec = np.linalg.eig(np.cov(X_p.T))
                     L_p = np.array([eigval[ni]**0.5 * evec[:, ni] for ni, i in enumerate(range(np.cov(X_p.T).shape[0]))]).T
@@ -109,8 +109,8 @@ def calc_meanPerceivedDisagreement(df, waves, variables, Lenses):
     Calculate mean perceived disagreement from the opinion data at different waves using different subjective lenses.
     
     Parameters:
-        df (pd.DataFrame): Dataframe that contains the columns "essround", "identity", and those listed in variables
-        waves (list): List of waves (values in df.essround)
+        df (pd.DataFrame): Dataframe that contains the columns "wave", "identity", and those listed in variables
+        waves (list): List of waves (values in df.wave)
         variables (list): List of opinion columns.
         Lenses (dict): Dictionary of the lens transformation matrices (M x M) used by each identity group.
         
@@ -120,13 +120,13 @@ def calc_meanPerceivedDisagreement(df, waves, variables, Lenses):
     mean_d = dict(zip(waves, [{} for _ in waves]))
     
     for n, r in enumerate(waves):
-        df_wave = df.loc[df.essround == r,:]
+        df_wave = df.loc[df.wave == r,:]
         for C in waves[:n+1]:
             obs = df_wave
             obd = df_wave
             ids = df_wave["identity"]
             subjDistMatrix = subjectiveDistanceMatrix(obs[variables].to_numpy(), obd[variables].to_numpy(), ids, Lenses[C])
-            mean_d[r][C] = avg_distances(subjDistMatrix, obs.anweight, obd.anweight, True)
+            mean_d[r][C] = avg_distances(subjDistMatrix, obs.participant_weight, obd.participant_weight, True)
     return mean_d
 
 
@@ -135,8 +135,8 @@ def calc_meanObjectiveDisagreement(data, waves, variables):
     Calculate mean objective disagreement from the opinion data at different waves.
     
     Parameters:
-        df (pd.DataFrame): Dataframe that contains the columns "essround", "identity", and those listed in variables
-        waves (list): List of waves (values in df.essround)
+        df (pd.DataFrame): Dataframe that contains the columns "wave", "identity", and those listed in variables
+        waves (list): List of waves (values in df.wave)
         variables (list): List of opinion columns.
         
     Returns:
@@ -144,10 +144,10 @@ def calc_meanObjectiveDisagreement(data, waves, variables):
     """
     Aobjmd = {}
     for r in waves:
-        df = data.loc[data.essround==r, :]
+        df = data.loc[data.wave==r, :]
         obs = df
         Aobjd = distance_matrix(obs[variables].to_numpy(), obs[variables].to_numpy())
-        Aobjmd[r] = avg_distances(Aobjd, obs.anweight, obs.anweight, True)
+        Aobjmd[r] = avg_distances(Aobjd, obs.participant_weight, obs.participant_weight, True)
     return Aobjmd
 
 
@@ -156,7 +156,7 @@ def calc_meanPerceivedDisagreement_betweenGroups(df, waves, parties, variables, 
     Calculate mean perceived disagreement from opinion data between waves as seen by the different parties.
     
     Parameters:
-        df (pd.DataFrame): Dataframe that contains the columns "essround", "identity", and those listed in variables
+        df (pd.DataFrame): Dataframe that contains the columns "wave", "identity", and those listed in variables
         waves (list): List of waves.
         parties (list): List of parties.
         variables (list): List of opinion columns.
@@ -176,7 +176,7 @@ def calc_meanPerceivedDisagreement_betweenGroups(df, waves, parties, variables, 
         for n, r in enumerate(waves):
             s0 = time.time()
             print(f"wave {r}", end="  ")
-            df_wave = df.loc[df.essround == r, :]
+            df_wave = df.loc[df.wave == r, :]
             obs = df_wave.loc[df_wave.identity == party_obs]
             for C in waves[:n+1]:
                 for party_obd in parties: 
@@ -187,12 +187,12 @@ def calc_meanPerceivedDisagreement_betweenGroups(df, waves, parties, variables, 
                     
                     # PxP: party-by-party
                     PxP_d = subjectiveDistanceMatrix(obs[variables].to_numpy(), obd[variables].to_numpy(), obs.identity, Lenses[C])
-                    PxP_meanDist[r][C][p_obs_k + p_obd_k] = avg_distances(PxP_d, w_obs=obs.anweight, w_obd=obd.anweight, all_observe_all=AoA)
+                    PxP_meanDist[r][C][p_obs_k + p_obd_k] = avg_distances(PxP_d, w_obs=obs.participant_weight, w_obd=obd.participant_weight, all_observe_all=AoA)
 
                 # PxA: party-to-all
                 obd = df_wave
                 PxA_d = subjectiveDistanceMatrix(obs[variables].to_numpy(), obd[variables].to_numpy(), obs.identity, Lenses[C])
-                PxA_meanDist[r][C][p_obs_k] = avg_distances(PxA_d, w_obs=obs.anweight, w_obd=obd.anweight, all_observe_all=True)
+                PxA_meanDist[r][C][p_obs_k] = avg_distances(PxA_d, w_obs=obs.participant_weight, w_obd=obd.participant_weight, all_observe_all=True)
 
             print(f"--> done ({(time.time() - s0):.0f} seconds, n={len(obs)})")
             
