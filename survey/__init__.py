@@ -341,4 +341,4 @@ class Results(Page):
 # 
 #page_sequence = [Introduction, Opinions, Friends]+[FriendOpinions]*C.NFRIENDS+[Green_Opinions, AfD_Opinions]+[MapTest, MapTestResult] * 5 + [Map]+[MapP]*C.NPS+[CheckDistance, Demographics, Results]
 
-page_sequence = [Introduction, Opinions, Friends]+[FriendOpinions]*C.NFRIENDS+[Green_Opinions, AfD_Opinions]+ [Map]+[MapP]*C.NPS+[CheckDistance, Demographics, Results]
+page_sequence = [Introduction, Opinions, Friends]+[FriendOpinions]*C.NFRIENDS+[Green_Opinions, AfD_Opinions] +[MapTest, MapTestResult] * 5 +[Map]+[MapP]*C.NPS+[CheckDistance, Demographics, Results]
