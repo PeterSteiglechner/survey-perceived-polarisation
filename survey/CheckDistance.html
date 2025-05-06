@@ -3,16 +3,18 @@ Plausibility check
 {{ endblock }}
 {{ block content }}
 
-Arranging people on a political map is difficutlt and often involves doing trade-offs. You assigned a greater political
-distance <strong>between yourself and {{ distantFriend }}</strong> than <strong>between yourself and {{ similarFriend
-    }}</strong>.
+Arranging people on a political map is a difficult task and often involves balancing some trade-offs. We want to
+understand how well the mapping you provided reflects your distances.
+
+You assigned a greater opinion distance <strong>between you and {{ distantFriend }}</strong> than
+<strong>between you and {{ similarFriend }}</strong>.
 
 {{ formfield "check_self_f1f2" }}
 
 {{ formfield "reason_f1f2" }}
 
-You also assigned a greater political distance <strong>between yourself and {{ distantP }}</strong> than
-<strong>between yourself and {{ similarP }}</strong>.
+You also assigned a greater opinion distance <strong>between you and {{ distantP }}</strong> than
+<strong>between you and {{ similarP }}</strong>.
 
 {{ formfield "check_self_P1P2" }}
 
@@ -22,7 +24,7 @@ You also assigned a greater political distance <strong>between yourself and {{ d
 {{next_button}}
 
 
-For reference, here are the prototypes again:
+For reference, here are the opinions of P1 and P2 again:
 <table class="table">
     <thead>
         <tr>
@@ -33,10 +35,10 @@ For reference, here are the prototypes again:
     <tbody>
         <tr>
 
-            <td><img src="{% static 'P1.png' %}" alt="P1 opinion" style="width:400px;height:280px;">
+            <td><img src="{% static 'P1_ops.png' %}" alt="P1 opinion" style="width:400px;height:280px;">
                 <!-- We risk our entire economic prosperity if we put everything to the test now because of climate change. -->
             </td>
-            <td><img src="{% static 'P2.png' %}" alt="P2 opinion" style="width:400px;height:280px;">
+            <td><img src="{% static 'P2_ops.png' %}" alt="P2 opinion" style="width:400px;height:280px;">
                 <!-- People who have changed their gender should be recognised as normal. -->
             </td>
         </tr>

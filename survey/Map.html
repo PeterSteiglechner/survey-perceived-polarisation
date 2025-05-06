@@ -13,8 +13,8 @@ Political Mapping</strong>
             { label: "{{ player.friend1 }}", x: 200, y: 110 },
             { label: "{{ player.friend2 }}", x: 250, y: 120 },
             { label: "{{ player.friend3 }}", x: 300, y: 130 },
-            { label: "Green_Voter", x: 400, y: 200 },
-            { label: "AfD_Voter", x: 450, y: 220 },
+            { label: "GreenVoter", x: 400, y: 200 },
+            { label: "AfDVoter", x: 450, y: 220 },
             { label: "P1", x: 1200, y: 1200 },
             { label: "P2", x: 1300, y: 1200 },
             { label: "P3", x: 1200, y: 1300 },
@@ -27,7 +27,7 @@ Political Mapping</strong>
             points.forEach(point => {
                 ctx.beginPath();
                 ctx.arc(point.x, point.y, 10, 0, 2 * Math.PI);
-                ctx.fillStyle = point.label === "self" ? "black" : (point.label.startsWith("P") ? "red" : (point.label === "Green_Voter" ? "green" : (point.label === "AfD_Voter" ? "blue" : "orange")));
+                ctx.fillStyle = point.label === "self" ? "black" : (point.label.startsWith("P") ? "red" : (point.label === "GreenVoter" ? "green" : (point.label === "AfDVoter" ? "blue" : "orange")));
                 ctx.fill();
                 ctx.stroke();
                 ctx.fillStyle = "black";
@@ -81,11 +81,10 @@ We now continue to the actual task:
 
 <br></br>
 
-Imagine you and the contacts are standing in a room. Position yourself and your social contacts (dots) in such a way
-that
-people who you perceive as <strong>politically close</strong> stand <strong>close to each other</strong> and people who
-you perceive as <strong>politically distant</strong> stand <strong>far away from each other</strong>.
-
+Imagine you, your social contacts, a typical Green voter, and a typical AfD voter are standing in a room.
+Arrange yourselves so that <strong>individuals who share similar political views</strong> on questions regarding
+economic inequality, migration, diversity, and climate change <strong>are positioned close together</strong>, while
+those with differing views are farther apart.
 
 <br></br>
 

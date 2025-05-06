@@ -8,12 +8,21 @@ Your app description
 def distance(a,b):
     return ((a[0]-b[0])**2 + (a[1]-b[1])**2)**0.5
 
-class C(BaseConstants):
+class C(BaseConstants): 
     NAME_IN_URL = 'survey'
     PLAYERS_PER_GROUP = None
     NUM_ROUNDS = 1
     LIKERT11 = list(range(0,11)) + [-999]
-    LIKERT7 = [1,2,3,4,5,6,7] + [-999]
+    LIKERT5_string = ["Strongly\nAgree","Agree","Neutral","Disagree","Strongly\nDisagree"] + ["Refuse/Don't know"]
+    LIKERT5_string = [
+    (1, 'Strongly agree'),
+    (2, 'Agree'),
+    (3, 'Neutral'),
+    (4, 'Disagree'),
+    (5, 'Strongly disagree'),
+    (-999, "----Refuse/Don't know----"),
+]
+    LIKERT5 = [1,2,3,4,5] + [-999]
     SLIDER = list(range(0,101)) +  [-999]
     QUESTIONS_SC =["climate_concern", 
                    "gay_adoption", 
@@ -25,7 +34,7 @@ class C(BaseConstants):
         'It is enriching for cultural life in Germany when migrants come here.', 
         'The state should take measures to reduce income differences more than before.']
     QUESTIONS =questiontext# [f"{q} (1 agree strongly - 7 disagree strongly)" for q in  questions]
-    CHECKTEXT = lambda which: f"To what extent does this actually reflect what you think about {which} political similarities to you?"
+    CHECKTEXT = lambda which: f"To what extent does this actually reflect your perception of political similarity?"
     REASONTEXT ="Please briefly describe why (in two to three sentences)" 
     NFRIENDS = 3
     NPS = 4
@@ -41,10 +50,10 @@ class Group(BaseGroup):
 
 
 def make_field(label):
-    return models.IntegerField(
-        choices=C.LIKERT7,
+    return models.StringField(
+        choices=C.LIKERT5_string,
         label=label,
-        widget=widgets.RadioSelectHorizontal,
+        widget=widgets.RadioSelect,
     )
 
 def make_slider(label):
@@ -76,10 +85,10 @@ class Player(BasePlayer):
     #################################
     #####  OWN POLITICAL OPINIONS   #####
     #################################
-    climate_concern= make_slider(C.QUESTIONS[0])
-    gay_adoption= make_slider(C.QUESTIONS[1])
-    govt_reduce_inequ=  make_slider(C.QUESTIONS[2])
-    migration_enriches_culture=  make_slider(C.QUESTIONS[3])
+    own_climate_concern= make_field(C.QUESTIONS[0])
+    own_gay_adoption= make_field(C.QUESTIONS[1])
+    own_govt_reduce_inequ=  make_field(C.QUESTIONS[2])
+    own_migration_enriches_culture=  make_field(C.QUESTIONS[3])
 
     
     
@@ -116,7 +125,7 @@ for f in range(1,C.NFRIENDS+1):
     for q in C.QUESTIONS_SC:
         setattr(Player, f"f{f}_{q}", make_field(''))
 
-for f in ["Green_Voter", "AfD_Voter"]:
+for f in ["GreenVoter", "AfDVoter"]:
     for q in C.QUESTIONS_SC:
         setattr(Player, f"{f}_{q}", make_field(''))
 
@@ -162,14 +171,14 @@ class FriendOpinions(Page):
 
 class Green_Opinions(Page):
     form_model = 'player'
-    form_fields =  [f"Green_Voter_{q}" for q in C.QUESTIONS_SC]
+    form_fields =  [f"GreenVoter_{q}" for q in C.QUESTIONS_SC]
     @staticmethod
     def vars_for_template(player: Player): 
         return {f'question_{q_sc}': q for q_sc, q in zip(C.QUESTIONS_SC, C.QUESTIONS)}
    
 class AfD_Opinions(Page):
     form_model = 'player'
-    form_fields = [f"AfD_Voter_{q}" for q in C.QUESTIONS_SC]
+    form_fields = [f"AfDVoter_{q}" for q in C.QUESTIONS_SC]
     @staticmethod
     def vars_for_template(player: Player): 
         return {f'question_{q_sc}': q for q_sc, q in zip(C.QUESTIONS_SC, C.QUESTIONS)}
@@ -177,7 +186,7 @@ class AfD_Opinions(Page):
 
 class Opinions(Page):
     form_model = 'player'
-    form_fields = C.QUESTIONS_SC
+    form_fields = [f"own_{q}" for q in C.QUESTIONS_SC]
     @staticmethod
     def vars_for_template(player: Player): 
         return {f'question_{q_sc}': q for q_sc, q in zip(C.QUESTIONS_SC, C.QUESTIONS)}
@@ -253,10 +262,10 @@ class MapP(Page):
     def vars_for_template(player: Player):
         d = {f"friend{f}": getattr(player, f"friend{f}") for f in range(1, C.NFRIENDS+1)}
         d["currentP"] = player.ps_placed+1
-        d["img_source"] = f"P{d['currentP']}.png"
+        d["img_source"] = f"P{d['currentP']}_ops.png"
         pos = json.loads(player.positions)
         pos = {p["label"]: [p["x"], p["y"]] for p in pos}
-        for f in ["self"]+[f"friend{f}" for f in range(1, C.NFRIENDS+1)]+["Green_Voter", "AfD_Voter"]+[f"P{p}" for p in range(1,5)]:
+        for f in ["self"]+[f"friend{f}" for f in range(1, C.NFRIENDS+1)]+["GreenVoter", "AfDVoter"]+[f"P{p}" for p in range(1,5)]:
             p = pos[f] if not "friend" in f else pos[getattr(player, f"friend{f[-1]}")]
             d[f"pos_{f}_x"] = p[0]
             d[f"pos_{f}_y"] = p[1]
@@ -305,7 +314,7 @@ class Results(Page):
     pass
 
 
-#Demographics, Opinions,Friend3_Opinions, Friend4_Opinions,
 # 
-page_sequence = [Introduction, Opinions, Friends]+[FriendOpinions]*C.NFRIENDS+[Green_Opinions, AfD_Opinions]+[MapTest, MapTestResult] * 5 + [Map]+[MapP]*C.NPS+[CheckDistance, Demographics, Results]
+#page_sequence = [Introduction, Opinions, Friends]+[FriendOpinions]*C.NFRIENDS+[Green_Opinions, AfD_Opinions]+[MapTest, MapTestResult] * 5 + [Map]+[MapP]*C.NPS+[CheckDistance, Demographics, Results]
 
+page_sequence = [Introduction, Opinions, Friends]+[FriendOpinions]*C.NFRIENDS+[Green_Opinions, AfD_Opinions]+ [Map]+[MapP]*C.NPS+[CheckDistance, Demographics, Results]

@@ -3,130 +3,47 @@ Your political beliefs
 {{ endblock }}
 {{ block content }}
 
-
-
 <style>
-    .mgslider-wrapper {
-        border-spacing: 10px;
-    }
-
-    .mgslider-show {
-        text-align: center;
-    }
-
-    .mgslider-limit {
-        width: 7%;
-        min-width: 50px;
-        height: 30px;
-        margin: 30px;
-        text-align: center;
-        background: #eee;
-        border: 1px solid #888;
-    }
-
-    .mgslider-limit,
-    .mgslider-value {
-        font-variant-numeric: tabular-nums;
-    }
-
-    .mgslider-before {
-        height: 10px;
-        width: 100%;
-        background: rgb(184, 188, 199);
-    }
-
-    .mgslider-feedback {
-        -webkit-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
+    .extra-space {
+        margin-top: 1.5em;
+        border-top: 1px solid #ccc;
+        padding-top: 0.5em;
     }
 </style>
-
-
 
 
 Please answer the following questions about your own political opinions
 
 
-
 <table class="table">
     <thead>
         <tr>
-            <th style="width: 55%;">Statement</th>
-            <th style="width: 45%;">Your response</th>
-        </tr>
-        <tr>
-            <th></th>
-            <th> &nbsp;&nbsp;&nbsp;&nbsp;1 = Strongly Disagree; 7 = Strongly Agree </th>
+            <th style="width: 65%;">Statement</th>
+            <th style="width: 45%;"> Your response</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>{{ question_climate_concern }}</td>
-            <td>
-                <div id="slider_climate_concern"></div>
-                <script src="{{ static 'mgslider.js' }}"></script>
-                <script>
-                    $(document).ready(function (event) {
-                        slider1 = new mgslider("climate_concern", 1, 7, 1);
-                        slider1.recall = true; // Optional line to remember value across errors
-                        slider1.print(document.getElementById("slider_climate_concern"));
-                    });
-                </script>
-            </td>
+            <td>{{ form.own_climate_concern }}</td>
+
         </tr>
         <tr>
             <td>{{ question_gay_adoption }}</td>
-            <!-- <td>{{ form.gay_adoption }}</td> -->
-            <td>
-                <div id="slider_gay_adoption"></div>
-                <script src="{{ static 'mgslider.js' }}"></script>
-                <script>
-                    $(document).ready(function (event) {
-                        slider2 = new mgslider("gay_adoption", 1, 7, 1);
-                        slider2.recall = true; // Optional line to remember value across errors
-                        slider2.print(document.getElementById("slider_gay_adoption"));
-                    });
-                </script>
-            </td>
-        </tr>
-        <tr>
-            <td>{{ question_govt_reduce_inequ }}</td>
-            <!-- <td>{{ form.govt_reduce_inequ }}</td> -->
-            <td>
-                <div id="slider_govt_reduce_inequ"></div>
-                <script src="{{ static 'mgslider.js' }}"></script>
-                <script>
-                    $(document).ready(function (event) {
-                        slider3 = new mgslider("govt_reduce_inequ", 1, 7, 1);
-                        slider3.recall = true; // Optional line to remember value across errors
-                        slider3.print(document.getElementById("slider_govt_reduce_inequ"));
-                    });
-                </script>
-            </td>
+            <td>{{ form.own_gay_adoption }}</td>
         </tr>
         <tr>
             <td>{{ question_migration_enriches_culture }}</td>
-            <!-- <td>{{ form.migration_enriches_culture }}</td> -->
-            <td>
-                <div id="sliders_migration_enriches_culture"></div>
-                <script src="{{ static 'mgslider.js' }}"></script>
-                <script>
-                    $(document).ready(function (event) {
-                        slider4 = new mgslider("migration_enriches_culture", 1, 7, 1);
-                        slider4.recall = true; // Optional line to remember value across errors
-                        slider4.print(document.getElementById("sliders_migration_enriches_culture"));
-                    });
-                </script>
-            </td>
+            <td>{{ form.own_migration_enriches_culture }}</td>
         </tr>
+        <tr>
+            <td>{{ question_govt_reduce_inequ }}</td>
+            <td>{{ form.own_govt_reduce_inequ }}</td>
+        </tr>
+
     </tbody>
 </table>
 
-{{ formfield_errors "climate_concern" }}
-{{ formfield_errors "gay_adoption" }}
-{{ formfield_errors "migration_enriches_culture" }}
-{{ formfield_errors "govt_reduce_inequ" }}
 
 {{next_button}}
 
