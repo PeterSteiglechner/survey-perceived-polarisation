@@ -46,16 +46,16 @@ class C(BaseConstants):
     "P4": [0,  0, -1, 0], # RIGHT
     }
     c = "worried about climate change."
-    g = "gay and lesbian couples should have the same rights to adopt children as couples consisting of a man and a woman."
-    m = "it is enriching for cultural life in Germany when migrants come here."
-    i = "the state should take measures to reduce income differences more than before."
+    g = "equal rights to adopt children for gay/lesbian couples."
+    m = "migration enriches cultural life in Germany."
+    i = "more state measures to reduce income differences."
     P_OP_RESPONSE = {"climate_concern": 
                      {-1: "is not at all "+c, 0:"is somewhat "+c, 1:"is extremely "+c},"gay_adoption": 
-                     {-1: "strongly disagrees that "+g, 0:"has a neutral position on whether "+g, 1:"strongly agrees that "+g}, 
+                     {-1: "strongly disapproves "+g, 0:"is neutral about "+g, 1:"strongly approves "+g}, 
                      "migration_enriches_culture":
                      {-1: "strongly disagrees that "+m, 0:"has a neutral position on whether "+m, 1:"strongly agrees that "+m}, 
                      "govt_reduce_inequ": 
-                     {-1: "strongly disagrees that "+i, 0:"has a neutral position on whether "+i, 1:"strongly agrees that "+i}
+                     {-1: "strongly opposes "+i, 0:"is neutral about "+i, 1:"strongly supports "+i}
                     }
 
 
