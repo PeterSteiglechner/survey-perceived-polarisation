@@ -15,13 +15,13 @@ class C(BaseConstants):
     LIKERT11 = list(range(0,11)) + [-999]
     LIKERT5_string = ["Strongly\nAgree","Agree","Neutral","Disagree","Strongly\nDisagree"] + ["Refuse/Don't know"]
     LIKERT5_string = [
-    (1, 'Strongly agree'),
-    (2, 'Agree'),
-    (3, 'Neutral'),
-    (4, 'Disagree'),
-    (5, 'Strongly disagree'),
-    (-999, "----Refuse/Don't know----"),
-]
+        (1, 'Strongly agree'),
+        (2, 'Agree'),
+        (3, 'Neutral'),
+        (4, 'Disagree'),
+        (5, 'Strongly disagree'),
+        (-999, "----Refuse/Don't know----"),
+    ]
     LIKERT5 = [1,2,3,4,5] + [-999]
     SLIDER = list(range(0,101)) +  [-999]
     QUESTIONS_SC =["climate_concern", 
@@ -32,12 +32,31 @@ class C(BaseConstants):
         'I am very concerned about climate change.', 
         'Gay and lesbian couples should have the same rights to adopt children as couples consisting of a man and a woman.', 
         'It is enriching for cultural life in Germany when migrants come here.', 
-        'The state should take measures to reduce income differences more than before.']
+        'The state should take measures to reduce income differences more than before.'
+        ]
     QUESTIONS =questiontext# [f"{q} (1 agree strongly - 7 disagree strongly)" for q in  questions]
     CHECKTEXT = lambda which: f"To what extent does this actually reflect your perception of political similarity?"
     REASONTEXT ="Please briefly describe why (in two to three sentences)" 
     NFRIENDS = 3
     NPS = 4
+    P_OPS =  {
+    "P1": [0,0, 0,-1],  # LIB
+    "P2": [0, -1, 0, -1], # climate-hoax RIGHT 
+    "P3": [1, 1, 1, 1], # LEFT
+    "P4": [0,  0, -1, 0], # RIGHT
+    }
+    c = "worried about climate change."
+    g = "gay and lesbian couples should have the same rights to adopt children as couples consisting of a man and a woman."
+    m = "it is enriching for cultural life in Germany when migrants come here."
+    i = "the state should take measures to reduce income differences more than before."
+    P_OP_RESPONSE = {"climate_concern": 
+                     {-1: "is not at all "+c, 0:"is somewhat "+c, 1:"is extremely "+c},"gay_adoption": 
+                     {-1: "strongly disagrees that "+g, 0:"has a neutral position on whether "+g, 1:"strongly agrees that "+g}, 
+                     "migration_enriches_culture":
+                     {-1: "strongly disagrees that "+m, 0:"has a neutral position on whether "+m, 1:"strongly agrees that "+m}, 
+                     "govt_reduce_inequ": 
+                     {-1: "strongly disagrees that "+i, 0:"has a neutral position on whether "+i, 1:"strongly agrees that "+i}
+                    }
 
 
 class Subsession(BaseSubsession):
@@ -263,6 +282,11 @@ class MapP(Page):
         d = {f"friend{f}": getattr(player, f"friend{f}") for f in range(1, C.NFRIENDS+1)}
         d["currentP"] = player.ps_placed+1
         d["img_source"] = f"P{d['currentP']}_ops.png"
+        P = f"P{d['currentP']}"
+        P_op = C.P_OPS[P]
+        P_op_text= f"{P} "+f" {P} ".join([C.P_OP_RESPONSE[q][P_op[n]] for n, q in enumerate(C.QUESTIONS_SC)])
+        d["P_op_text"] =P_op_text
+        
         pos = json.loads(player.positions)
         pos = {p["label"]: [p["x"], p["y"]] for p in pos}
         for f in ["self"]+[f"friend{f}" for f in range(1, C.NFRIENDS+1)]+["GreenVoter", "AfDVoter"]+[f"P{p}" for p in range(1,5)]:
