@@ -119,7 +119,7 @@ for fname in filelist:
 
 # this format is pretty crazy though (i.e., saving a ton of very different things in the question column)
 df = pd.concat(df_op_arr)
-df.to_csv("cleandata/pilot_internal.csv", index=False)
+df.to_csv("cleandata/pilot_internal_responses.csv", index=False)
 
 
 #################################
@@ -137,21 +137,23 @@ codes = df.code.unique()
 df = df.set_index(["code", "id", "question"])
 
 results = []
-for code in codes: 
+# loop through each participant 
+for code in codes:
     myops = df.loc[[(code, "self", q) for q in questions_sc],"response"]
+    # loop through each given distance
     for obs, obs_cat in zip(observed, observed_cat):
         otherops = df.loc[[(code, obs, q) for q in questions_sc],"response"]
-        d = otherops.values - myops.values
+        opinionDistVector = otherops.values - myops.values
 
         res = [code, obs, obs_cat]
-        res.extend(d)
+        res.extend(opinionDistVector)
         res.append(df.loc[(code, obs, "euclidean_distance"), "response"])
         res.append(df.loc[(code, obs, "perceived_distance"), "response"])
         
         results.append(res)
 df_for_predict = pd.DataFrame(results, columns=["code", "observed", "category"]+[f"d_{q}" for q in questions_sc]+["euclideanDistance",  "perceivedDistance"])
-df_for_predict 
 
+df_for_predict.to_csv("cleandata/pilot_internal_preprocessed.csv", index=False)
 
-import seaborn as sns
-sns.scatterplot(df_for_predict, x="euclideanDistance", y="perceivedDistance")
+# import seaborn as sns
+# ax = sns.scatterplot(df_for_predict, x="euclideanDistance", y="perceivedDistance", hue="category")
