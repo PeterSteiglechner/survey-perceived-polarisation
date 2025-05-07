@@ -15,16 +15,19 @@ questiontext = [
         'The state should take measures to reduce income differences more than before.']
 
 vals_arr = {
-    "P1": [0.05,0.05, 0.05,-1],  # LIB
-    "P2": [0.05, -1, 0.05, -1], # climate-hoax RIGHT 
+    "P1": [0,0, 0,-1],  # LIB
+    "P2": [0, -1, 0, -1], # climate-hoax RIGHT 
     "P3": [1, 1, 1, 1], # LEFT
-    "P4": [0.05,  0.05, -1, 0.05], # RIGHT
+    "P4": [0,  0, -1, 0], # RIGHT
 }
+
+
 for p, vals in vals_arr.items():
 
     fig, ax = plt.subplots(1,1,figsize=(16/2.54, 12/2.54))
     y = [3, 2,1,0]
-    ax.barh(y, vals, color=["green", "purple", "blue", "red"], height=0.5)
+    bar_heights = [v + (0. if abs(v)>0 else 0.05)  for v in vals ]
+    ax.barh(y, bar_heights, color=["green", "purple", "blue", "red"], height=0.5)
     ax.set_yticks([])
     ax.set_xticks([-1,0,1])
     #ax.set_xticklabels(["strongly\ndisagree", "neutral", "strongly\nagree"])
