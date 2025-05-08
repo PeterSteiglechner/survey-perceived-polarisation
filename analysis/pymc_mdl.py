@@ -1,37 +1,31 @@
+import arviz as az 
+import matplotlib.pyplot as plt 
 import numpy as np 
+import pymc as pm
+import pytensor.tensor as pt 
 import pandas as pd 
-import pymc as pm 
+
+# random seed
+RANDOM_SEED = 3251
+rng = np.random.default_rng(RANDOM_SEED)
+az.style.use("arviz-darkgrid")
 
 # load data 
-df = pd.read_csv('cleandata/pilot_internal.csv')
-df['question'].unique()
+df = pd.read_csv('cleandata/pilot_internal_preprocessed.csv')
+n_participants = df['code'].nunique()
 
-'''
-'climate_concern'
-'gay_adoption'
-'migration_enriches_culture'
-'govt_reduce_inequ'
-'name'
-'perceived_distances'
-'manhattan_distances'
-'euclidean_distances'
-'''
+# formulate PyMC models
 
-# all of the questions
-df_q = df[df['question'].isin([
-    'climate_concern', 
-    'gay_adoption', 
-    'migration_enriches_culture',
-    'govt_reduce_inequ'
-    ])].drop_duplicates().dropna() # n=400
-
-# always with reference to self I assume
-df_d = df[df['question'].isin([
-    'perceived_distances',
-    'manhattan_distances',
-    'euclidean_distances'
-]
-)].drop_duplicates().dropna() # n=300 (n=270 without NAN).
-
-# but where do we have objective distance on a specific question?
-# that is why I do not understand this format at all.
+# simplest model (with varying intercepts)
+with pm.Model() as model_1:
+    # priors 
+    alpha = pm.Normal("alpha", mu=0, sigma=10)
+    beta = pm.Normal("beta", mu=0, sigma=10)
+    
+    # random intercepts for each ID
+    sigma_alpha_id = pm.Exponential("sigma_alpha_id", 1.0)
+    alpha_id_offset = pm.Normal("alpha_id_offset", mu=0, sigma=1, shape=n_participants)
+    alpha_id = pm.Deterministic("alpha_id", alpha_id_offset * sigma_alpha_id)
+    
+    # expected value
+    mu = alpha + alpha_id[df["ID"]] + beta * df['X']    
