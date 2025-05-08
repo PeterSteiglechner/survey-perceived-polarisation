@@ -146,7 +146,7 @@ results = []
 # loop through each participant 
 for code in codes:
     myops = df.loc[[(code, "self", q) for q in questions_sc],"response"]
-    identity = df.loc[[(code, "self", "identity")]]
+    identity = df.loc[[(code, "self", "identity")], "response"].values[0]
     # loop through each given distance
     for obs, obs_cat in zip(observed, observed_cat):
         otherops = df.loc[[(code, obs, q) for q in questions_sc],"response"]
