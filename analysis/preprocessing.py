@@ -113,8 +113,14 @@ for fname in filelist:
         df_op_long = df_op.reset_index()
         df_op_long["code"] = code
 
+        df_op_long = df_op_long.melt(id_vars=["code", "index"], var_name="question", value_name="response").rename(columns={"index":"id"})
 
-        df_op_long = df_op_long.melt(id_vars=["code", "index"], var_name="question", value_name="response").rename(columns={"index":"id"})        
+        if  data[f'{surveyname}.{id}.player.feel_closest'].values[0]=="yes":
+            identity = data[f'{surveyname}.{id}.player.feel_closest_party'].values[0]
+        else:
+            identity = "None"
+        df_op_long.loc[len(df_op_long)] = [code, "self", "identity", identity] 
+
         df_op_arr.append(df_op_long)
 
 # this format is pretty crazy though (i.e., saving a ton of very different things in the question column)
@@ -140,18 +146,19 @@ results = []
 # loop through each participant 
 for code in codes:
     myops = df.loc[[(code, "self", q) for q in questions_sc],"response"]
+    identity = df.loc[[(code, "self", "identity")]]
     # loop through each given distance
     for obs, obs_cat in zip(observed, observed_cat):
         otherops = df.loc[[(code, obs, q) for q in questions_sc],"response"]
         opinionDistVector = otherops.values - myops.values
 
-        res = [code, obs, obs_cat]
+        res = [code, obs, obs_cat, identity]
         res.extend(opinionDistVector)
         res.append(df.loc[(code, obs, "euclidean_distance"), "response"])
         res.append(df.loc[(code, obs, "perceived_distance"), "response"])
         
         results.append(res)
-df_for_predict = pd.DataFrame(results, columns=["code", "observed", "category"]+[f"d_{q}" for q in questions_sc]+["euclideanDistance",  "perceivedDistance"])
+df_for_predict = pd.DataFrame(results, columns=["code", "observed", "category", "identity"]+[f"d_{q}" for q in questions_sc]+["euclideanDistance",  "perceivedDistance"])
 
 df_for_predict.to_csv("cleandata/pilot_internal_preprocessed.csv", index=False)
 
