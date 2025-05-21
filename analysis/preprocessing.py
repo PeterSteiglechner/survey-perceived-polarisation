@@ -19,11 +19,18 @@ print(filelist)
 surveyname = "survey"
 id=1
 
-P_ops = {
-    "P1": [0,0, 0,-1],  # LIB
-    "P2": [0, -1, 0, -1], # climate-hoax RIGHT 
-    "P3": [1, 1, 1, 1], # LEFT
-    "P4": [0,  0, -1, 0], # RIGHT
+# P_ops = {
+#     "P1": [0,0, 0,-1],  # LIB
+#     "P2": [0, -1, 0, -1], # climate-hoax RIGHT 
+#     "P3": [1, 1, 1, 1], # LEFT
+#     "P4": [0,  0, -1, 0], # RIGHT
+# }
+
+P_ops_Likert = {
+     "P1": [3, 3, 3, 5],  # LIB
+     "P2": [3, 5, 3, 5], # climate-hoax RIGHT 
+     "P3": [1, 1, 1, 1], # LEFT
+     "P4": [3, 3, 5, 3], # RIGHT
 }
 
 #################################
@@ -96,7 +103,7 @@ for fname in filelist:
             df_op.append(x[[f"{surveyname}.{id}.player.{p_id}_{q}" for q in questions_sc]].values)
         
         for p_id in range(1,nP+1):
-            df_op.append(P_ops[f"P{p_id}"])  
+            df_op.append(P_ops_Likert[f"P{p_id}"])  
         
         df_op = pd.DataFrame(df_op, columns=questions_sc, index=namesType)
         df_op["name"] = names
@@ -105,9 +112,9 @@ for fname in filelist:
         pos = json.loads(x[f'{surveyname}.{id}.player.positions'])
         df_op["perceived_distance"] = [np.nan] + [dist(pos, "self", f) for f in names[1:]]
         
-        df_op["manhattan_distance"] = [np.nan] + [manhattan(df_op.T, "self", f) for f in namesType[1:]]
+        #df_op["manhattan_distance"] = [np.nan] + [manhattan(df_op.T, "self", f) for f in namesType[1:]]
         
-        df_op["euclidean_distance"] = [np.nan] + [euclidean(df_op.T, "self", f) for f in namesType[1:]]
+        #df_op["euclidean_distance"] = [np.nan] + [euclidean(df_op.T, "self", f) for f in namesType[1:]]
                 
         # make long format:
         df_op_long = df_op.reset_index()
@@ -151,10 +158,10 @@ for code in codes:
     for obs, obs_cat in zip(observed, observed_cat):
         otherops = df.loc[[(code, obs, q) for q in questions_sc],"response"]
         opinionDistVector = otherops.values - myops.values
-
         res = [code, obs, obs_cat, identity]
         res.extend(opinionDistVector)
-        res.append(df.loc[(code, obs, "euclidean_distance"), "response"])
+        euclidean_distance = np.linalg.norm(opinionDistVector) 
+        res.append(euclidean_distance)
         res.append(df.loc[(code, obs, "perceived_distance"), "response"])
         
         results.append(res)
@@ -162,5 +169,6 @@ df_for_predict = pd.DataFrame(results, columns=["code", "observed", "category", 
 
 df_for_predict.to_csv("cleandata/pilot_internal_preprocessed.csv", index=False)
 
+df_for_predict
 # import seaborn as sns
 # ax = sns.scatterplot(df_for_predict, x="euclideanDistance", y="perceivedDistance", hue="category")
