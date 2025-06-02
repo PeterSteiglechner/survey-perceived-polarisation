@@ -6,6 +6,9 @@ import numpy as np
 import json
 import os
 import pandas as pd
+from itertools import combinations
+
+
 folder = "data/"
 questions_sc = [
     "climate_concern",
@@ -70,105 +73,88 @@ def dist(positions, a, b):
 
 nfriends = 3
 nP = 4
+typical_voters = ["GreenVoter", "AfDVoter"] 
+namesType = (
+    ["self"]
+    + [f"friend{f}" for f in range(1, nfriends + 1)]
+    + typical_voters
+    + [f"P{n}" for n in range(1, nP + 1)]
+)
+categories=dict(zip(namesType, ["self"]+["friend"]*nfriends + ["voter"]*len(typical_voters) + ["P"]*nP))
 
-func = "euclidean"
-opDist = manhattan if func=="manhattan" else euclidean
 
-prototypes_party = ["GreenVoter", "AfDVoter"] 
+def get_attributes(x, base, ids):
+    return x[[f"{base}{suffix}" for suffix in ids]].values
 
-df_op_arr = []
+def build_names(data, code, base, prototypes_party, nfriends, nP):
+    self_name = [code]
+    friend_names = [data.loc[code, f"{base}friend{n}"] for n in range(1, nfriends + 1)]
+    proto_names = prototypes_party
+    fixed_names = [f"P{n}" for n in range(1, nP + 1)]
+    return self_name + friend_names + proto_names + fixed_names
+
+codes = []
+rows = []
+columns = ["code", "identity", "observedA", "observedB", "cat_A", "cat_B"]+[f"A_{q}" for q in questions_sc]+[f"B_{q}" for q in questions_sc]+[f"ed_{q}" for q in questions_sc]+["posAx", "posAy", "posBx", "posBy"] + ["euclideanDistance", "perceivedDistance"]
+    
 for fname in filelist:
-    print(fname)
-    data = pd.read_csv(folder+fname).set_index("participant.code")
-
+    data = pd.read_csv(folder + fname).set_index("participant.code")
+    
     for code, x in data.iterrows():
-        df_op = []
+        codes.append(code)
+        base = f"{surveyname}.{id}.player."
         
-        df_op.append(x[[f'{surveyname}.{id}.player.own_{q}' for q in questions_sc]].values)
-        
-        namesType = ["self"]+\
-            [f"friend{f}" for f in range(1, nfriends+1)] +\
-            prototypes_party +\
-            [f"P{n}" for n in range(1,nP+1)]
+        # Self
+        df_op = [get_attributes(x, base, [f"own_{q}" for q in questions_sc])]
 
-        names = [code]+\
-            [data.loc[code, f"{surveyname}.{id}.player.friend{n}"] for n in range(1, nfriends+1)] +\
-            prototypes_party +\
-            [f"P{n}" for n in range(1,nP+1)]
+        # Friends
+        df_op += [
+            get_attributes(x, base, [f"f{f}_{q}" for q in questions_sc])
+            for f in range(1, nfriends + 1)
+        ]
 
-        for f_id in range(1,nfriends+1):
-            df_op.append(x[[f"{surveyname}.{id}.player.f{f_id}_{q}" for q in questions_sc]].values)
-        
-        for p_id  in prototypes_party:
-            df_op.append(x[[f"{surveyname}.{id}.player.{p_id}_{q}" for q in questions_sc]].values)
-        
-        for p_id in range(1,nP+1):
-            df_op.append(P_ops_Likert[f"P{p_id}"])  
-        
+        # Prototypes
+        df_op += [
+            get_attributes(x, base, [f"{proto}_{q}" for q in questions_sc])
+            for proto in typical_voters
+        ]
+
+        # Fixed profiles
+        df_op += [P_ops_Likert[f"P{n}"] for n in range(1, nP + 1)]
+
+        # Names and types
         df_op = pd.DataFrame(df_op, columns=questions_sc, index=namesType)
+        names = build_names(data, code, base, typical_voters, nfriends, nP)
         df_op["name"] = names
-        df_op = df_op.replace([-999], np.nan)
-
-        pos = json.loads(x[f'{surveyname}.{id}.player.positions'])
-        df_op["perceived_distance"] = [np.nan] + [dist(pos, "self", f) for f in names[1:]]
         
-        #df_op["manhattan_distance"] = [np.nan] + [manhattan(df_op.T, "self", f) for f in namesType[1:]]
-        
-        #df_op["euclidean_distance"] = [np.nan] + [euclidean(df_op.T, "self", f) for f in namesType[1:]]
-                
-        # make long format:
-        df_op_long = df_op.reset_index()
-        df_op_long["code"] = code
+        df_op = df_op.replace(-999, np.nan)
 
-        df_op_long = df_op_long.melt(id_vars=["code", "index"], var_name="question", value_name="response").rename(columns={"index":"id"})
-
-        if  data[f'{surveyname}.{id}.player.feel_closest'].values[0]=="yes":
-            identity = data[f'{surveyname}.{id}.player.feel_closest_party'].values[0]
-        else:
-            identity = "None"
-        df_op_long.loc[len(df_op_long)] = [code, "self", "identity", identity] 
-
-        df_op_arr.append(df_op_long)
-
-# this format is pretty crazy though (i.e., saving a ton of very different things in the question column)
-df = pd.concat(df_op_arr)
-df.to_csv("cleandata/pilot_internal_responses.csv", index=False)
+        # Positions
+        pos = pd.DataFrame(json.loads(x[f"{base}positions"])).set_index("label")
+        pos = pos.rename(dict(zip(names, namesType)))
+        df_op["xPos"] = pos.loc[df_op.index, "x"]
+        df_op["yPos"] = pos.loc[df_op.index, "y"]
 
 
-#################################
-#####  prediction-ready dataframe   #####
-#################################
+        for (A, B) in combinations(df_op.index, 2):
+            diff = abs(df_op.loc[A,questions_sc] - df_op.loc[B, questions_sc])
+            xA, yA = df_op.loc[A, ['xPos', 'yPos']]
+            xB, yB = df_op.loc[B, ['xPos', 'yPos']]
+            pos_dist = np.sqrt((xA - xB)**2 + (yA - yB)**2)
+            row = [code, x[base+"feel_closest_party"]] +\
+                [A, B] + \
+                [categories[A], categories[B]]+\
+                list(df_op.loc[A,questions_sc].values) + \
+                list(df_op.loc[B,questions_sc].values) + \
+                list(diff.values) + \
+                [xA, yA] + [xB, yB] + \
+                [np.linalg.norm(diff.values), pos_dist] 
+            rows.append(pd.Series(row, index=columns))
 
-observed = []
-observed.extend([f"friend{f}" for f in range(1, nfriends+1)])
-observed.extend([f"P{f}" for f in range(1, nP+1)])
-observed.extend(prototypes_party)
-observed_cat = ["friend"] * nfriends + ["P"] * nP + ["voter"] * len(prototypes_party)
+diff_df = pd.DataFrame(rows, columns=columns)
 
-codes = df.code.unique()
+diff_df.to_csv("cleandata/pilot_internal_preprocessed.csv", index=False)
 
-df = df.set_index(["code", "id", "question"])
 
-results = []
-# loop through each participant 
-for code in codes:
-    myops = df.loc[[(code, "self", q) for q in questions_sc],"response"]
-    identity = df.loc[[(code, "self", "identity")], "response"].values[0]
-    # loop through each given distance
-    for obs, obs_cat in zip(observed, observed_cat):
-        otherops = df.loc[[(code, obs, q) for q in questions_sc],"response"]
-        opinionDistVector = otherops.values - myops.values
-        res = [code, obs, obs_cat, identity]
-        res.extend(opinionDistVector)
-        euclidean_distance = np.linalg.norm(opinionDistVector) 
-        res.append(euclidean_distance)
-        res.append(df.loc[(code, obs, "perceived_distance"), "response"])
-        
-        results.append(res)
-df_for_predict = pd.DataFrame(results, columns=["code", "observed", "category", "identity"]+[f"d_{q}" for q in questions_sc]+["euclideanDistance",  "perceivedDistance"])
-
-df_for_predict.to_csv("cleandata/pilot_internal_preprocessed.csv", index=False)
-
-df_for_predict
-# import seaborn as sns
-# ax = sns.scatterplot(df_for_predict, x="euclideanDistance", y="perceivedDistance", hue="category")
+import seaborn as sns
+ax = sns.scatterplot(diff_df, x="euclideanDistance", y="perceivedDistance", hue="cat_B")
