@@ -14,4 +14,4 @@ __pycache__/
 .DS_Store
 *.otreezip
 analysis/data/archive/
-survey/archive/
+.Rproj.user

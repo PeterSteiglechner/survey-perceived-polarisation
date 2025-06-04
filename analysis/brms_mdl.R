@@ -65,7 +65,7 @@ loo_1 <- loo(model_1)
 loo_2 <- loo(model_2)
 loo_compare(loo_1, loo_2)
 
-# model 1 is preferred (but uncertain)
+# model 2 is preferred (but uncertain)
 # elpd_diff: expected log predictive density difference (out-of-sample pred. acc.)
 # se_diff: how uncertain elpd_diff is (standard error: so here uncertain)
 
@@ -132,7 +132,7 @@ pop_preds <- bind_rows(
 )
 
 p2 <- ggplot(pop_preds, aes(x = euclidean_norm, y = Estimate, color = model, fill = model)) +
-    geom_line(size = 1) +
+    geom_line() +
     geom_ribbon(aes(ymin = Q2.5, ymax = Q97.5), alpha = 0.2, color = NA) +
     scale_color_manual(values = c("model_1" = "gray40", "model_2" = "steelblue")) +
     scale_fill_manual(values = c("model_1" = "gray40", "model_2" = "steelblue")) +
@@ -161,6 +161,10 @@ ggsave(
     bg = "white"
 )
 
+## explore random effects ##
+ranef(model_2) # subject-specific intercepts/slopes (with CIs)
+coef(model_2) # subject-specific values (fixed + random effects)
+
 # more complex models #
 # model 3 (just random intercept here?)
 colnames(df)
@@ -179,10 +183,30 @@ model_3 <- brm(
 
 # compare model 3 to the simpler models
 loo_3 <- loo(model_3)
-loo_compare(loo_1, loo_2, loo_3) # looks like model 3 is good actually
+loo_compare(loo_1, loo_2, loo_3) # model 3 is terrible.
 
+# look at fixed effects
 fixef(model_1) # reasonable: basically 1-1 mapping
-fixef(model_2) # reasonable: basically 1-1 mapping
-fixef(model_3) # this looks weird though (should all be positive)
+fixef(model_2) # reasonable: basically 1-1 mapping (intercept positive: so when no actual distance, perceive some distance)
+fixef(model_3) # This looks weird though (should all be positive). Also intercept becomes larger here.
 
 ## plot model 3 ##
+pp_check(model_3)
+
+library(bayesplot)
+mcmc_areas(as_draws_df(model_3), pars = vars(starts_with("b_")))
+
+df$pred_model3 <- fitted(model_3)[, "Estimate"]
+
+ggplot(df, aes(x = pred_model3, y = perceived_norm)) +
+    geom_point(alpha = 0.3) +
+    geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
+    labs(
+        x = "Predicted perceived distance (model_3)",
+        y = "Observed perceived distance",
+        title = "Predicted vs Observed (Model 3)"
+    ) +
+    theme_minimal()
+
+library(bayesplot)
+mcmc_areas(as_draws_df(model_3), pars = vars(starts_with("b_")))
