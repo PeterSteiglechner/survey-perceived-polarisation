@@ -1,5 +1,5 @@
 {{ block title }}
-Your political beliefs
+Political Beliefs of a typical <strong>{{ name }}</strong> voter
 {{ endblock }}
 {{ block content }}
 
@@ -50,13 +50,15 @@ Your political beliefs
 </style>
 
 
-Please answer the following questions about your own political opinions
+
+We now ask you the same political questions as before. Imagine a typical <strong> {{ name }} voter</strong>.
+Please click on the response option that this person would probably select.
 
 <table class="survey-table-clean">
     <thead>
         <tr>
             <th style="width: 65%;">Statement</th>
-            <th style="width: 35%;">Your Response</th>
+            <th style="width: 35%;"><em>{{ name }}</em> Voter  Response</th>
         </tr>
     </thead>
     <tbody>
@@ -70,6 +72,9 @@ Please answer the following questions about your own political opinions
 </table>
 
 
+
+
 {{next_button}}
+
 
 {{ endblock }}

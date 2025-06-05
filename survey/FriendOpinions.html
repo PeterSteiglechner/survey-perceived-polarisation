@@ -3,6 +3,54 @@ Political Beliefs of <strong>{{ friend_name }}</strong>
 {{ endblock }}
 {{ block content }}
 
+<style>
+    .extra-space {
+        margin-top: 1.5em;
+        border-top: 1px solid #ccc;
+        padding-top: 0.5em;
+    }
+.survey-table-clean {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.survey-table-clean thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.survey-table-clean th {
+    padding: 15px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.survey-table-clean td {
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: top;
+}
+
+.survey-table-clean tr:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+}
+
+.survey-table-clean .statement-cell {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #2c3e50;
+    font-weight: 500;
+}
+</style>
+
+
+
 We now ask you the same political questions as before.
 Please click on the response option that you think
 <strong>
@@ -11,23 +59,22 @@ Please click on the response option that you think
 would probably select.
 
 
-<table class="table">
+<table class="survey-table-clean">
     <thead>
         <tr>
             <th style="width: 65%;">Statement</th>
-            <th style="width: 45%;"><em>{{ friend_name }}</em>'s response</th>
+            <th style="width: 35%;"><em>{{ friend_name }}</em>'s Response</th>
         </tr>
     </thead>
     <tbody>
         {{ for field, question in field_question_pairs }}
         <tr>
-            <td>{{ question }}</td>
+            <td class="statement-cell">{{ question }}</td>
             <td>{% formfield field %}</td>
         </tr>
-        {{endfor}}
+        {{ endfor }}
     </tbody>
 </table>
-
 
 
 

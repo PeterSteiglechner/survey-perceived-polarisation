@@ -1,113 +1,262 @@
-{{ block title }}
-Political Mapping</strong>
-{{ endblock }}
-
 {% block content %}
+<div class="container">
+    <h2>Political Mapping Exercise 2</h2>
+    <p style="margin-bottom: 0.5em; color: grey;">We now continue to the main positioning task:</p>
+    <p style="margin-bottom: 0.5em; color: grey;">
+        Imagine you, your social contacts, a typical Green voter, and a typical AfD voter are 
+        standing in a room. Arrange yourselves so that <strong>individuals who share similar political views</strong> 
+        on questions regarding economic inequality, migration, diversity, climate change, free & fair elections, 
+        and politician salaries <strong>are positioned close together</strong>, while those with differing views 
+        are placed farther apart.
+    </p>
+    <p style="margin-bottom: 0.5em;">
+        Next, consider the individual <strong>{{ currentP }}</strong> and place the corresponding dot in the room.
+    </p>
+    <p style="margin-bottom: 0.5em;">
+        Here are the opinions of <strong>{{ currentP }}</strong>:
+        
+    </p>
+    
+    <img src="{% static img_source %}" alt="Political opinion profile" style="width: 512px; height: 350px; border: 1px solid #ddd; border-radius: 4px; margin: 10px 0;">
+    
+    <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-left: 4px solid #007bff; border-radius: 4px;">
+        {{ P_op_text }}
+    </div>
+    
+    <p style="margin-bottom: 0.5em;">
+        Feel free to adjust the positions of all dots to accurately reflect the political distances between these individuals.
+    </p>
+
+    <canvas id="dragCanvas" width="560" height="500" style="border: 2px solid #333; background: #fafafa; display: block; margin: 20px auto; cursor: grab;"></canvas>
+
+    <div id="popup" style="
+        display: none;
+        position: fixed;
+        left: 510px;
+        top: 0px;
+        width: 400px;
+        padding: 15px;
+        background: white;
+        border: 2px solid #333;
+        border-radius: 6px;
+        box-shadow: 4px 4px 12px rgba(0,0,0,0.3);
+        z-index: 1000;
+        font-size: 13px;
+        line-height: 1.3;
+    "></div>
+
+    <input type="hidden" name="positions" id="positions">
+
+    <div class="instructions" style="margin: 20px 0; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+        <p style="margin-bottom: 0.5em; font-weight: bold;">
+            You cannot continue until you have placed all items inside the positioning square.
+        </p>
+        <p style="margin: 0; color: #856404;">
+            <strong>Instructions:</strong> Drag all dots to position them according to political similarity. 
+            Click on any dot to see detailed information. All dots must be within the square boundary to proceed.
+        </p>
+    </div>
+
+    {{ next_button }}
+
+</div>
+
+<style>
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        font-family: Arial, sans-serif;
+    }
+    
+    #dragCanvas:active {
+        cursor: grabbing;
+    }
+    
+</style>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const canvas = document.getElementById("dragCanvas");
         const ctx = canvas.getContext("2d");
         const points = [
-            { label: "self", x: {{ pos_self_x }}, y: {{ pos_self_y }} },
-        { label: "{{ player.friend1 }}", x: {{ pos_friend1_x }}, y: {{ pos_friend1_y }} },
-        { label: "{{ player.friend2 }}", x: {{ pos_friend2_x }}, y: {{ pos_friend2_y }} },
-        { label: "{{ player.friend3 }}", x: {{ pos_friend3_x }}, y: {{ pos_friend3_y }} },
-        { label: "GreenVoter", x: {{ pos_GreenVoter_x }}, y: {{ pos_GreenVoter_y }} },
-        { label: "AfDVoter", x: {{ pos_AfDVoter_x }}, y: {{ pos_AfDVoter_y }} },
-        { label: "P1", x: {{ pos_P1_x }}, y: {{ pos_P1_y }} },
-        { label: "P2", x: {{ pos_P2_x }}, y: {{ pos_P2_y }} },
-        { label: "P3", x: {{ pos_P3_x }}, y: {{ pos_P3_y }} },
-        { label: "P4", x: {{ pos_P4_x }}, y: {{ pos_P4_y }} },
+            {% for dot in dots %}
+                {
+                label: "{{ dot.label }}", 
+                name: "{{ dot.name }}", 
+                x: {{ dot.x }}, 
+                y: {{ dot.y }}, 
+                dottype: "{{ dot.dottype }}" ,
+                descr:"{{ dot.descr }}",
+                radius: 12
+                },    
+            {% endfor %}
         ];
-    let draggingPoint = null;
+        const popup = document.getElementById("popup");
 
-    function drawCanvas() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        points.forEach(point => {
-            ctx.beginPath();
-            ctx.arc(point.x, point.y, 10, 0, 2 * Math.PI);
-            ctx.fillStyle = point.label === "self" ? "black" : (point.label.startsWith("P") && ["1", "2", "3", "4"].includes(point.label[1]) ? "red" : (point.label === "GreenVoter" ? "green" : (point.label === "AfDVoter" ? "blue" : "orange")));
-            ctx.fill();
-            ctx.stroke();
-            ctx.fillStyle = "black";
-            ctx.fillText(point.label, point.x + 12, point.y);
-        });
-    }
+        let draggingPoint = null;
+        let hoveredPoint = null;
+        let selectedPoint = null;
+        
+        console.log("Loaded points:", points);
 
-    function getMousePos(evt) {
-        const rect = canvas.getBoundingClientRect();
-        return {
-            x: evt.clientX - rect.left,
-            y: evt.clientY - rect.top
-        };
-    }
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    function findPoint(mousePos) {
-        return points.find(p => Math.hypot(p.x - mousePos.x, p.y - mousePos.y) < 10);
-    }
+            // Draw the boundary square with enhanced styling
+            ctx.strokeStyle = "#333";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(0, 0, canvas.height, canvas.height);
+            
+       
+            // Draw all points
+            points.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                
+                // Set fill color based on type
+                ctx.fillStyle =
+                    p.dottype === "self" ? "black" :
+                        p.name === "GreenVoter" ? "green" :
+                            p.name === "AfDVoter" ? "blue" :
+                                p.dottype === "friend" ? "orange":
+                                    p.dottype === "P" ? "red":
+                                        "grey";      
+                ctx.fill();
+                
+                // Add border with hover effect
+                ctx.strokeStyle = p === hoveredPoint ? "#fff" : "#333";
+                ctx.lineWidth = p === hoveredPoint ? 3 : 2;
+                ctx.stroke();
 
-    canvas.addEventListener("mousedown", function (evt) {
-        const mousePos = getMousePos(evt);
-        draggingPoint = findPoint(mousePos);
-    });
+                // Draw label with better positioning
+                ctx.fillStyle = "#333";
+                ctx.font = "12px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "bottom";
+                ctx.fillText(p.label, p.x, p.y - 18);
+            });
+        }
 
-    canvas.addEventListener("mousemove", function (evt) {
-        if (draggingPoint) {
+        function getMousePos(evt) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: evt.clientX - rect.left,
+                y: evt.clientY - rect.top
+            };
+        }
+
+        function findPoint(mousePos) {
+            return points.find(p => Math.hypot(p.x - mousePos.x, p.y - mousePos.y) < p.radius);
+        }
+
+        function showPopup(point, mouseX, mouseY) {
+            const canvasRect = canvas.getBoundingClientRect();
+            const containerRect = canvas.parentElement.getBoundingClientRect();
+            
+            // Position popup to the right of canvas, starting at x=510px from canvas left
+            popup.style.left = `${canvasRect.left + 580}px`;
+            popup.style.top = `${canvasRect.top}px`;
+            
+            // Create table from description
+            let tableContent = '';
+            if (point.descr && point.descr.includes(';')) {
+                const lines = point.descr.split(';').map(line => line.trim()).filter(line => line);
+                tableContent = lines.map(line => {
+                    const colonIndex = line.indexOf(':');
+                    if (colonIndex !== -1) {
+                        const question = line.substring(0, colonIndex);
+                        const answer = line.substring(colonIndex + 1).trim();
+                        return `<tr><td style="padding: 4px 8px 4px 0; vertical-align: top; border-bottom: 1px solid #eee;">${question}:</td><td style="padding: 4px 0; vertical-align: top; border-bottom: 1px solid #eee; font-weight: bold;">${answer}</td></tr>`;
+                    }
+                    return `<tr><td colspan="2" style="padding: 4px 0; border-bottom: 1px solid #eee;">${line}</td></tr>`;
+                }).join('');
+            } else {
+                tableContent = `<tr><td style="padding: 4px 0;">${point.descr || 'No description available'}</td></tr>`;
+            }
+            
+            popup.innerHTML = `
+                <strong style="font-size: 14px;">${point.label}</strong><br><br>
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                    ${tableContent}
+                </table>
+            `;
+            popup.style.display = "block";
+        }
+
+        canvas.addEventListener("mousedown", function (evt) {
             const mousePos = getMousePos(evt);
-            draggingPoint.x = mousePos.x;
-            draggingPoint.y = mousePos.y;
+            const clickedPoint = findPoint(mousePos);
+
+            if (clickedPoint) {
+                draggingPoint = clickedPoint;
+                selectedPoint = clickedPoint;
+                showPopup(clickedPoint, mousePos.x, mousePos.y);
+            } else {
+                selectedPoint = null;
+                popup.style.display = "none";
+            }
+        });
+
+        canvas.addEventListener("mousemove", function (evt) {
+            const mousePos = getMousePos(evt);
+            const newHoveredPoint = findPoint(mousePos);
+            
+            if (newHoveredPoint !== hoveredPoint) {
+                hoveredPoint = newHoveredPoint;
+                drawCanvas();
+            }
+            
+            if (draggingPoint) {
+                draggingPoint.x = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, mousePos.x));
+                draggingPoint.y = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, mousePos.y));
+                drawCanvas();
+
+                if (selectedPoint === draggingPoint) {
+                    showPopup(draggingPoint, draggingPoint.x, draggingPoint.y);
+                }
+            }
+        });
+
+        canvas.addEventListener("mouseup", function () {
+            draggingPoint = null;
+        });
+
+        canvas.addEventListener("mouseleave", function () {
+            draggingPoint = null;
+            hoveredPoint = null;
             drawCanvas();
+        });
+          
+        document.addEventListener("click", function (e) {
+            if (!canvas.contains(e.target) && !popup.contains(e.target)) {
+                popup.style.display = "none";
+                selectedPoint = null;
+            }
+        });
+
+        // Initial draw
+        drawCanvas();
+        
+        // Validation function for boundary checking
+        function allPointsInsideBox() {
+            return points.every(p => p.x >= 0 && p.x <= canvas.height && p.y >= 0 && p.y <= canvas.height);
+        }
+        
+        // Handle form submission
+        const form = document.querySelector("form");
+        const nextButton = document.querySelector("button[type=submit], .otree-btn-next");
+        
+        if (nextButton) {
+            nextButton.addEventListener("click", function (e) {
+                e.preventDefault();
+                if (!allPointsInsideBox()) {
+                    alert("Please place all dots inside the positioning square before continuing.");
+                    return;
+                }
+                document.getElementById("positions").value = JSON.stringify(points);
+                form.submit();
+            });
         }
     });
-
-    canvas.addEventListener("mouseup", function () {
-        draggingPoint = null;
-    });
-
-    drawCanvas();
-
-
-    function savePositions() {
-        document.getElementById("positions").value = JSON.stringify(points);
-    }
-
-    // Ensure saving positions before form submission
-    document.querySelector("form").addEventListener("submit", savePositions);
-    });
 </script>
-
-
-Imagine you, your social contacts, a typical Green voter, and a typical AfD voter are standing in a room.
-Arrange yourselves so that <strong>individuals who share similar political views</strong> on questions regarding
-economic inequality, migration, diversity, and climate change <strong>are positioned close together</strong>, while
-those with differing views are farther apart.
-
-<br></br>
-<br></br>
-
-
-Next, consider the reported opinions of individual P{{ currentP }} and place them in the room accordingly. Feel free to
-adjust the positions of the other individuals if necessary to reflect any changes in perceived political distance.
-
-
-<br></br>
-
-Here is the opinion of P{{ currentP }} on the questions regarding economic inequality, migration, diversity, and climate
-change:
-<br></br>
-
-<img src="{% static img_source %}" alt="reported opinion" style="width:512px;height:350px;">
-<br></br>
-
-{{ P_op_text }}
-
-<br></br>
-
-
-<canvas id="dragCanvas" width="500" height="500" style="border:1px solid black;"></canvas>
-<input type="hidden" id="positions" name="positions">
-
-{{ next_button }}
-
 {% endblock %}

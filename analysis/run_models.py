@@ -9,6 +9,7 @@ import pymc as pm
 import pandas as pd 
 import seaborn as sns
 import xarray as xr 
+from itertools import combinations 
 from models import model1, model2, model3, model4, model1NL, model2NL, model3NL, model4NL
 from plot_model_functions import *
 from preprocessing import questions_sc as questions
@@ -39,27 +40,27 @@ plot_rawData(df)
 #####  FIT LINEAR MODELS   #####
 #################################
 # random seed
-RANDOM_SEED = 3251
+RANDOM_SEED = 7353
 rng = np.random.default_rng(RANDOM_SEED)
 
 with model1(df) as m1:
-    trace1 = pm.sample(1000, tune=1000, return_inferencedata=True, target_accept=0.9, idata_kwargs={"log_likelihood": True})
+    trace1 = pm.sample(1000, tune=1000, return_inferencedata=True, target_accept=0.95, idata_kwargs={"log_likelihood": True})
     posterior_samples1 = pm.sample_posterior_predictive(trace1)
 summary1 = az.summary(trace1)
 
 with model2(df) as m2:
-    trace2 = pm.sample(1000, tune=1000, return_inferencedata=True, target_accept=0.9, idata_kwargs={"log_likelihood": True})
+    trace2 = pm.sample(1000, tune=1000, return_inferencedata=True, target_accept=0.95, idata_kwargs={"log_likelihood": True})
     posterior_samples2 = pm.sample_posterior_predictive(trace2)
 summary2 = az.summary(trace2)
 
 
 with model3(df, questions=questions) as m3:
-    trace3 = pm.sample(1000, tune=1000, return_inferencedata=True, target_accept=0.9, idata_kwargs={"log_likelihood": True})
+    trace3 = pm.sample(1000, tune=1000, return_inferencedata=True, target_accept=0.95, idata_kwargs={"log_likelihood": True})
     posterior_samples3 = pm.sample_posterior_predictive(trace3)
 summary3 = az.summary(trace3)
 
 with model4(df, questions=questions) as m4:
-    trace4 = pm.sample(1000, tune=1000, return_inferencedata=True, target_accept=0.9, idata_kwargs={"log_likelihood": True})
+    trace4 = pm.sample(1000, tune=1000, return_inferencedata=True, target_accept=0.95, idata_kwargs={"log_likelihood": True})
     posterior_samples4 = pm.sample_posterior_predictive(trace4)
 summary4 = az.summary(trace4)
 
@@ -70,72 +71,60 @@ summary4 = az.summary(trace4)
 #################################
 
 with model1NL(df) as m1nl:
-    trace1nl = pm.sample(1000, tune=100, return_inferencedata=True, target_accept=0.9, idata_kwargs={"log_likelihood": True})
+    trace1nl = pm.sample(1000, tune=100, return_inferencedata=True, target_accept=0.95, idata_kwargs={"log_likelihood": True})
     posterior_samples1nl = pm.sample_posterior_predictive(trace1nl)
 summary1nl = az.summary(trace1nl)
 
 with model2NL(df) as m2nl:
-    trace2nl = pm.sample(1000, tune=100, return_inferencedata=True, target_accept=0.9, idata_kwargs={"log_likelihood": True})
+    trace2nl = pm.sample(1000, tune=100, return_inferencedata=True, target_accept=0.95, idata_kwargs={"log_likelihood": True})
     posterior_samples2nl = pm.sample_posterior_predictive(trace2nl)
 summary2nl = az.summary(trace2nl)
 
 with model3NL(df, questions=questions) as m3nl:
-    trace3nl = pm.sample(1000, tune=100, return_inferencedata=True, target_accept=0.9, idata_kwargs={"log_likelihood": True})
+    trace3nl = pm.sample(1000, tune=100, return_inferencedata=True, target_accept=0.95, idata_kwargs={"log_likelihood": True})
     posterior_samples3nl = pm.sample_posterior_predictive(trace3nl)
 summary3nl = az.summary(trace3nl)
 
 with model4NL(df, questions=questions) as m4nl:
-    trace4nl = pm.sample(1000, tune=100, return_inferencedata=True, target_accept=0.9, idata_kwargs={"log_likelihood": True})
+    trace4nl = pm.sample(1000, tune=100, return_inferencedata=True, target_accept=0.95, idata_kwargs={"log_likelihood": True})
     posterior_samples4nl = pm.sample_posterior_predictive(trace4nl)
 summary4nl = az.summary(trace4nl)
 
 #%%
-
 fig, axs = plot_model1(df, summary1)
 fig, axs = plot_model2(df, summary2)
-fig, axs = plot_model3(df, summary3)
-fig, axs = plot_model4(df, summary4)
+for q in questions:
+    fig, axs = plot_model3(df, summary3, q)
+    fig, axs = plot_model4(df, summary4, q)
+
+#%%
+
+fig, axs = plot_model1(df, summary1nl, linear=False)
+fig, axs = plot_model2(df, summary2nl, linear=False)
+for q in questions:
+    fig, axs = plot_model3(df, summary3nl, q, linear=False)
+    fig, axs = plot_model4(df, summary4nl, q, linear=False)
 
 
 
 #%%
-from plot_model_functions import plot_model1nl, plot_model2nl, plot_model3nl, plot_model4nl
-plot_model1nl(df, summary1nl)
-plot_model2nl(df, summary2nl)
-plot_model3nl(df, summary3nl)
-plot_model4nl(df, summary4nl)
-
-
-#%%
-
-loo1 = az.loo(trace1)
-loo2 = az.loo(trace2)
-loo3 = az.loo(trace3)
-loo4 = az.loo(trace4)
-loo1nl = az.loo(trace1nl)
-loo2nl = az.loo(trace2nl)
-loo3nl = az.loo(trace3nl)
-loo4nl = az.loo(trace4nl)
+#################################
+#####  MODEL COMPARISON   #####
+#################################
+traces = {'model1': trace1, 'model2': trace2, "model3":trace3, "model4":trace4,'model1nl': trace1nl, 'model2nl': trace2nl, "model3nl":trace3nl, "model4nl":trace4nl}
+loos = {}
+for m, t in traces.items():
+    loos[m] = az.loo(t)
 # Compare the models
-comparison = az.compare({'model1': trace1, 'model2': trace2, "model3":trace3, "model4":trace4,'model1nl': trace1nl, 'model2nl': trace2nl, "model3nl":trace3nl, "model4nl":trace4nl})
-
+comparison = az.compare(traces)
 comparison
 
-# %%
-
 az.plot_compare(comparison)
-
-# %%
-
-
-
-
-
 
 
 # %%
 # #################################
-#####  ANALYSE MODEL 4 IN MORE DETAIL  #####
+#####  ANALYSE MODEL 4 BY GROUP/IDENTITY/INDIVIDUAL  #####
 #################################
 
 
@@ -190,3 +179,4 @@ ax.set_ylabel("mean regression slope")
 ax.legend(title="Survey Participant", loc='upper right')
 ax.set_ylim(0,)
 fig.tight_layout()
+# %%

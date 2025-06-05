@@ -1,37 +1,127 @@
-{{ block title }}
-Political Mapping</strong>
-{{ endblock }}
-
 {% block content %}
+<div class="container">
+    <h2>Political Mapping Exercise</h2>
+    <p style="margin-bottom: 0.5em; color: black;">We now continue to the main positioning task:</p>
+    <p style="margin-bottom: 0.5em; color: black;">
+        Imagine you, your social contacts, a typical Green voter, and a typical AfD voter are 
+        standing in a room. Arrange yourselves so that <strong>individuals who share similar political views</strong> 
+        on questions regarding economic inequality, migration, diversity, climate change, free & fair elections, 
+        and politician salaries <strong>are positioned close together</strong>, while those with differing views 
+        are placed farther apart.
+    </p>
+   
+    <p style="margin-bottom: 0.5em;">
+        Feel free to adjust the positions of all dots to accurately reflect the political distances between these individuals.
+    </p>
+
+    <canvas id="dragCanvas" width="600" height="500" style="border: 2px solid #333; background: #fafafa; display: block; margin: 20px auto; cursor: grab;"></canvas>
+
+    <div id="popup" style="
+        display: none;
+        position: fixed;
+        left: 510px;
+        top: 0px;
+        width: 400px;
+        padding: 15px;
+        background: white;
+        border: 2px solid #333;
+        border-radius: 6px;
+        box-shadow: 4px 4px 12px rgba(0,0,0,0.3);
+        z-index: 1000;
+        font-size: 13px;
+        line-height: 1.3;
+    "></div>
+
+    <input type="hidden" name="positions" id="positions">
+    <input type="hidden" name="positions_preP" id="positions_preP">
+
+    <div class="instructions" style="margin: 20px 0; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+        <p style="margin-bottom: 0.5em; font-weight: bold;">
+            You cannot continue until you have placed all items inside the positioning square.
+        </p>
+        <p style="margin: 0; color: #856404;">
+            <strong>Instructions:</strong> Drag all dots to position them according to political similarity. 
+            Click on any dot to see detailed information. All dots must be within the square boundary to proceed.
+        </p>
+    </div>
+
+    {{ next_button }}
+
+</div>
+
+<style>
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        font-family: Arial, sans-serif;
+    }
+    
+    #dragCanvas:active {
+        cursor: grabbing;
+    }
+    
+</style>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const canvas = document.getElementById("dragCanvas");
         const ctx = canvas.getContext("2d");
         const points = [
-            { label: "self", x: 100, y: 100 },
-            { label: "{{ player.friend1 }}", x: 200, y: 110 },
-            { label: "{{ player.friend2 }}", x: 250, y: 120 },
-            { label: "{{ player.friend3 }}", x: 300, y: 130 },
-            { label: "GreenVoter", x: 400, y: 200 },
-            { label: "AfDVoter", x: 450, y: 220 },
-            { label: "P1", x: 1200, y: 1200 },
-            { label: "P2", x: 1300, y: 1200 },
-            { label: "P3", x: 1200, y: 1300 },
-            { label: "P4", x: 1300, y: 1300 },
+            {% for dot in dots %}
+                {
+                label: "{{ dot.label }}", 
+                name: "{{ dot.name }}", 
+                x: {{ dot.x }}, 
+                y: {{ dot.y }}, 
+                dottype: "{{ dot.dottype }}" ,
+                descr:"{{ dot.descr }}",
+                radius: 12
+                },    
+            {% endfor %}
         ];
+        const popup = document.getElementById("popup");
+
         let draggingPoint = null;
+        let hoveredPoint = null;
+        let selectedPoint = null;
+        
+        console.log("Loaded points:", points);
 
         function drawCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            points.forEach(point => {
+
+            // Draw the boundary square with enhanced styling
+            ctx.strokeStyle = "#333";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(0, 0, canvas.height, canvas.height);
+            
+       
+            // Draw all points
+            points.forEach(p => {
                 ctx.beginPath();
-                ctx.arc(point.x, point.y, 10, 0, 2 * Math.PI);
-                ctx.fillStyle = point.label === "self" ? "black" : (point.label.startsWith("P") && ["1", "2", "3", "4"].includes(point.label[1]) ? "red" : (point.label === "GreenVoter" ? "green" : (point.label === "AfDVoter" ? "blue" : "orange")));
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                
+                // Set fill color based on type
+                ctx.fillStyle =
+                    p.dottype === "self" ? "black" :
+                        p.name === "GreenVoter" ? "green" :
+                            p.name === "AfDVoter" ? "blue" :
+                                p.dottype === "friend" ? "orange":
+                                    p.dottype === "P" ? "red":
+                                        "grey";      
                 ctx.fill();
+                
+                // Add border with hover effect
+                ctx.strokeStyle = p === hoveredPoint ? "#fff" : "#333";
+                ctx.lineWidth = p === hoveredPoint ? 3 : 2;
                 ctx.stroke();
-                ctx.fillStyle = "black";
-                ctx.fillText(point.label, point.x + 12, point.y);
+
+                // Draw label with better positioning
+                ctx.fillStyle = "#333";
+                ctx.font = "12px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "bottom";
+                ctx.fillText(p.label, p.x, p.y - 18);
             });
         }
 
@@ -44,20 +134,40 @@ Political Mapping</strong>
         }
 
         function findPoint(mousePos) {
-            return points.find(p => Math.hypot(p.x - mousePos.x, p.y - mousePos.y) < 10);
+            return points.find(p => Math.hypot(p.x - mousePos.x, p.y - mousePos.y) < p.radius);
         }
 
         canvas.addEventListener("mousedown", function (evt) {
             const mousePos = getMousePos(evt);
-            draggingPoint = findPoint(mousePos);
+            const clickedPoint = findPoint(mousePos);
+
+            if (clickedPoint) {
+                draggingPoint = clickedPoint;
+                selectedPoint = clickedPoint;
+                //showPopup(clickedPoint, mousePos.x, mousePos.y);
+            } else {
+                selectedPoint = null;
+                popup.style.display = "none";
+            }
         });
 
         canvas.addEventListener("mousemove", function (evt) {
-            if (draggingPoint) {
-                const mousePos = getMousePos(evt);
-                draggingPoint.x = mousePos.x;
-                draggingPoint.y = mousePos.y;
+            const mousePos = getMousePos(evt);
+            const newHoveredPoint = findPoint(mousePos);
+            
+            if (newHoveredPoint !== hoveredPoint) {
+                hoveredPoint = newHoveredPoint;
                 drawCanvas();
+            }
+            
+            if (draggingPoint) {
+                draggingPoint.x = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, mousePos.x));
+                draggingPoint.y = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, mousePos.y));
+                drawCanvas();
+
+                // if (selectedPoint === draggingPoint) {
+                //    showPopup(draggingPoint, draggingPoint.x, draggingPoint.y);
+                // }
             }
         });
 
@@ -65,32 +175,43 @@ Political Mapping</strong>
             draggingPoint = null;
         });
 
+        canvas.addEventListener("mouseleave", function () {
+            draggingPoint = null;
+            hoveredPoint = null;
+            drawCanvas();
+        });
+          
+        document.addEventListener("click", function (e) {
+            if (!canvas.contains(e.target) && !popup.contains(e.target)) {
+                popup.style.display = "none";
+                selectedPoint = null;
+            }
+        });
+
+        // Initial draw
         drawCanvas();
-
-
-        function savePositions() {
-            document.getElementById("positions").value = JSON.stringify(points);
+        
+        // Validation function for boundary checking
+        function allPointsInsideBox() {
+            return points.every(p => p.x >= 0 && p.x <= canvas.height && p.y >= 0 && p.y <= canvas.height);
         }
-
-        // Ensure saving positions before form submission
-        document.querySelector("form").addEventListener("submit", savePositions);
+        
+        // Handle form submission
+        const form = document.querySelector("form");
+        const nextButton = document.querySelector("button[type=submit], .otree-btn-next");
+        
+        if (nextButton) {
+            nextButton.addEventListener("click", function (e) {
+                e.preventDefault();
+                if (!allPointsInsideBox()) {
+                    alert("Please place all dots inside the positioning square before continuing.");
+                    return;
+                }
+                document.getElementById("positions").value = JSON.stringify(points);
+                document.getElementById("positions_preP").value = JSON.stringify(points);
+                form.submit();
+            });
+        }
     });
 </script>
-
-We now continue to the actual task:
-
-<br></br>
-
-Imagine you, your social contacts, a typical Green voter, and a typical AfD voter are standing in a room.
-Arrange yourselves so that <strong>individuals who share similar political views</strong> on questions regarding
-economic inequality, migration, diversity, and climate change <strong>are positioned close together</strong>, while
-those with differing views are farther apart.
-
-<br></br>
-
-<canvas id="dragCanvas" width="500" height="500" style="border:1px solid black;"></canvas>
-<input type="hidden" id="positions" name="positions">
-
-{{ next_button }}
-
 {% endblock %}
