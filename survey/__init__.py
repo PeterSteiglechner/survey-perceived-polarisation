@@ -69,6 +69,7 @@ class C(BaseConstants):
     LABELLED = ["Green voter", "AfD voter"]
     LABELLEDCOLORS = dict(zip(LABELLED, ["#46962b", "#009ee0"]))
     NPS = len(P_OPS.keys())
+    NR_CHECKS = 4
 
     c = "worried about climate change."
     g = "equal rights to adopt children for gay/lesbian couples."
@@ -141,10 +142,25 @@ class Player(BasePlayer):
     #################################
     #####  CHecks   #####
     #################################
-    for toCheck in ["f1f2", "P1P2"]:
-        exec(f"check_self_{toCheck} = models.StringField(        choices=['not at all','somewhat','very much'],label=C.CHECKTEXT('your contacts'),widget=widgets.RadioSelectHorizontal,blank=False)")
-        exec(f"reason_{toCheck} =  models.LongStringField(label=C.REASONTEXT)")
-    del toCheck
+    check = models.IntegerField(initial=1) 
+    check1_p1 =  models.LongStringField(blank=True)
+    check1_p2 =  models.LongStringField(blank=True)
+    check2_p1 =  models.LongStringField(blank=True)
+    check2_p2 =  models.LongStringField(blank=True)
+    check3_p1 =  models.LongStringField(blank=True)
+    check3_p2 =  models.LongStringField(blank=True)
+    check4_p1 =  models.LongStringField(blank=True)
+    check4_p2 =  models.LongStringField(blank=True)
+    check1 = models.StringField(choices=['not at all','somewhat','very much'],label=C.CHECKTEXT('your contacts'),widget=widgets.RadioSelectHorizontal,blank=False)
+    check2 = models.StringField(        choices=['not at all','somewhat','very much'],label=C.CHECKTEXT('your contacts'),widget=widgets.RadioSelectHorizontal,blank=False)
+    check3 = models.StringField(        choices=['not at all','somewhat','very much'],label=C.CHECKTEXT('your contacts'),widget=widgets.RadioSelectHorizontal,blank=False)
+    check4 = models.StringField(        choices=['not at all','somewhat','very much'],label=C.CHECKTEXT('your contacts'),widget=widgets.RadioSelectHorizontal,blank=False)
+    
+    
+    # for toCheck in ["f1f2", "P1P2"]:
+    #     exec(f"check_self_{toCheck} = models.StringField(        choices=['not at all','somewhat','very much'],label=C.CHECKTEXT('your contacts'),widget=widgets.RadioSelectHorizontal,blank=False)")
+    #     exec(f"reason_{toCheck} =  models.LongStringField(label=C.REASONTEXT)")
+    # del toCheck
 
     isTrainingPassed = models.BooleanField(initial=False)#
     isTrainingCondFvC = models.BooleanField(initial=False)#
@@ -405,8 +421,27 @@ class slide07_SPaM_personas(Page):
 
 class slide08_plausibilityCheck(Page):
     form_model = 'player'
-    form_fields = ['check_self_f1f2']#, "reason_f1f2", "check_self_P1P2", "reason_P1P2"]
     
+    @staticmethod
+    def get_form_fields(player: Player):
+        # get the current iteration number
+        i = player.check
+        return [f'check{i}']
+    
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        p1_label = player.participant.vars.get(f'check{player.check}_p1')
+        p2_label = player.participant.vars.get(f'check{player.check}_p2')
+        if p1_label and p2_label:
+            setattr(player, f'check{player.check}_p1', p1_label)
+            setattr(player, f'check{player.check}_p2', p2_label)
+        else:
+            # fallback, just set empty string or default
+            setattr(player, f'check{player.check}_p1', '')
+            setattr(player, f'check{player.check}_p2', '')
+        player.check += 1
+
+
     @staticmethod
     def vars_for_template(player: Player):
         pos = json.loads(getattr(player, "positions"))
@@ -430,6 +465,10 @@ class slide08_plausibilityCheck(Page):
             p1, p2 = random.choice(valid_pairs)
         else:
             p1, p2 = random.sample(p_points, 2)
+        # Save to participant.vars so accessible in before_next_page
+        player.participant.vars[f'check{player.check}_p1'] = p1
+        player.participant.vars[f'check{player.check}_p2'] = p2
+        
 
         dist_p1 = distances[p1]
         dist_p2 = distances[p2]
@@ -462,8 +501,7 @@ class slide08_plausibilityCheck(Page):
             'dist_p2': dist_p2,
             'distantP': distantP,
             'similarP': similarP,
-            'distantFriend': distantFriend,
-            'similarFriend': similarFriend,
+            'current_check': f'check{player.check}',
         }
     
 # class slide08_CheckDistance(Page):
@@ -506,10 +544,10 @@ page_sequence = [slide01_Introduction,
     slide02_Opinions, 
     slide03_Contacts] + \
     [slide04_PersonOpinion] * (C.NCONTACTS + len(C.LABELLED)) + \
-    [slide06_SPaM] + \
+    [slide06_SPaM] +\
     [slide07_SPaM_personas] * C.NPS +\
-    [slide08_plausibilityCheck, 
-     slide09_Demographics, 
+    [slide08_plausibilityCheck] * C.NR_CHECKS +\
+    [slide09_Demographics, 
      slide10_Results]
 
     #+[slide05a_MapTest, slide05b_MapTestResult] * 5
