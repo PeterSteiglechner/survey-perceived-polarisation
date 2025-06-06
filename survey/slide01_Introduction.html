@@ -1,3 +1,6 @@
+{{ block title }}Introduction{{ endblock }}
+{{ block content }}
+
 <div class="card bg-light m-3">
     <div class="card-body">
 
@@ -6,8 +9,8 @@
         </h3>
 
         <p>
-            In this study, we will first ask a few questions about your own political beliefs. There are no right or
-            wrong answers. In the next chapter, you will list three of your social contacts. We then ask you to report
+            In this study, we will first ask a few questions about your own political beliefs.
+            In the next chapter, you will list three of your social contacts. We then ask you to report
             what you
             think these social contacts would answer to the same political questions. And what your think a typical
             Green voter and a typical AfD voter will respond. Finally, we ask you to map the distance you perceive
@@ -15,11 +18,23 @@
             your social contacts', and the typical Green/AfD voter's opinions as political positions on a 2D map. We
             will provide some more example individuals and ask you
             to also position these statements onto the map.
-
         </p>
+
+         <div class="instructions" style="margin: 20px 0; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+        <p style="margin: 0; color: #856404;">
+            There are no right or
+            wrong answers. Your answers are anonymous and will only be used for academic research.
+        </p>
+    </div>
+
         <p><i>You will be paid XX if you complete all steps.</i></p>
 
 
 
     </div>
 </div>
+
+{{ next_button }}
+
+{{ endblock }}
+

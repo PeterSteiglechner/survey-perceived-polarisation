@@ -28,7 +28,9 @@ questiontext = [
 
 
 import pandas as pd
+
 from personas import personas
+
 LIKERT5_string = [
         (1, 'Strongly agree'),
         (2, 'Agree'),
@@ -40,15 +42,21 @@ LIKERT5_string = [
 likert_tex2num = {tex:num for num, tex in LIKERT5_string}
 likert2ones = {num: -(num-3)/2 for tex, num in likert_tex2num.items() if num!=999}
 
+personas_tex = list(personas)
+for P in personas_tex:
+    for n, (qsc, q) in enumerate(zip(QUESTIONS_SC, questionshorttext)):
+        P[qsc] = P["responses"][qsc] #likert2ones[likert_tex2num[P["responses"][qsc]]]
+pd.DataFrame(personas_tex).drop(columns=["responses"]).to_csv("../_static/2025-06-04_personas-TEX.csv")
+
+personas_tex
+
 for P in personas:
     for n, (qsc, q) in enumerate(zip(QUESTIONS_SC, questionshorttext)):
-        P[q] = likert2ones[likert_tex2num[P["responses"][qsc]]]
-pd.DataFrame(personas).drop(columns=["responses"]).to_csv("2025-06-04_personas.csv")
-
+        P[qsc] = likert2ones[likert_tex2num[P["responses"][qsc]]]
 
 
 vals_arr = {
-    f"P{n+1}": [P[q] for q in questionshorttext] for n, P in enumerate(personas)
+    f"P{n+1}": [P[q] for q in QUESTIONS_SC] for n, P in enumerate(personas)
 }
 
 
@@ -63,8 +71,8 @@ for p, vals in vals_arr.items():
     ax.set_yticks([])
     ax.set_xticks([-1,0,1])
     #ax.set_xticklabels(["strongly\ndisagree", "neutral", "strongly\nagree"])
-    for n, qsc in enumerate(QUESTIONS_SC):
-        ax.text(-0.,y[n]+0.43, qsc, rotation=0, va="center", ha="center", bbox={"pad":4, "facecolor":"gainsboro", "edgecolor":"gainsboro", "alpha":0.7})
+    for n, q in enumerate(questionshorttext):
+        ax.text(-0.,y[n]+0.43, q, rotation=0, va="center", ha="center", bbox={"pad":4, "facecolor":"gainsboro", "edgecolor":"gainsboro", "alpha":0.7})
         ax.text(-1.05, y[n], "Strongly\ndisagree", va="center", ha="right")
         ax.text(1.05, y[n], "Strongly\nagree", va="center", ha="left")
     ax.spines['bottom'].set_visible(True)
@@ -79,5 +87,7 @@ for p, vals in vals_arr.items():
     ax.set_ylim(-0.5, 5.5)
     fig.tight_layout()
     print(f"{p}.png")
-    plt.savefig(f"{p}_op.png", dpi=600)
+    plt.savefig(f"../_static/{p}_op.png", dpi=600)
+
+
 

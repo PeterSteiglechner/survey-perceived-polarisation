@@ -1,110 +1,16 @@
 from otree.api import *
 import json
-
-
-
+import pandas as pd
+import random
 
 doc = """
 Your app description
 """
 
 
-
-
-personas = [
-  {
-    "name": "Green Progressive / Social Justice Activist",
-    "description": "Young, urban, left-leaning, pro-equality and environmentalist.",  # Alternative: "Strongly leftist, fights for equality and systemic change.", 
-    "responses": {"climate_concern": "Strongly agree", 
-                  "gay_adoption": "Strongly agree",
-                  "migration_enriches_culture": "Strongly agree",
-                  "govt_reduce_inequ": "Strongly agree",
-                  "free_elect": "Strongly agree",
-                  "politician_salaries": "Strongly disagree"
-                  }
-  },
-  {
-    "name": "Centrist Pragmatist",
-    "description": "Moderate, politically balanced, avoids extremes, skeptical of migration.",
-    "responses": {"climate_concern": "Neutral", 
-                  "gay_adoption": "Neutral",
-                  "migration_enriches_culture": "Strongly disagree",
-                  "govt_reduce_inequ": "Neutral",
-                  "free_elect": "Strongly agree",
-                  "politician_salaries": "Neutral"
-                  }
-  },
-  {
-    "name": "Economic Liberal",
-    "description": "Pro-market, fiscally conservative, socially moderate.",
-    "responses": {"climate_concern": "Neutral", 
-                  "gay_adoption": "Neutral",
-                  "migration_enriches_culture": "Neutral",
-                  "govt_reduce_inequ": "Strongly disagree",
-                  "free_elect": "Strongly agree",
-                  "politician_salaries": "Strongly agree"
-                  }
-  },
-  {
-    "name": "National Populist",
-    "description": "Anti-elite, nationalist, anti-immigration, skeptical of climate action.",
-    "responses": {"climate_concern": "Strongly disagree", 
-                  "gay_adoption": "Strongly disagree",
-                  "migration_enriches_culture": "Strongly disagree",
-                  "govt_reduce_inequ": "Strongly disagree",
-                  "free_elect": "Neutral",
-                  "politician_salaries": "Neutral"
-                  }
-  },
-  {
-    "name": "Left-Conservative Dissenter",
-    "description": "Economically leftist, culturally traditional, skeptical of globalization and political elites.",
-    "responses": {"climate_concern": "Strongly agree", 
-                  "gay_adoption": "Strongly disagree",
-                  "migration_enriches_culture": "Strongly disagree",
-                  "govt_reduce_inequ": "Strongly agree",
-                  "free_elect": "Strongly agree",
-                  "politician_salaries": "Strongly disagree"
-                  }
-    }, 
-{
-  "name": "Old-School Unionist",
-  "description": "Economically Marxist, pro-worker, culturally moderate, skeptical of elites and identity politics.",
-  "responses": {"climate_concern": "Neutral", 
-                  "gay_adoption": "Neutral",
-                  "migration_enriches_culture": "Neutral",
-                  "govt_reduce_inequ": "Strongly agree",
-                  "free_elect": "Strongly agree",
-                  "politician_salaries": "Strongly disagree"
-                  }
-},
-{
-    "name": "Moderate Christian Democrat",
-    "description": "Center-right, values tradition, stability, social market economy, and democratic institutions.",
-    "responses": {"climate_concern": "Strongly agree", 
-                  "gay_adoption": "Neutral",
-                  "migration_enriches_culture": "Neutral",
-                  "govt_reduce_inequ": "Neutral",
-                  "free_elect": "Strongly agree",
-                  "politician_salaries": "Strongly agree"
-                  }
-    }, 
- {
-  "name": "Tech Libertarian",
-  "description": "Hyper-individualist, pro-market, socially liberal, anti-redistribution and skeptical of government regulation.",
-  "responses": {"climate_concern": "Strongly disagree", 
-                  "gay_adoption": "Strongly agree",
-                  "migration_enriches_culture": "Strongly agree",
-                  "govt_reduce_inequ": "Strongly disagree",
-                  "free_elect": "Strongly agree",
-                  "politician_salaries": "Neutral"
-                  }
-}
-]
-
-
 def distance(a,b):
     return ((a[0]-b[0])**2 + (a[1]-b[1])**2)**0.5
+
 
 class C(BaseConstants): 
     NAME_IN_URL = 'survey'
@@ -132,33 +38,38 @@ class C(BaseConstants):
     
     LIKERT5 = [1,2,3,4,5] + [-999]
     SLIDER = list(range(0,101)) +  [-999]
-    QUESTIONS_SC =["climate_concern", 
+    QUESTIONS = ["climate_concern", 
                    "gay_adoption", 
                     "migration_enriches_culture",
                    "govt_reduce_inequ",
                    "free_elect", 
                    "politician_salaries"]
-    questiontext = [
+    QUESTIONTEXT = dict(zip( QUESTIONS, [
         'I am very concerned about climate change.', 
         'Gay and lesbian couples should have the same rights to adopt children as couples consisting of a man and a woman.', 
         'It is enriching for cultural life in Germany when migrants come here.', 
         'The state should take measures to reduce income differences more than before.',
         'That national elections are free and fair is extremely important for democracy.',
         'Politicians should receive a higher salary during their term of office.'
-        ]
-    questionshorttext =[
+        ]))
+    QUESTIONSHORTTEXT = dict(zip( QUESTIONS, [
         "concerned about climate", 
         "equal adoption rights for gay couples", 
         "migration enriches culture",
         "state should act to reduce income differences", 
         "free & fair elections important", 
-        "higher politician salaries"]
-    QUESTIONS =questiontext# [f"{q} (1 agree strongly - 7 disagree strongly)" for q in  questions]
+        "higher politician salaries"
+        ]))
+    PERSONAS = pd.read_csv("_static/personas.csv")[QUESTIONS]
+    P_OPS =  {f"P{n+1}": row.to_dict()  for n, row in PERSONAS.iterrows()}
+
     CHECKTEXT = lambda which: f"To what extent does this actually reflect your perception of political similarity?"
     REASONTEXT ="Please briefly describe why (in two to three sentences)" 
-    NFRIENDS = 3
-    P_OPS =  {f"P{n+1}": P["responses"]  for n, P in enumerate(personas)}
+    NCONTACTS = 3
+    LABELLED = ["Green voter", "AfD voter"]
+    LABELLEDCOLORS = dict(zip(LABELLED, ["#46962b", "#009ee0"]))
     NPS = len(P_OPS.keys())
+
     c = "worried about climate change."
     g = "equal rights to adopt children for gay/lesbian couples."
     m = "migration enriches cultural life in Germany."
@@ -180,9 +91,6 @@ class C(BaseConstants):
                           "Strongly disagree":"strongly supports "+ps, "Neutral":"is neutral about "+ps, "Strongly agree":"strongly supports "+ps
                       }
                     }
-    
-    VOTERS = ["Green", "AfD"]
-
 
 class Subsession(BaseSubsession):
     pass
@@ -205,8 +113,8 @@ def make_slider(label):
         widget=widgets.RadioSelectHorizontal,
     )
 
-def define_friend(label, n):
-    return  models.LongStringField(label=label, initial=f"contact {n}")
+def define_contact(label, n):
+    return  models.LongStringField(label=label, blank=False) # , initial=f"contact {n}",
 
 
 class Player(BasePlayer):
@@ -234,7 +142,7 @@ class Player(BasePlayer):
     #####  CHecks   #####
     #################################
     for toCheck in ["f1f2", "P1P2"]:
-        exec(f"check_self_{toCheck} = models.StringField(        choices=['not at all','somewhat','very much'],label=C.CHECKTEXT('your friends'),widget=widgets.RadioSelectHorizontal,blank=True)")
+        exec(f"check_self_{toCheck} = models.StringField(        choices=['not at all','somewhat','very much'],label=C.CHECKTEXT('your contacts'),widget=widgets.RadioSelectHorizontal,blank=False)")
         exec(f"reason_{toCheck} =  models.LongStringField(label=C.REASONTEXT)")
     del toCheck
 
@@ -244,114 +152,110 @@ class Player(BasePlayer):
     isTrainingCondSvFC = models.BooleanField(initial=False)#
     trainingMessageConfirmed = models.BooleanField(initial=False)#
     isTrainingCondSvF = models.BooleanField(initial=False)#
-    current_friend = models.IntegerField(initial=1) 
-    evaluated_voter = models.IntegerField(initial=0) 
+    current_contact = models.IntegerField(initial=1) 
+    evaluated_labelledPerson = models.IntegerField(initial=0) 
     ps_placed = models.IntegerField(initial=0)  
-
+    mode = models.StringField(initial="contact")  # 'contact' or 'labelledPerson'
     
 
 #################################
 #####  OWN POLITICAL OPINIONS   #####
 #################################
-for q in C.QUESTIONS_SC:
+for q in C.QUESTIONS:
     setattr(Player, f"own_{q}", make_field(''))  
 #################################
-#####  FRIENDS' POLITICAL OPINIONS   #####
+#####  CONTACTS' POLITICAL OPINIONS   #####
 #################################
-for f in range(1,C.NFRIENDS+1):
-    setattr(Player, f"friend{f}", define_friend(f"Contact {f}", f))
-    for q in C.QUESTIONS_SC:
-        setattr(Player, f"f{f}_{q}", make_field(''))
+for n in range(1,C.NCONTACTS+1):
+    setattr(Player, f"contact{n}", define_contact(f"Contact {n}: ", n))
+    for q in C.QUESTIONS:
+        setattr(Player, f"contact{n}_{q}", make_field(''))
 
-for f in ["GreenVoter", "AfDVoter"]:
-    for q in C.QUESTIONS_SC:
-        setattr(Player, f"{f}_{q}", make_field(''))
+for name in C.LABELLED:
+    for q in C.QUESTIONS:
+        setattr(Player, f"{name.replace(" ", "")}_{q}", make_field(''))
 
 # PAGES
-class Introduction(Page):
+class slide01_Introduction(Page):
     pass
 
-class Demographics(Page):
+class slide02_Opinions(Page):
     form_model = 'player'
-    form_fields = ['age', 'feel_closest', 'feel_closest_party', "how_polarised"]
-
-
-class Friends(Page):
+    form_fields = [f"own_{q}" for q in C.QUESTIONS]
+    @staticmethod
+    def vars_for_template(player: Player): 
+        d = {
+            "fields": [f"own_{q}" for q in C.QUESTIONS],
+            "questions":  [C.QUESTIONTEXT[q] for q in C.QUESTIONS]
+        }
+        d["field_question_pairs"] = list(zip(d["fields"], d["questions"]))
+        return d
+    
+class slide03_Contacts(Page):
     form_model = 'player'
-    form_fields = [f"friend{n}" for n in range(1, C.NFRIENDS+1)]
+    form_fields = [f"contact{n}" for n in range(1, C.NCONTACTS+1)]
     @staticmethod
     def vars_for_template(player:Player):
-        return {"nfriends":C.NFRIENDS}
+        return {"ncontacts": C.NCONTACTS}
 
-class FriendOpinions(Page):
+
+class slide04_PersonOpinion(Page):
     form_model = "player"
+
     @staticmethod
-    def get_form_fields(player):
-        return [f"f{player.current_friend}_{q}" for q in C.QUESTIONS_SC]
+    def vars_for_template(player: Player):
+        if player.mode == 'contact':
+            idx = player.current_contact
+            name = getattr(player, f"contact{idx}")
+            prefix = f"contact{idx}_"
+            heading = f"{name}"
+            color = "#ff9600"  # Optional: generic or specific contact color
+        else:  # mode == 'labelledPerson'
+            idx = player.evaluated_labelledPerson
+            name = C.LABELLED[idx]
+            prefix = f"{name.replace(" ","")}_"
+            heading = f"a typical {name}"
+            color = C.LABELLEDCOLORS[name]
+
+        fields = [f"{prefix}{q}" for q in C.QUESTIONS]
+        questions = [C.QUESTIONTEXT[q] for q in C.QUESTIONS]
+
+        return {
+            "name": name,
+            "color": color,
+            "heading": heading,
+            "fields": fields,
+            "questions": questions,
+            "field_question_pairs": list(zip(fields, questions)),
+        }
+
+    @staticmethod
+    def get_form_fields(player: Player):
+        if player.mode == 'contact':
+            prefix = f"contact{player.current_contact}_"
+        else:
+            name = C.LABELLED[player.evaluated_labelledPerson]
+            prefix = f"{name.replace(" ", "")}_"
+        return [f"{prefix}{q}" for q in C.QUESTIONS]
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        if player.mode == 'contact':
+            player.current_contact += 1
+        else:
+            player.evaluated_labelledPerson += 1
+        if player.current_contact > C.NCONTACTS:
+            player.mode = "labelledPerson"
+    @staticmethod
+    def is_displayed(player: Player):
+        if player.mode == 'contact':
+            return player.current_contact <= C.NCONTACTS
+        else:
+            return player.evaluated_labelledPerson <= len(C.LABELLED)
         
-    @staticmethod
-    def before_next_page(player: Player, timeout_happened):
-        player.current_friend +=1
 
-    @staticmethod
-    def vars_for_template(player):
-        # d = {f'question_{q_sc}': q for q_sc, q in zip(C.QUESTIONS_SC, C.QUESTIONS)}
-        d = {"friend_name": getattr(player, f"friend{player.current_friend}")}
-        d["fields"] = [f"f{player.current_friend}_{q}" for q in C.QUESTIONS_SC]
-        d["questions"] = C.questiontext
-        d["field_question_pairs"] = list(zip(d["fields"], d["questions"]))
-        return d
 
-    @staticmethod
-    def is_displayed(player):
-        return player.current_friend <= C.NFRIENDS  
-
-class Voter_Opinions(Page):
-    form_model = 'player'
-    @staticmethod
-    def get_form_fields(player):
-        return [f"{C.VOTERS[player.evaluated_voter]}Voter_{q}" for q in C.QUESTIONS_SC]
-    @staticmethod
-    def before_next_page(player: Player, timeout_happened):
-        player.evaluated_voter +=1
-    @staticmethod
-    def vars_for_template(player: Player): 
-        voter = C.VOTERS[player.evaluated_voter]
-        d = {
-            "name": voter,
-            "fields": [f"{voter}Voter_{q}" for q in C.QUESTIONS_SC], 
-            "questions": C.questiontext
-            }
-        d["field_question_pairs"] = list(zip(d["fields"], d["questions"]))
-        return d
-    @staticmethod
-    def is_displayed(player):
-        return player.evaluated_voter <= len(C.VOTERS)  
-    
-class AfD_Opinions(Page):
-    form_model = 'player'
-    #form_fields = [f"AfDVoter_{q}" for q in C.QUESTIONS_SC]
-    @staticmethod
-    def get_form_fields(player):
-        return [f"GreenVoter_{q}" for q in C.QUESTIONS_SC]
-    @staticmethod
-    def vars_for_template(player: Player): 
-        d = {"fields": [f"AfDVoter_{q}" for q in C.QUESTIONS_SC],
-        "questions": C.questiontext}
-        d["field_question_pairs"] = list(zip(d["fields"], d["questions"]))
-        return d
-
-class Opinions(Page):
-    form_model = 'player'
-    form_fields = [f"own_{q}" for q in C.QUESTIONS_SC]
-    @staticmethod
-    def vars_for_template(player: Player): 
-        d = {"fields": [f"own_{q}" for q in C.QUESTIONS_SC],
-        "questions": C.questiontext}
-        d["field_question_pairs"] = list(zip(d["fields"], d["questions"]))
-        return d
-
-class MapTest(Page):
+class slide05a_MapTest(Page):
     form_model = 'player'
     form_fields = ['positionsTest']  # Store the final positions
    
@@ -381,7 +285,7 @@ class MapTest(Page):
         return not player.isTrainingPassed 
     
 
-class MapTestResult(Page):
+class slide05b_MapTestResult(Page):
     @staticmethod
     def vars_for_template(player: Player):
         passedMsg = "Well done! Your arrangement fulfills all the criteria. Below we show another possible example of an arrangement that accurately describes the scenario."
@@ -400,78 +304,95 @@ class MapTestResult(Page):
     def is_displayed(player: Player):
         return not player.trainingMessageConfirmed or not player.isTrainingPassed
 
-class Map(Page):
+class slide06_SPaM(Page):
     form_model = 'player'
     form_fields = ['positions_preP','positions']
     
     @staticmethod
     def vars_for_template(player:Player):
-        names =  ["self"]+[getattr(player, f"friend{f}") for f in range(1,C.NFRIENDS+1)]+[f"{v}Voter" for v in C.VOTERS] 
-        types = ["self"]+["friend"]*C.NFRIENDS + ["voter"]*len(C.VOTERS)
-        dotnames = ["self"]+[f"friend{f}" for f in range(1,C.NFRIENDS+1)]+[f"{v}Voter" for v in C.VOTERS] 
+        names =  ["self"]+[getattr(player, f"contact{f}") for f in range(1,C.NCONTACTS+1)]+[f"{v}" for v in C.LABELLED] 
+        types = ["self"]+["contact"]*C.NCONTACTS + ["labelledPerson"]*len(C.LABELLED)
+        dotnames = ["self"]+[f"contact{f}" for f in range(1,C.NCONTACTS+1)]+[f"{v}" for v in C.LABELLED] 
         init_dots = [{"dottype": dottype, "label": name, 
         "name":dotname, "x": 530, "y": 40 + i * 60, "descr": ""} for i, (dottype, name, dotname) in enumerate(zip(types, names, dotnames))]
         return dict(dots=init_dots)
-    
-    # @staticmethod
-    # def before_next_page(player: Player, timeout_happened):
-    #     if player.positions_preP:
-    #         player.positions = player.positions_preP
 
-# class Map(Page):
-#     form_model = 'player'
-#     form_fields = ['positions']  # Store the final positions
-    
-#     @staticmethod
-#     def vars_for_template(player: Player):
-#         return {f"friend{f}": getattr(player, f"friend{f}") for f in range(1, C.NFRIENDS+1)}
-#     @staticmethod
-#     def before_next_page(player: Player, timeout_happened):
-#         player.positions = player.positions_preP
-
-
-class MapP(Page):
+class slide07_SPaM_personas(Page):
     form_model = 'player'
     form_fields = ['positions']  # Store the final positions
     
     @staticmethod
     def vars_for_template(player:Player):
-        P = f"P{player.ps_placed+1}"
+
+        def get_ops(prefix, questions):
+            return {
+                q: getattr(player, f"{prefix}{q}", -999) or -999
+                for q in questions
+            }
+        def format_ops(ops_dict):
+            return "; ".join(
+                f"{C.QUESTIONSHORTTEXT[q]}: {C.LIKERT_NUM2TEX[int(val)]}"
+                for q, val in ops_dict.items()
+            )
+        
+        # Determine current profile
+        P = f"P{player.ps_placed + 1}"
         P_op = [C.LIKERT_TEX2NUM[op] for q, op in C.P_OPS[P].items()]
-        pos_raw = getattr(player, "positions")
-        if pos_raw:
-            pos = json.loads(pos_raw)
-        else:
-            pos = []
-        P_text = f"{P} "+f" {P} ".join([C.P_OP_RESPONSE[q][C.LIKERT_NUM2TEX[P_op[n]]] for n, q in enumerate(C.QUESTIONS_SC)])
-        P_text_short = "; ".join([f"{q}: {C.LIKERT_NUM2TEX[op]}" for q, op in zip(C.questionshorttext, P_op)]) 
-        
-        own_ops = {qsc: (getattr(player, "own_"+qsc) if  getattr(player, "own_"+qsc)!="" else -999) for qsc in C.QUESTIONS_SC}
-        dot_descrs = {"self": "; ".join([f"{q}: {C.LIKERT_NUM2TEX[int(own_ops[qsc])]}" for q, qsc in zip(C.questionshorttext, C.QUESTIONS_SC)])}
-        for f in range(1, C.NFRIENDS+1):
-            f_ops = {qsc:  (getattr(player, f"f{f}_"+qsc) if  getattr(player, f"f{f}_"+qsc)!="" else -999) for qsc in C.QUESTIONS_SC}
-            dot_descrs[f"friend{f}"] = "; ".join([f"{q}: {C.LIKERT_NUM2TEX[int(f_ops[qsc])]}" for q, qsc in zip(C.questionshorttext, C.QUESTIONS_SC)])
-        for v in C.VOTERS:
-            v_ops = {qsc:  (getattr(player, f"{v}Voter_"+qsc) if  getattr(player, f"{v}Voter_"+qsc)!="" else -999) for qsc in C.QUESTIONS_SC}            
-            dot_descrs[f"{v}Voter"] = "; ".join([f"{q}: {C.LIKERT_NUM2TEX[int(v_ops[qsc])]}" for q, qsc in zip(C.questionshorttext, C.QUESTIONS_SC)])
-        for p in range(1, player.ps_placed+1):
-            #print(f"looking at p={p}")
-            currP = f"P{player.ps_placed+1}"
+
+        # Parse positions
+        pos = json.loads(player.positions) if player.positions else []
+
+        # Full and short textual representations
+        P_text = f"{P} " + f" {P} ".join([
+            C.P_OP_RESPONSE[q][C.LIKERT_NUM2TEX[P_op[n]]] for n, q in enumerate(C.QUESTIONS)
+        ])
+        P_text_short = "; ".join([
+            f"{C.QUESTIONSHORTTEXT[q]}: {C.LIKERT_NUM2TEX[P_op[i]]}"
+            for i, q in enumerate(C.QUESTIONS)
+        ])
+
+        # Initialize dot descriptions of Contacts, Labelled, and Past Personas
+        dot_descrs = {"self": format_ops(get_ops("own_", C.QUESTIONS))}
+        for f in range(1, C.NCONTACTS + 1):
+            dot_descrs[f"contact{f}"] = format_ops(get_ops(f"contact{f}_", C.QUESTIONS))
+        for v in C.LABELLED:
+            dot_descrs[f"{v}"] = format_ops(get_ops(f"{v.replace(" ", "")}_", C.QUESTIONS))
+        for p in range(1, player.ps_placed + 1):
+            currP = f"P{p}"
             currP_op = [C.LIKERT_TEX2NUM[op] for q, op in C.P_OPS[currP].items()]
-            dot_descrs[f"P{p}"] =  "; ".join([f"{q}: {C.LIKERT_NUM2TEX[op]}" for q, op in zip(C.questionshorttext, currP_op)]) 
+            dot_descrs[currP] = "; ".join([
+                f"{C.QUESTIONSHORTTEXT[q]}: {C.LIKERT_NUM2TEX[op]}"
+                for q, op in zip(C.QUESTIONS, currP_op)
+            ])
 
-            #"; ".join([f"{q}: {op}" for q, (key, op) in zip(C.questionshorttext, C.P_OPS["P"+p]["responses"].items())]) 
-        
-        init_dots = [{"label": p["label"], "name":p["name"], "x":p["x"], "y":p["y"], "dottype": p["dottype"], "descr":dot_descrs[p["name"]]} for p in pos]
-        init_dots.append(
-            {"label": P, "name": P, "x": 530, "y": 400, "dottype": "P", "descr":P_text_short} 
-        )
+        # Prepare initial dot data
+        init_dots = [
+            {
+                "label": p["label"],
+                "name": p["name"],
+                "x": p["x"],
+                "y": p["y"],
+                "dottype": p["dottype"],
+                "descr": dot_descrs.get(p["name"], "")
+            }
+            for p in pos
+        ]
+        init_dots.append({
+            "label": P,
+            "name": P,
+            "x": 530,
+            "y": 400,
+            "dottype": "P",
+            "descr": P_text_short
+        })
 
-        return dict(dots=init_dots, 
-                    currentP=P,
-                    P_op_text = P_text,
-                    P_op_text_short = P_text_short,
-                    img_source=f"{P}_op.png")
+        return {
+            "P": P,
+            "P_text": P_text,
+            "P_text_short": P_text_short,
+            "dots": init_dots, 
+            "img_source": f"{P}_op.png"
+        }
     
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
@@ -482,37 +403,113 @@ class MapP(Page):
         return player.ps_placed <= C.NPS  
 
 
-class CheckDistance(Page):
+class slide08_plausibilityCheck(Page):
     form_model = 'player'
-    form_fields = ['check_self_f1f2', "reason_f1f2", "check_self_P1P2", "reason_P1P2"]
+    form_fields = ['check_self_f1f2']#, "reason_f1f2", "check_self_P1P2", "reason_P1P2"]
     
     @staticmethod
     def vars_for_template(player: Player):
-        pos = json.loads(getattr(player, f"positions"))
+        pos = json.loads(getattr(player, "positions"))
         pos = {p["label"]: [p["x"], p["y"]] for p in pos}
-        isDistF1LargerDistF2 = distance(pos["self"], pos[player.friend1]) > distance(pos["self"], pos[player.friend2])
-        isDistP1LargerDistP2 = distance(pos["self"], pos["P1"]) > distance(pos["self"], pos["P2"])
-        distantFriend = player.friend1 if isDistF1LargerDistF2 else player.friend2
-        similarFriend = player.friend2 if isDistF1LargerDistF2 else player.friend1
-        distantP = "P1" if isDistP1LargerDistP2 else "P2"
-        similarP = "P2" if isDistP1LargerDistP2 else "P1"
+
+        p_points = [f"P{i}" for i in range(1, 9)]
+
+        # Calculate all distances from 'self' to P points
+        distances = {p: distance(pos["self"], pos[p]) for p in p_points}
+
+        # Find pairs where one distance is >= 1.5 times the other
+        valid_pairs = []
+        for i, p1 in enumerate(p_points):
+            for p2 in p_points[i+1:]:
+                d1 = distances[p1]
+                d2 = distances[p2]
+                if d1 >= 1.5 * d2 or d2 >= 1.5 * d1:
+                    valid_pairs.append((p1, p2))
+
+        if valid_pairs:
+            p1, p2 = random.choice(valid_pairs)
+        else:
+            p1, p2 = random.sample(p_points, 2)
+
+        dist_p1 = distances[p1]
+        dist_p2 = distances[p2]
+
+        distantP = p1 if dist_p1 > dist_p2 else p2
+        similarP = p2 if dist_p1 > dist_p2 else p1
+
+        isDistF1LargerDistF2 = distance(pos["self"], pos[player.contact1]) > distance(pos["self"], pos[player.contact2])
+        distantFriend = player.contact1 if isDistF1LargerDistF2 else player.contact2
+        similarFriend = player.contact2 if isDistF1LargerDistF2 else player.contact1
+
+        dot_descrs= {}
+        for p in [p1, p2]:
+            currP = f"{p}"
+            currP_op = [C.LIKERT_TEX2NUM[op] for q, op in C.P_OPS[currP].items()]
+            dot_descrs[currP] = "; ".join([
+                f"{C.QUESTIONSHORTTEXT[q]}: {C.LIKERT_NUM2TEX[op]}"
+                for q, op in zip(C.QUESTIONS, currP_op)])
+
+
         return {
-            'distantFriend': distantFriend,
-            'similarFriend': similarFriend,
+            'self_coords': pos["self"],
+            'p1_coords': pos[p1],
+            'p2_coords': pos[p2],
+            'p1': p1,
+            'p2': p2,
+            'descr_p1': dot_descrs[p1],
+            'descr_p2': dot_descrs[p2],
+            'dist_p1': dist_p1,
+            'dist_p2': dist_p2,
             'distantP': distantP,
             'similarP': similarP,
+            'distantFriend': distantFriend,
+            'similarFriend': similarFriend,
         }
     
+# class slide08_CheckDistance(Page):
+#     form_model = 'player'
+#     form_fields = ['check_self_f1f2', "reason_f1f2", "check_self_P1P2", "reason_P1P2"]
+    
+#     @staticmethod
+#     def vars_for_template(player: Player):
+#         pos = json.loads(getattr(player, f"positions"))
+#         pos = {p["label"]: [p["x"], p["y"]] for p in pos}
+#         isDistF1LargerDistF2 = distance(pos["self"], pos[player.contact1]) > distance(pos["self"], pos[player.contact2])
+#         isDistP1LargerDistP2 = distance(pos["self"], pos["P1"]) > distance(pos["self"], pos["P2"])
+#         distantFriend = player.contact1 if isDistF1LargerDistF2 else player.contact2
+#         similarFriend = player.contact2 if isDistF1LargerDistF2 else player.contact1
+#         distantP = "P1" if isDistP1LargerDistP2 else "P2"
+#         similarP = "P2" if isDistP1LargerDistP2 else "P1"
+#         return {
+#             'distantFriend': distantFriend,
+#             'similarFriend': similarFriend,
+#             'distantP': distantP,
+#             'similarP': similarP,
+#         }
+    
 
-class ResultsWaitPage(WaitPage):
-    pass
+# class ResultsWaitPage(WaitPage):
+#     pass
+class slide09_Demographics(Page):
+    form_model = 'player'
+    form_fields = ['age', 'feel_closest', 'feel_closest_party', "how_polarised"]
 
-class Results(Page):
+class slide10_Results(Page):
     pass
 
 
 # 
-#page_sequence = [Introduction, Opinions, Friends]+[FriendOpinions]*C.NFRIENDS+[Green_Opinions, AfD_Opinions]+[MapTest, MapTestResult] * 5 + [Map]+[MapP]*C.NPS+[CheckDistance, Demographics, Results]
+#page_sequence = [Introduction, Opinions, Friends]+[FriendOpinions]*C.NCONTACTS+[Green_Opinions, AfD_Opinions]+[MapTest, MapTestResult] * 5 + [Map]+[MapP]*C.NPS+[CheckDistance, Demographics, Results]
 
-#+[MapTest, MapTestResult] * 5
-page_sequence = [Introduction, Opinions, Friends]+[FriendOpinions]*C.NFRIENDS+[Voter_Opinions] * len(C.VOTERS) +[Map]+[MapP]*C.NPS+[CheckDistance, Demographics, Results]
+#[FriendOpinions]*C.NCONTACTS+[Voter_Opinions] * len(C.LABELLED)
+page_sequence = [slide01_Introduction, 
+    slide02_Opinions, 
+    slide03_Contacts] + \
+    [slide04_PersonOpinion] * (C.NCONTACTS + len(C.LABELLED)) + \
+    [slide06_SPaM] + \
+    [slide07_SPaM_personas] * C.NPS +\
+    [slide08_plausibilityCheck, 
+     slide09_Demographics, 
+     slide10_Results]
+
+    #+[slide05a_MapTest, slide05b_MapTestResult] * 5

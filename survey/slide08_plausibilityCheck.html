@@ -1,0 +1,180 @@
+{{ block title }}
+Plausibility check
+{{ endblock }}
+{{ block content }}
+
+
+<div>
+  <p style="margin-bottom: 0.5em;"> Below we show a subset of your map. </p>
+  <canvas id="dragCanvas" width="560" height="500" style="border: 2px solid #333; background: #fafafa; display: block; margin: 20px auto; cursor: grab;"></canvas>
+
+  <p style="margin-bottom: 0.5em;">
+    Your map indicates that the political distance between <strong>yourself</strong> and <strong>{{distantP}}</strong> is much larger than the political distance between <strong>yourself</strong> and <strong>{{similarP}}</strong>.
+  </p>
+  <p style="margin-bottom: 0.5em;">
+    How much does this reflect how you perceive the political distance to {{distantP}} and {{similarP}}?
+   
+    <br>
+    {{ formfields }}
+
+    {{ next_button}}
+  
+  </p>
+
+</div>
+
+<div id="popup" style="
+    display: none;
+    position: fixed;
+    left: 580px;
+    top: 0px;
+    width: 400px;
+    padding: 15px;
+    background: white;
+    border: 2px solid #333;
+    border-radius: 6px;
+    box-shadow: 4px 4px 12px rgba(0,0,0,0.3);
+    z-index: 1000;
+    font-size: 13px;
+    line-height: 1.3;
+"></div>
+
+<script>
+  const canvas = document.getElementById('dragCanvas');
+  const ctx = canvas.getContext('2d');
+
+  // Positions and descriptions passed from oTree backend
+  const selfPos = {{ self_coords|safe }};
+  const p1Pos = {{ p1_coords }};
+  const p2Pos = {{ p2_coords }};
+
+  // Descriptions for P1 and P2 (passed in the template context)
+  const descr_p1 = `{{ descr_p1 }}`;
+  const descr_p2 = `{{ descr_p2 }}`;
+
+  // Define points with metadata for interaction
+  const points = [
+    {label: 'self', x: selfPos[0], y: selfPos[1], color: 'grey', radius: 12, descr: null},
+    {label: '{{ p1 }}', x: p1Pos[0], y: p1Pos[1], color: 'red', radius: 12, descr: descr_p1},
+    {label: '{{ p2 }}', x: p2Pos[0], y: p2Pos[1], color: 'red', radius: 12, descr: descr_p2},
+  ];
+
+  function drawDot(point) {
+    ctx.fillStyle = point.color;
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, point.radius, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.fillStyle = '#000';
+    ctx.font = "14px Arial";
+    ctx.fillText(point.label, point.x + point.radius + 4, point.y + 4);
+  }
+
+  function drawLine(start, end, color, width=3) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(end.x, end.y);
+    ctx.stroke();
+  }
+
+  // Clear canvas and draw everything
+  function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const distP1 = Math.hypot(selfPos[0] - p1Pos[0], selfPos[1] - p1Pos[1]);
+    const distP2 = Math.hypot(selfPos[0] - p2Pos[0], selfPos[1] - p2Pos[1]);
+
+    // Draw lines with thickness depending on longer distance
+    if (distP1 > distP2) {
+      drawLine(points[0], points[1], 'grey', 2);
+      drawLine(points[0], points[2], 'grey', 2);
+    } else {
+      drawLine(points[0], points[1], 'grey', 2);
+      drawLine(points[0], points[2], 'grey', 2);
+    }
+
+    // Draw all points
+    points.forEach(drawDot);
+  }
+
+  render();
+
+  // Popup handling
+  const popup = document.getElementById("popup");
+  let selectedPoint = null;
+
+  function getMousePos(evt) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: evt.clientX - rect.left,
+      y: evt.clientY - rect.top
+    };
+  }
+
+  function findPoint(mousePos) {
+    return points.find(p => {
+      const dx = p.x - mousePos.x;
+      const dy = p.y - mousePos.y;
+      return Math.sqrt(dx*dx + dy*dy) < p.radius + 4; // clickable radius with padding
+    });
+  }
+
+  function showPopup(point) {
+    if (!point.descr) return; // no popup for self
+
+    const canvasRect = canvas.getBoundingClientRect();
+    popup.style.left = (canvasRect.right + 20) + "px"; // 20px margin to right of canvas
+    popup.style.top = canvasRect.top + "px";
+
+    // If description contains semicolon-separated key: value lines, format nicely:
+    let tableContent = '';
+    if (point.descr.includes(';')) {
+      const lines = point.descr.split(';').map(line => line.trim()).filter(line => line);
+      tableContent = lines.map(line => {
+        const colonIndex = line.indexOf(':');
+        if (colonIndex !== -1) {
+          const question = line.substring(0, colonIndex);
+          const answer = line.substring(colonIndex + 1).trim();
+          return `<tr><td style="padding:4px 8px 4px 0;vertical-align:top;border-bottom:1px solid #eee;">${question}:</td><td style="padding:4px 0;vertical-align:top;border-bottom:1px solid #eee;font-weight:bold;">${answer}</td></tr>`;
+        }
+        return `<tr><td colspan="2" style="padding:4px 0;border-bottom:1px solid #eee;">${line}</td></tr>`;
+      }).join('');
+    } else {
+      tableContent = `<tr><td style="padding:4px 0;">${point.descr || 'No description available'}</td></tr>`;
+    }
+
+    popup.innerHTML = `
+      <strong style="font-size:14px;">${point.label}</strong><br><br>
+      <table style="width:100%; border-collapse: collapse; font-size:12px;">
+        ${tableContent}
+      </table>
+    `;
+
+    popup.style.display = "block";
+  }
+
+  canvas.addEventListener("mousedown", evt => {
+    const mousePos = getMousePos(evt);
+    const clickedPoint = findPoint(mousePos);
+
+    if (clickedPoint && clickedPoint.descr) {
+      selectedPoint = clickedPoint;
+      showPopup(clickedPoint);
+    } else {
+      selectedPoint = null;
+      popup.style.display = "none";
+    }
+  });
+
+  document.addEventListener("click", e => {
+    if (!canvas.contains(e.target) && !popup.contains(e.target)) {
+      popup.style.display = "none";
+      selectedPoint = null;
+    }
+  });
+</script>
+
+
+
+{{endblock}}

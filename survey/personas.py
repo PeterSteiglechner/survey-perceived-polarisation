@@ -83,7 +83,7 @@ personas = [
                   "gay_adoption": "Strongly agree",
                   "migration_enriches_culture": "Strongly agree",
                   "govt_reduce_inequ": "Strongly disagree",
-                  "free_elect": "Strongly agree",
+                  "free_elect": "Neutral",
                   "politician_salaries": "Neutral"
                   }
 }

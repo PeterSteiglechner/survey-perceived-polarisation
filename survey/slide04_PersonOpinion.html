@@ -1,5 +1,5 @@
 {{ block title }}
-Political Beliefs of a typical <strong>{{ name }}</strong> voter
+Political Beliefs of <strong>{{ heading }}</strong> 
 {{ endblock }}
 {{ block content }}
 
@@ -20,7 +20,7 @@ Political Beliefs of a typical <strong>{{ name }}</strong> voter
 }
 
 .survey-table-clean thead {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: {{color }};
     color: white;
 }
 
@@ -49,16 +49,13 @@ Political Beliefs of a typical <strong>{{ name }}</strong> voter
 }
 </style>
 
-
-
-We now ask you the same political questions as before. Imagine a typical <strong> {{ name }} voter</strong>.
-Please click on the response option that this person would probably select.
+If we asked <strong> {{ heading }}</strong> the same questions, what do you think would be their probable responses.
 
 <table class="survey-table-clean">
     <thead>
         <tr>
             <th style="width: 65%;">Statement</th>
-            <th style="width: 35%;"><em>{{ name }}</em> Voter  Response</th>
+            <th style="width: 35%;"><em>{{ name }}</em>'s response</th>
         </tr>
     </thead>
     <tbody>
