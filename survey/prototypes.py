@@ -69,13 +69,13 @@ for p, vals in vals_arr.items():
     #["green", "purple", "blue", "red", "brown", "orange"]
     ax.barh(y, bar_heights, color=colors, height=0.3, alpha=0.7)
     ax.set_yticks([])
-    ax.set_xticks([-1,0,1])
+    ax.set_xticks([])
     #ax.set_xticklabels(["strongly\ndisagree", "neutral", "strongly\nagree"])
     for n, q in enumerate(questionshorttext):
         ax.text(-0.,y[n]+0.43, q, rotation=0, va="center", ha="center", bbox={"pad":4, "facecolor":"gainsboro", "edgecolor":"gainsboro", "alpha":0.7})
         ax.text(-1.05, y[n], "Strongly\ndisagree", va="center", ha="right")
         ax.text(1.05, y[n], "Strongly\nagree", va="center", ha="left")
-    ax.spines['bottom'].set_visible(True)
+    ax.spines['bottom'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.spines['left'].set_visible(False)

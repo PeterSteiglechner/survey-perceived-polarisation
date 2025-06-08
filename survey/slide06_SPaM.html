@@ -1,6 +1,6 @@
 {% block content %}
 <div class="container">
-    <h2>Political Mapping Exercise</h2>
+    <h2>Political Mapping</h2>
     <p style="margin-bottom: 0.5em; color: black;">We now continue to the main positioning task:</p>
     <p style="margin-bottom: 0.5em; color: black;">
         Imagine you, your social contacts, a typical Green voter, and a typical AfD voter are 
@@ -10,11 +10,11 @@
         are placed farther apart.
     </p>
    
-    <p style="margin-bottom: 0.5em;">
+    {% comment %} <p style="margin-bottom: 0.5em;">
         Feel free to adjust the positions of all dots to accurately reflect the political distances between these individuals.
-    </p>
+    </p> {% endcomment %}
 
-    <canvas id="dragCanvas" width="560" height="500" style="border: 2px solid #333; background: #fafafa; display: block; margin: 20px auto; cursor: grab;"></canvas>
+    <canvas id="dragCanvas" width="560" height="500" style="border: 0px solid #333; background: #fafafa; display: block; margin: 20px auto; cursor: grab;"></canvas>
 
     {% comment %} <div id="popup" style="
         display: none;
@@ -35,13 +35,12 @@
     <input type="hidden" name="positions" id="positions">
     <input type="hidden" name="positions_preP" id="positions_preP">
 
-    <div class="instructions" style="margin: 20px 0; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
-        <p style="margin-bottom: 0.5em; font-weight: bold;">
-            You cannot continue until you have placed all items inside the positioning square.
-        </p>
+    </div>
+            <div class="instructions" style="margin: 20px 0; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
         <p style="margin: 0; color: #856404;">
-            <strong>Instructions:</strong> Drag all dots to position them according to political similarity. 
-            Click on any dot to see detailed information. All dots must be within the square boundary to proceed.
+            {% comment %} <strong>Instructions:</strong> Drag all dots to position them according to political similarity. 
+            Click on any dot to see detailed information.  {% endcomment %}
+            All dots must be within the square boundary to proceed.
         </p>
     </div>
 

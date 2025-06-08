@@ -63,7 +63,7 @@ class C(BaseConstants):
     PERSONAS = pd.read_csv("_static/personas.csv")[QUESTIONS]
     P_OPS =  {f"P{n+1}": row.to_dict()  for n, row in PERSONAS.iterrows()}
 
-    CHECKTEXT = lambda which: f"To what extent does this actually reflect your perception of political similarity?"
+    #CHECKTEXT = lambda which: f"To what extent does this actually reflect your perception of political similarity?"
     REASONTEXT ="Please briefly describe why (in two to three sentences)" 
     NCONTACTS = 3
     LABELLED = ["Green voter", "AfD voter"]
@@ -71,27 +71,29 @@ class C(BaseConstants):
     NPS = len(P_OPS.keys())
     NR_CHECKS = 4
 
-    c = "worried about climate change."
-    g = "equal rights to adopt children for gay/lesbian couples."
-    m = "migration enriches cultural life in Germany."
-    i = "more state measures to reduce income differences."
-    ps = "higher salaries for politicians."
-    P_OP_RESPONSE = {"climate_concern": 
-                     {"Strongly disagree": "is not at all "+c, "Neutral":"is somewhat "+c, "Strongly agree":"is extremely "+c},"gay_adoption": 
-                     {"Strongly disagree": "strongly disapproves "+g, "Neutral":"is neutral about "+g, "Strongly agree":"strongly approves "+g}, 
-                     "migration_enriches_culture":
-                     {"Strongly disagree": "strongly disagrees that "+m, "Neutral":"has a neutral position on whether "+m, "Strongly agree":"strongly agrees that "+m}, 
-                     "govt_reduce_inequ": 
-                     {"Strongly disagree": "strongly opposes "+i, "Neutral":"is neutral about "+i, "Strongly agree":"strongly supports "+i},
-                     "free_elect":
-                     {"Strongly disagree": "thinks free and fair elections are not at all important for democracy.", 
-                      "Neutral": "is doubtful whether free and fair elections are important for democracy.", 
-                      "Strongly agree":"thinks free and fair elections are extremely important for democracy."
-                      }, 
-                      "politician_salaries":{
-                          "Strongly disagree":"strongly supports "+ps, "Neutral":"is neutral about "+ps, "Strongly agree":"strongly supports "+ps
-                      }
-                    }
+    N_MAX_PRACTICE_RUNS = 5
+
+    # c = "worried about climate change."
+    # g = "equal rights to adopt children for gay/lesbian couples."
+    # m = "migration enriches cultural life in Germany."
+    # i = "more state measures to reduce income differences."
+    # ps = "higher salaries for politicians."
+    # P_OP_RESPONSE = {"climate_concern": 
+    #                  {"Strongly disagree": "is not at all "+c, "Neutral":"is somewhat "+c, "Strongly agree":"is extremely "+c},"gay_adoption": 
+    #                  {"Strongly disagree": "strongly disapproves "+g, "Neutral":"is neutral about "+g, "Strongly agree":"strongly approves "+g}, 
+    #                  "migration_enriches_culture":
+    #                  {"Strongly disagree": "strongly disagrees that "+m, "Neutral":"has a neutral position on whether "+m, "Strongly agree":"strongly agrees that "+m}, 
+    #                  "govt_reduce_inequ": 
+    #                  {"Strongly disagree": "strongly opposes "+i, "Neutral":"is neutral about "+i, "Strongly agree":"strongly supports "+i},
+    #                  "free_elect":
+    #                  {"Strongly disagree": "thinks free and fair elections are not at all important for democracy.", 
+    #                   "Neutral": "is doubtful whether free and fair elections are important for democracy.", 
+    #                   "Strongly agree":"thinks free and fair elections are extremely important for democracy."
+    #                   }, 
+    #                   "politician_salaries":{
+    #                       "Strongly disagree":"strongly supports "+ps, "Neutral":"is neutral about "+ps, "Strongly agree":"strongly supports "+ps
+    #                   }
+    #                 }
 
 class Subsession(BaseSubsession):
     pass
@@ -120,6 +122,10 @@ def define_contact(label, n):
 
 class Player(BasePlayer):
     age = models.IntegerField(label='How old are you?', min=18, max=100)
+    political_interest = models.StringField(label='How interested would you say you are in politics - are you...',
+                                     choices=["Very interested", "Quite interested", "Hardly interested", "Not at all interested"],
+                                     widget=widgets.RadioSelectHorizontal)
+
     feel_closest = models.StringField(label='Do you feel yourself closer to one of the political parties than the others?',
                                      choices=["yes", "no", "refuse to say"],
                                      widget=widgets.RadioSelectHorizontal)
@@ -151,10 +157,10 @@ class Player(BasePlayer):
     check3_p2 =  models.LongStringField(blank=True)
     check4_p1 =  models.LongStringField(blank=True)
     check4_p2 =  models.LongStringField(blank=True)
-    check1 = models.StringField(choices=['not at all','somewhat','very much'],label=C.CHECKTEXT('your contacts'),widget=widgets.RadioSelectHorizontal,blank=False)
-    check2 = models.StringField(        choices=['not at all','somewhat','very much'],label=C.CHECKTEXT('your contacts'),widget=widgets.RadioSelectHorizontal,blank=False)
-    check3 = models.StringField(        choices=['not at all','somewhat','very much'],label=C.CHECKTEXT('your contacts'),widget=widgets.RadioSelectHorizontal,blank=False)
-    check4 = models.StringField(        choices=['not at all','somewhat','very much'],label=C.CHECKTEXT('your contacts'),widget=widgets.RadioSelectHorizontal,blank=False)
+    check1 = models.StringField(choices=['not at all','somewhat','very much'], label="", widget=widgets.RadioSelectHorizontal,blank=False)
+    check2 = models.StringField(        choices=['not at all','somewhat','very much'], label="", widget=widgets.RadioSelectHorizontal,blank=False)
+    check3 = models.StringField(        choices=['not at all','somewhat','very much'],label="", widget=widgets.RadioSelectHorizontal,blank=False)
+    check4 = models.StringField(        choices=['not at all','somewhat','very much'],label="", widget=widgets.RadioSelectHorizontal,blank=False)
     
     
     # for toCheck in ["f1f2", "P1P2"]:
@@ -166,8 +172,11 @@ class Player(BasePlayer):
     isTrainingCondFvC = models.BooleanField(initial=False)#
     isTrainingCondSelfvFC = models.BooleanField(initial=False)#
     isTrainingCondSvFC = models.BooleanField(initial=False)#
-    trainingMessageConfirmed = models.BooleanField(initial=False)#
+    #trainingMessageConfirmed = models.BooleanField(initial=False)#
     isTrainingCondSvF = models.BooleanField(initial=False)#
+    attemptPractice = models.IntegerField(initial=0) 
+
+
     current_contact = models.IntegerField(initial=1) 
     evaluated_labelledPerson = models.IntegerField(initial=0) 
     ps_placed = models.IntegerField(initial=0)  
@@ -200,12 +209,19 @@ class slide02_Opinions(Page):
     form_fields = [f"own_{q}" for q in C.QUESTIONS]
     @staticmethod
     def vars_for_template(player: Player): 
-        d = {
-            "fields": [f"own_{q}" for q in C.QUESTIONS],
-            "questions":  [C.QUESTIONTEXT[q] for q in C.QUESTIONS]
-        }
-        d["field_question_pairs"] = list(zip(d["fields"], d["questions"]))
-        return d
+        fields =  [f"own_{q}" for q in C.QUESTIONS]
+        questions = [C.QUESTIONTEXT[q] for q in C.QUESTIONS]
+        #d["field_question_pairs"] = list(zip(d["fields"], d["questions"]))
+
+        field_question_pairs = []
+        for field, question in zip(fields, questions):
+            choices = dict(C.LIKERT5_string_noNA)  # convert list of tuples to dict
+            field_question_pairs.append({
+                'field_name': field,
+                'question_text': question,
+                'choices': choices.items(),
+            })
+        return {'field_question_pairs': field_question_pairs}
     
 class slide03_Contacts(Page):
     form_model = 'player'
@@ -236,13 +252,21 @@ class slide04_PersonOpinion(Page):
         fields = [f"{prefix}{q}" for q in C.QUESTIONS]
         questions = [C.QUESTIONTEXT[q] for q in C.QUESTIONS]
 
+        field_question_pairs = []
+        for field, question in zip(fields, questions):
+            choices = dict(C.LIKERT5_string_noNA)  # convert list of tuples to dict
+            field_question_pairs.append({
+                'field_name': field,
+                'question_text': question,
+                'choices': choices.items(),
+            })
         return {
             "name": name,
             "color": color,
             "heading": heading,
             "fields": fields,
             "questions": questions,
-            "field_question_pairs": list(zip(fields, questions)),
+            "field_question_pairs": field_question_pairs,
         }
 
     @staticmethod
@@ -274,9 +298,10 @@ class slide04_PersonOpinion(Page):
 class slide05a_MapTest(Page):
     form_model = 'player'
     form_fields = ['positionsTest']  # Store the final positions
-   
+
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
+        player.attemptPractice += 1
         player.positionsTest = player.positionsTest
         pos = json.loads(player.positionsTest)
         pos = {p["label"]: [p["x"], p["y"]] for p in pos}
@@ -304,21 +329,19 @@ class slide05a_MapTest(Page):
 class slide05b_MapTestResult(Page):
     @staticmethod
     def vars_for_template(player: Player):
-        passedMsg = "Well done! Your arrangement fulfills all the criteria. Below we show another possible example of an arrangement that accurately describes the scenario."
         errors = ""
-        errors += r"The distance between self and C should be larger than the distance between self and F (bullet points 2/3). <br>" if player.isTrainingCondFvC==0 else ""
-        errors += r"The distance between F and C should be larger than the distance between self and C (bullet point 4). <br>" if player.isTrainingCondSelfvFC==0 else ""
-        errors += r"The distance between self and S should be larger than the distance between self and F (bullet point 5). <br>" if player.isTrainingCondSvF==0 else ""
-        errors += r"The distances between F and S and between C and S should be smaller than the distance between self and S (bullet point 6). <br>" if player.isTrainingCondSvFC==0 else ""
+        errors += r"- The distance between self and C should be larger than the distance between self and F (bullet points 2/3). <br>" if player.isTrainingCondFvC==0 else ""
+        errors += r"- The distance between F and C should be larger than the distance between self and C (bullet point 4). <br>" if player.isTrainingCondSelfvFC==0 else ""
+        errors += r"- The distance between self and S should be larger than the distance between self and F (bullet point 5). <br>" if player.isTrainingCondSvF==0 else ""
+        errors += r"- The distances between F and S and between C and S should be smaller than the distance between self and S (bullet point 6). <br>" if player.isTrainingCondSvFC==0 else ""
         
-        failedMsg=fr"Your arrangement does not meet all parts of the description: <br>  <br> {errors} <br>"+\
-        "Please repeat the training and try to arrange the dots so that all criteria are fulfilled. You can see one possible arrangement that fulfills all the criteria below."
-        if player.isTrainingPassed:
-            player.trainingMessageConfirmed = True
-        return {"isTrainingPassedMsg": passedMsg if player.isTrainingPassed else failedMsg} 
+        return {"passed": player.isTrainingPassed, "errors":errors, "attempt":player.attemptPractice, "max_attempts": C.N_MAX_PRACTICE_RUNS} 
+    
     @staticmethod
     def is_displayed(player: Player):
-        return not player.trainingMessageConfirmed or not player.isTrainingPassed
+        return player.attemptPractice<=C.N_MAX_PRACTICE_RUNS or not player.isTrainingPassed
+
+
 
 class slide06_SPaM(Page):
     form_model = 'player'
@@ -359,9 +382,9 @@ class slide07_SPaM_personas(Page):
         pos = json.loads(player.positions) if player.positions else []
 
         # Full and short textual representations
-        P_text = f"{P} " + f" {P} ".join([
-            C.P_OP_RESPONSE[q][C.LIKERT_NUM2TEX[P_op[n]]] for n, q in enumerate(C.QUESTIONS)
-        ])
+        # P_text = f"{P} " + f" {P} ".join([
+        #     C.P_OP_RESPONSE[q][C.LIKERT_NUM2TEX[P_op[n]]] for n, q in enumerate(C.QUESTIONS)
+        # ])
         P_text_short = "; ".join([
             f"{C.QUESTIONSHORTTEXT[q]}: {C.LIKERT_NUM2TEX[P_op[i]]}"
             for i, q in enumerate(C.QUESTIONS)
@@ -397,14 +420,14 @@ class slide07_SPaM_personas(Page):
             "label": P,
             "name": P,
             "x": 530,
-            "y": 400,
+            "y": 100,
             "dottype": "P",
             "descr": P_text_short
         })
 
         return {
             "P": P,
-            "P_text": P_text,
+            #"P_text": P_text,
             "P_text_short": P_text_short,
             "dots": init_dots, 
             "img_source": f"{P}_op.png"
@@ -444,13 +467,15 @@ class slide08_plausibilityCheck(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
-        pos = json.loads(getattr(player, "positions"))
-        pos = {p["label"]: [p["x"], p["y"]] for p in pos}
+        positions = json.loads(getattr(player, "positions"))
+        pos = {p["label"]: [p["x"], p["y"]] for p in positions}
 
-        p_points = [f"P{i}" for i in range(1, 9)]
+        p_points = [f"P{i}" for i in range(1, C.NPS)]
+        focal_point = "self" #if random.random() < 0.5 else (f"contact{int(random.random()*C.NCONTACTS)+1}")
+        focal_point_label= "yourself"
 
         # Calculate all distances from 'self' to P points
-        distances = {p: distance(pos["self"], pos[p]) for p in p_points}
+        distances = {p: distance(pos[focal_point], pos[p]) for p in p_points}
 
         # Find pairs where one distance is >= 1.5 times the other
         valid_pairs = []
@@ -460,11 +485,13 @@ class slide08_plausibilityCheck(Page):
                 d2 = distances[p2]
                 if d1 >= 1.5 * d2 or d2 >= 1.5 * d1:
                     valid_pairs.append((p1, p2))
-
         if valid_pairs:
             p1, p2 = random.choice(valid_pairs)
+            significant = True
         else:
+            print("no significant differences in P distances")
             p1, p2 = random.sample(p_points, 2)
+            significant = False
         # Save to participant.vars so accessible in before_next_page
         player.participant.vars[f'check{player.check}_p1'] = p1
         player.participant.vars[f'check{player.check}_p2'] = p2
@@ -490,9 +517,11 @@ class slide08_plausibilityCheck(Page):
 
 
         return {
-            'self_coords': pos["self"],
+            'p0_coords': pos[focal_point],
             'p1_coords': pos[p1],
             'p2_coords': pos[p2],
+            'p0': focal_point,
+            'p0label': focal_point_label,
             'p1': p1,
             'p2': p2,
             'descr_p1': dot_descrs[p1],
@@ -502,6 +531,7 @@ class slide08_plausibilityCheck(Page):
             'distantP': distantP,
             'similarP': similarP,
             'current_check': f'check{player.check}',
+            'significant': "much larger" if significant else "larger"
         }
     
 # class slide08_CheckDistance(Page):
@@ -530,7 +560,7 @@ class slide08_plausibilityCheck(Page):
 #     pass
 class slide09_Demographics(Page):
     form_model = 'player'
-    form_fields = ['age', 'feel_closest', 'feel_closest_party', "how_polarised"]
+    form_fields = ['age', 'political_interest', 'feel_closest', 'feel_closest_party', "how_polarised"]
 
 class slide10_Results(Page):
     pass
@@ -544,6 +574,7 @@ page_sequence = [slide01_Introduction,
     slide02_Opinions, 
     slide03_Contacts] + \
     [slide04_PersonOpinion] * (C.NCONTACTS + len(C.LABELLED)) + \
+    [slide05a_MapTest, slide05b_MapTestResult] * 5+\
     [slide06_SPaM] +\
     [slide07_SPaM_personas] * C.NPS +\
     [slide08_plausibilityCheck] * C.NR_CHECKS +\

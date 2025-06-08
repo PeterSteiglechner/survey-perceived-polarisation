@@ -1,9 +1,7 @@
 ,name,description,climate_concern,gay_adoption,migration_enriches_culture,govt_reduce_inequ,free_elect,politician_salaries
-0,Green Progressive / Social Justice Activist,"Young, urban, left-leaning, pro-equality and environmentalist.",Strongly agree,Strongly agree,Strongly agree,Strongly agree,Strongly agree,Strongly disagree
-1,Centrist Pragmatist,"Moderate, politically balanced, avoids extremes, skeptical of migration.",Neutral,Neutral,Strongly disagree,Neutral,Strongly agree,Neutral
-2,Economic Liberal,"Pro-market, fiscally conservative, socially moderate.",Neutral,Neutral,Neutral,Strongly disagree,Strongly agree,Strongly agree
-3,National Populist,"Anti-elite, nationalist, anti-immigration, skeptical of climate action.",Strongly disagree,Strongly disagree,Strongly disagree,Strongly disagree,Neutral,Neutral
-4,Left-Conservative Dissenter,"Economically leftist, culturally traditional, skeptical of globalization and political elites.",Strongly agree,Strongly disagree,Strongly disagree,Strongly agree,Strongly agree,Strongly disagree
-5,Old-School Unionist,"Economically Marxist, pro-worker, culturally moderate, skeptical of elites and identity politics.",Neutral,Neutral,Neutral,Strongly agree,Strongly agree,Strongly disagree
-6,Moderate Christian Democrat,"Center-right, values tradition, stability, social market economy, and democratic institutions.",Strongly agree,Neutral,Neutral,Neutral,Strongly agree,Strongly agree
-7,Tech Libertarian,"Hyper-individualist, pro-market, socially liberal, anti-redistribution and skeptical of government regulation.",Strongly disagree,Strongly agree,Strongly agree,Strongly disagree,Neutral,Neutral
+0,Green Progressive,"Young, urban, left-leaning, pro-equality and climate action.",Strongly agree,Strongly agree,Strongly agree,Strongly agree,Strongly agree,Disagree
+1,National Populist,"Anti-elite, nationalist, anti-immigration, skeptical of climate action.",Strongly disagree,Strongly disagree,Strongly disagree,Disagree,Agree,Disagree
+2,Economic Liberal,"Pro-market, fiscally conservative, socially moderate.",Neutral,Agree,Neutral,Strongly disagree,Agree,Strongly agree
+3,Left-Conservative,"Economically leftist, culturally traditional, anti-globalization.",Neutral,Disagree,Disagree,Strongly agree,Strongly agree,Strongly disagree
+4,Centrist Pragmatist,"Moderate, politically balanced, avoids extremes.",Agree,Neutral,Neutral,Neutral,Strongly agree,Neutral
+5,Authoritarian Technocrat,Believes in expert rule and efficient governance over democratic chaos; values order and competence.,Agree,Neutral,Neutral,Agree,Disagree,Neutral

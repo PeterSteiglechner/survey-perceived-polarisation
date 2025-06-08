@@ -1,26 +1,25 @@
-{{ block title }}
-Political Beliefs of <strong>{{ heading }}</strong> 
-{{ endblock }}
+
 {{ block content }}
+
 
 <style>
     .extra-space {
-        margin-top: 1.5em;
+        margin-top: 4em;
         border-top: 1px solid #ccc;
-        padding-top: 0.5em;
+        padding-top: 4em;
     }
 .survey-table-clean {
     width: 100%;
     border-collapse: collapse;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    margin: 20px 0;
+    margin: 25px 0;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     border-radius: 8px;
     overflow: hidden;
 }
 
 .survey-table-clean thead {
-    background: {{color }};
+    background: {{ color }};
     color: white;
 }
 
@@ -28,13 +27,14 @@ Political Beliefs of <strong>{{ heading }}</strong>
     padding: 15px 20px;
     text-align: left;
     font-weight: 600;
-    font-size: 16px;
+    font-size: 20px;
 }
 
 .survey-table-clean td {
     padding: 20px;
     border-bottom: 1px solid #e9ecef;
     vertical-align: top;
+    font-size: 18px;
 }
 
 .survey-table-clean tr:hover {
@@ -42,36 +42,93 @@ Political Beliefs of <strong>{{ heading }}</strong>
 }
 
 .survey-table-clean .statement-cell {
-    font-size: 15px;
+    font-size: 18px;
     line-height: 1.5;
     color: #2c3e50;
     font-weight: 500;
 }
+
+.option-cards {
+    display: flex;
+    gap: 17px;
+    margin-top: 7px;
+}
+
+.option-card {
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 8px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1;
+    font-size: 15px;
+}
+
+.option-card:hover {
+    border-color: #666;
+    background-color: #f9f9f9;
+}
+
+.option-card input[type="radio"] {
+    display: none;
+}
+
+.option-card.selected {
+    border-color: #007bff;
+    background-color: #e6f0ff;
+}
 </style>
 
-If we asked <strong> {{ heading }}</strong> the same questions, what do you think would be their probable responses.
 
-<table class="survey-table-clean">
-    <thead>
-        <tr>
-            <th style="width: 65%;">Statement</th>
-            <th style="width: 35%;"><em>{{ name }}</em>'s response</th>
-        </tr>
-    </thead>
-    <tbody>
-        {{ for field, question in field_question_pairs }}
-        <tr>
-            <td class="statement-cell">{{ question }}</td>
-            <td>{% formfield field %}</td>
-        </tr>
-        {{ endfor }}
-    </tbody>
-</table>
+<h2>Political Opinions of Others</h2>
+
+<br>
+
+<p style="font-size: 20px;"> Thinking about {{heading}}, how do you think <strong>{{ heading }}</strong> would respond to those same political statements?</p>
 
 
+<form method="post">
+    <table class="survey-table-clean">
+        <thead>
+            <tr>
+                <th style="width: 100%;"> <strong>{{ heading }}</strong>'s response</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in field_question_pairs %}
+            <tr>
+                <td>
+                    <div class="statement-cell">{{ item.question_text }}</div>
+                    <div class="option-cards" data-field="{{ item.field_name }}">
+                        {% for value, label in item.choices %}
+                        <label class="option-card">
+                            <input type="radio" name="{{ item.field_name }}" value="{{ value }}">
+                            {{ label }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
+    {{ next_button }}
+</form>
 
-{{next_button}}
+<script>
+document.querySelectorAll('.option-cards').forEach(group => {
+    const name = group.dataset.field;
+    group.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            group.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            radio.closest('.option-card').classList.add('selected');
+        });
+    });
+});
+</script>
 
-
-{{ endblock }}
+{% endblock %}

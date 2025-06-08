@@ -9,7 +9,7 @@ Plausibility check
   <canvas id="dragCanvas" width="560" height="500" style="border: 2px solid #333; background: #fafafa; display: block; margin: 20px auto; cursor: grab;"></canvas>
 
   <p style="margin-bottom: 0.5em;">
-    Your map indicates that the political distance between <strong>yourself</strong> and <strong>{{distantP}}</strong> is much larger than the political distance between <strong>yourself</strong> and <strong>{{similarP}}</strong>.
+    Your map indicates that the political distance between <strong>{{ p0label }}</strong> and <strong>{{distantP}}</strong> is {{significant}} than the political distance between <strong>{{p0label}}</strong> and <strong>{{similarP}}</strong>.
   </p>
   <p style="margin-bottom: 0.5em;">
     How much does this reflect how you perceive the political distance to {{distantP}} and {{similarP}}?
@@ -44,7 +44,7 @@ Plausibility check
   const ctx = canvas.getContext('2d');
 
   // Positions and descriptions passed from oTree backend
-  const selfPos = {{ self_coords|safe }};
+  const p0Pos = {{ p0_coords }};
   const p1Pos = {{ p1_coords }};
   const p2Pos = {{ p2_coords }};
 
@@ -54,7 +54,7 @@ Plausibility check
 
   // Define points with metadata for interaction
   const points = [
-    {label: 'self', x: selfPos[0], y: selfPos[1], color: 'grey', radius: 12, descr: null},
+    {label: '{{ p0 }}', x: p0Pos[0], y: p0Pos[1], color: 'grey', radius: 12, descr: null},
     {label: '{{ p1 }}', x: p1Pos[0], y: p1Pos[1], color: 'red', radius: 12, descr: descr_p1},
     {label: '{{ p2 }}', x: p2Pos[0], y: p2Pos[1], color: 'red', radius: 12, descr: descr_p2},
   ];
@@ -82,8 +82,8 @@ Plausibility check
   function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const distP1 = Math.hypot(selfPos[0] - p1Pos[0], selfPos[1] - p1Pos[1]);
-    const distP2 = Math.hypot(selfPos[0] - p2Pos[0], selfPos[1] - p2Pos[1]);
+    const distP1 = Math.hypot(p0Pos[0] - p1Pos[0], p0Pos[1] - p1Pos[1]);
+    const distP2 = Math.hypot(p0Pos[0] - p2Pos[0], p0Pos[1] - p2Pos[1]);
 
     // Draw lines with thickness depending on longer distance
     if (distP1 > distP2) {
@@ -121,7 +121,7 @@ Plausibility check
   }
 
   function showPopup(point) {
-    if (!point.descr) return; // no popup for self
+    if (!point.descr) return; // no popup for p0
 
     const canvasRect = canvas.getBoundingClientRect();
     popup.style.left = (canvasRect.right + 20) + "px"; // 20px margin to right of canvas
