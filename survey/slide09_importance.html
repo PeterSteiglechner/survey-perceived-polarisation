@@ -1,5 +1,5 @@
 {{ block title }}
-Some questions about yourself
+Evaluation
 {{ endblock }}
 
 {{ block content }}
@@ -70,45 +70,12 @@ Some questions about yourself
     }
 </style>
 
-<p>In this final part, we would like you to answer the following questions about yourself.</p>
-
 <div class="card-section">
 
-    <!-- Demographic Card -->
+    <!-- Importance Card -->
     <div class="card">
-        <h3>Basic Information</h3>
         <div class="form-group">
-            {% formfield player.age %}
-        </div>
-        <div class="form-group">
-            {% formfield player.political_interest %}
-        </div>
-    </div>
-
-    <!-- Political Identity Card -->
-    <div class="card">
-        <h3>Political Identity</h3>
-        <div class="form-group">
-            {% formfield player.feel_closest %}
-        </div>
-        <div class="form-group">
-            {% formfield player.feel_closest_party %}
-        </div>
-    </div>
-
-    <!-- Polarization Perception Card -->
-    <div class="card">
-        <h3>Polarization Perception</h3>
-        <label class="form-label">
-            People sometimes say that the public polarises on political issues. Would you agree?
-        </label>
-        <div class="option-cards" data-field="how_polarised">
-            {% for choice in ["Strongly Agree", "Somewhat Agree", "Somewhat Disagree", "Strongly Disagree"] %}
-            <label class="option-card">
-                <input type="radio" name="how_polarised" value="{{ choice }}">
-                {{ choice }}
-            </label>
-            {% endfor %}
+            {% formfield player.topic_importance %}
         </div>
     </div>
 

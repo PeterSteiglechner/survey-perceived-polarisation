@@ -60,11 +60,19 @@ class C(BaseConstants):
         "free & fair elections important", 
         "higher politician salaries"
         ]))
+    QUESTIONNAMES = dict(zip( QUESTIONS, [
+        "concern about climate", 
+        "equality in adoption rights for gay couples", 
+        "enriching effect of migration on culture",
+        "state action to reduce income differences", 
+        "free & fair elections", 
+        "higher politician salaries"
+        ]))
     PERSONAS = pd.read_csv("_static/personas.csv")[QUESTIONS]
     P_OPS =  {f"P{n+1}": row.to_dict()  for n, row in PERSONAS.iterrows()}
 
     #CHECKTEXT = lambda which: f"To what extent does this actually reflect your perception of political similarity?"
-    REASONTEXT ="Please briefly describe why (in two to three sentences)" 
+    #REASONTEXT ="Please briefly describe why (in two to three sentences)" 
     NCONTACTS = 3
     LABELLED = ["Green voter", "AfD voter"]
     LABELLEDCOLORS = dict(zip(LABELLED, ["#46962b", "#009ee0"]))
@@ -104,7 +112,7 @@ class Group(BaseGroup):
 
 def make_field(label):
     return models.StringField(
-        choices=C.LIKERT5_string_noNA,
+        choices=C.LIKERT5_string_noNA[::-1],
         label=label,
         widget=widgets.RadioSelect,
     )
@@ -126,17 +134,17 @@ class Player(BasePlayer):
                                      choices=["Very interested", "Quite interested", "Hardly interested", "Not at all interested"],
                                      widget=widgets.RadioSelectHorizontal)
 
-    feel_closest = models.StringField(label='Do you feel yourself closer to one of the political parties than the others?',
-                                     choices=["yes", "no", "refuse to say"],
-                                     widget=widgets.RadioSelectHorizontal)
-    feel_closest_party = models.StringField(label='Which party do you feel closest to?',
-                                     choices=["CDU/CSU", "AfD", "SPD", "Grüne", "Linke", "BSW", "FDP", "other", "refuse to say"],
+    # feel_closest = models.StringField(label='Do you feel yourself closer to one of the political parties than the others?',
+    #                                  choices=["yes", "no", "refuse to say"],
+    #                                  widget=widgets.RadioSelectHorizontal)
+    feel_closest_party = models.StringField(label='Do you feel yourself closer to one of the political parties than the others? If so, which one?',
+                                     choices=["None", "CDU/CSU", "AfD", "SPD", "Grüne", "Linke", "BSW", "FDP", "other", "refuse to say"],
                                      widget=widgets.RadioSelectHorizontal, 
                                      blank=True)
     how_polarised = models.StringField(label='People sometimes say that the public polarises on political issues. Would you agree?',
                                      choices=["Strongly Agree", "Somewhat Agree", "Somewhat Disagree", "Strongly Disagree"],
                                      widget=widgets.RadioSelect)
-    
+    topic_importance = models.StringField(label='In the previous mapping exercise, what topic was the most important one for how you arranged the dots?', choices=[q+"." for q in C.QUESTIONNAMES]+["All topics were equally important.", "Other topics.", "I don't know."], widget=widgets.RadioSelect)
     
     #################################
     #####  MAP POSITIONS   #####
@@ -158,9 +166,9 @@ class Player(BasePlayer):
     check4_p1 =  models.LongStringField(blank=True)
     check4_p2 =  models.LongStringField(blank=True)
     check1 = models.StringField(choices=['not at all','somewhat','very much'], label="", widget=widgets.RadioSelectHorizontal,blank=False)
-    check2 = models.StringField(        choices=['not at all','somewhat','very much'], label="", widget=widgets.RadioSelectHorizontal,blank=False)
-    check3 = models.StringField(        choices=['not at all','somewhat','very much'],label="", widget=widgets.RadioSelectHorizontal,blank=False)
-    check4 = models.StringField(        choices=['not at all','somewhat','very much'],label="", widget=widgets.RadioSelectHorizontal,blank=False)
+    check2 = models.StringField(choices=['not at all','somewhat','very much'], label="", widget=widgets.RadioSelectHorizontal,blank=False)
+    check3 = models.StringField(choices=['not at all','somewhat','very much'],label="", widget=widgets.RadioSelectHorizontal,blank=False)
+    check4 = models.StringField(choices=['not at all','somewhat','very much'],label="", widget=widgets.RadioSelectHorizontal,blank=False)
     
     
     # for toCheck in ["f1f2", "P1P2"]:
@@ -215,7 +223,7 @@ class slide02_Opinions(Page):
 
         field_question_pairs = []
         for field, question in zip(fields, questions):
-            choices = dict(C.LIKERT5_string_noNA)  # convert list of tuples to dict
+            choices = dict(C.LIKERT5_string_noNA[::-1])  # convert list of tuples to dict
             field_question_pairs.append({
                 'field_name': field,
                 'question_text': question,
@@ -229,7 +237,13 @@ class slide03_Contacts(Page):
     @staticmethod
     def vars_for_template(player:Player):
         return {"ncontacts": C.NCONTACTS}
-
+    @staticmethod
+    def error_message(player: Player, values):
+        contacts = [v.strip() for v in values.values() if v.strip()]
+        if len(contacts) < C.NCONTACTS:
+            return "Please fill in all contact fields."
+        if len(set(contacts)) < len(contacts):
+            return "Each contact must be unique. Please avoid duplicates. You can use nicknames, initials, or anything that you will later recognise."
 
 class slide04_PersonOpinion(Page):
     form_model = "player"
@@ -254,7 +268,7 @@ class slide04_PersonOpinion(Page):
 
         field_question_pairs = []
         for field, question in zip(fields, questions):
-            choices = dict(C.LIKERT5_string_noNA)  # convert list of tuples to dict
+            choices = dict(C.LIKERT5_string_noNA[::-1])  # convert list of tuples to dict
             field_question_pairs.append({
                 'field_name': field,
                 'question_text': question,
@@ -301,8 +315,19 @@ class slide05a_MapTest(Page):
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        player.attemptPractice += 1
         player.positionsTest = player.positionsTest
+    
+    @staticmethod
+    def is_displayed(player):
+        return not player.isTrainingPassed 
+    
+
+class slide05b_MapTestResult(Page):
+    @staticmethod
+    def vars_for_template(player: Player):
+
+        player.attemptPractice += 1
+        
         pos = json.loads(player.positionsTest)
         pos = {p["label"]: [p["x"], p["y"]] for p in pos}
         #calculate distances
@@ -320,26 +345,24 @@ class slide05a_MapTest(Page):
         isTrainingPassed = player.isTrainingCondFvC & player.isTrainingCondSelfvFC & player.isTrainingCondSvFC & player.isTrainingCondSvF
         #print("isTrainingPassed", isTrainingPassed, dF, dS, dFS, dCS)
         player.isTrainingPassed = isTrainingPassed
-    
-    @staticmethod
-    def is_displayed(player):
-        return not player.isTrainingPassed 
-    
 
-class slide05b_MapTestResult(Page):
-    @staticmethod
-    def vars_for_template(player: Player):
         errors = ""
         errors += r"- The distance between self and C should be larger than the distance between self and F (bullet points 2/3). <br>" if player.isTrainingCondFvC==0 else ""
         errors += r"- The distance between F and C should be larger than the distance between self and C (bullet point 4). <br>" if player.isTrainingCondSelfvFC==0 else ""
         errors += r"- The distance between self and S should be larger than the distance between self and F (bullet point 5). <br>" if player.isTrainingCondSvF==0 else ""
         errors += r"- The distances between F and S and between C and S should be smaller than the distance between self and S (bullet point 6). <br>" if player.isTrainingCondSvFC==0 else ""
         
-        return {"passed": player.isTrainingPassed, "errors":errors, "attempt":player.attemptPractice, "max_attempts": C.N_MAX_PRACTICE_RUNS} 
+        return {"passed": player.isTrainingPassed, "errors":errors, "attempt": player.attemptPractice, "max_attempts": C.N_MAX_PRACTICE_RUNS} 
     
     @staticmethod
     def is_displayed(player: Player):
-        return player.attemptPractice<=C.N_MAX_PRACTICE_RUNS or not player.isTrainingPassed
+        print((player.attemptPractice<=C.N_MAX_PRACTICE_RUNS) and ((not player.isTrainingPassed) or (player.isTrainingPassed and player.attemptPractice==1)), 
+              (player.attemptPractice<=C.N_MAX_PRACTICE_RUNS), 
+               ((not player.isTrainingPassed), 
+                (player.isTrainingPassed and player.attemptPractice==0))
+              )
+        
+        return (player.attemptPractice<=C.N_MAX_PRACTICE_RUNS) and ((not player.isTrainingPassed) or (player.isTrainingPassed and player.attemptPractice==1))
 
 
 
@@ -556,13 +579,17 @@ class slide08_plausibilityCheck(Page):
 #         }
     
 
+class slide09_importance(Page):
+    form_model = 'player'
+    form_fields = ['topic_importance']
+
 # class ResultsWaitPage(WaitPage):
 #     pass
-class slide09_Demographics(Page):
+class slide10_Demographics(Page):
     form_model = 'player'
-    form_fields = ['age', 'political_interest', 'feel_closest', 'feel_closest_party', "how_polarised"]
+    form_fields = ['age', 'political_interest', 'feel_closest_party', "how_polarised"]
 
-class slide10_Results(Page):
+class slide11_Results(Page):
     pass
 
 
@@ -574,11 +601,11 @@ page_sequence = [slide01_Introduction,
     slide02_Opinions, 
     slide03_Contacts] + \
     [slide04_PersonOpinion] * (C.NCONTACTS + len(C.LABELLED)) + \
-    [slide05a_MapTest, slide05b_MapTestResult] * 5+\
+    [slide05a_MapTest, slide05b_MapTestResult] * C.N_MAX_PRACTICE_RUNS +\
     [slide06_SPaM] +\
     [slide07_SPaM_personas] * C.NPS +\
     [slide08_plausibilityCheck] * C.NR_CHECKS +\
-    [slide09_Demographics, 
-     slide10_Results]
+    [slide09_importance, slide10_Demographics, 
+     slide11_Results]
 
     #+[slide05a_MapTest, slide05b_MapTestResult] * 5

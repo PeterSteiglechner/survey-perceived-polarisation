@@ -61,20 +61,31 @@
     transition: all 0.2s ease;
     flex: 1;
     font-size: 15px;
+    opacity:0.5
 }
 
-.option-card:hover {
-    border-color: #666;
-    background-color: #f9f9f9;
+.option-card[data-value="5"] { background-color: #ffcdd2; color: black; } /* Strong disagreement - light red */
+.option-card[data-value="4"] { background-color: #fce4ec; color: black; } /* Disagreement - very light red */
+.option-card[data-value="3"] { background-color: #fff9c4; color: black; } /* Neutral - light yellow */
+.option-card[data-value="2"] { background-color: #c8e6c9; color: black; } /* Agreement - light green */
+.option-card[data-value="1"] { background-color: #a5d6a7; color: black; } /* Strong agreement - medium green */
+
+.option-card[data-value="1"]:hover,
+.option-card[data-value="2"]:hover,
+.option-card[data-value="3"]:hover,
+.option-card[data-value="4"]:hover,
+.option-card[data-value="5"]:hover { 
+    opacity: 0.9; 
 }
 
 .option-card input[type="radio"] {
     display: none;
 }
-
 .option-card.selected {
-    border-color: #007bff;
-    background-color: #e6f0ff;
+    border: 5px solid #ccc;
+    border-color:rgb(0, 0, 0);
+    opacity: 1;
+    padding: 5px 7px;
 }
 </style>
 
@@ -99,7 +110,7 @@
                     <div class="statement-cell">{{ item.question_text }}</div>
                     <div class="option-cards" data-field="{{ item.field_name }}">
                         {% for value, label in item.choices %}
-                        <label class="option-card">
+                        <label class="option-card" data-value="{{ value }}">
                             <input type="radio" name="{{ item.field_name }}" value="{{ value }}">
                             {{ label }}
                         </label>
