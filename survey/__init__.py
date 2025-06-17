@@ -362,7 +362,7 @@ class slide05b_MapTestResult(Page):
                 (player.isTrainingPassed and player.attemptPractice==0))
               )
         
-        return (player.attemptPractice<=C.N_MAX_PRACTICE_RUNS) and ((not player.isTrainingPassed) or (player.isTrainingPassed and player.attemptPractice==1))
+        return (player.attemptPractice<=C.N_MAX_PRACTICE_RUNS) and ((not player.isTrainingPassed) or (player.isTrainingPassed and player.attemptPractice==0))
 
 
 
