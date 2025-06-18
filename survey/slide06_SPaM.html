@@ -1,46 +1,29 @@
 {% block content %}
 <div class="container">
-    <h2>Political Mapping</h2>
-    <p style="margin-bottom: 0.5em; color: black;">We now continue to the main positioning task:</p>
-    <p style="margin-bottom: 0.5em; color: black;">
-        Imagine you, your social contacts, a typical Green voter, and a typical AfD voter are 
-        standing in a room. Arrange yourselves so that <strong>individuals who share similar political views</strong> 
-        on questions regarding economic inequality, migration, diversity, climate change, free & fair elections, 
-        and politician salaries <strong>are positioned close together</strong>, while those with differing views 
-        are placed farther apart.
-    </p>
-   
-    {% comment %} <p style="margin-bottom: 0.5em;">
-        Feel free to adjust the positions of all dots to accurately reflect the political distances between these individuals.
-    </p> {% endcomment %}
 
-    <canvas id="dragCanvas" width="560" height="500" style="border: 0px solid #333; background: #fafafa; display: block; margin: 20px auto; cursor: grab;"></canvas>
+    <h2>Political Mapping - Part 1 </h2>
 
-    {% comment %} <div id="popup" style="
-        display: none;
-        position: fixed;
-        left: 510px;
-        top: 0px;
-        width: 400px;
-        padding: 15px;
-        background: white;
-        border: 2px solid #333;
-        border-radius: 6px;
-        box-shadow: 4px 4px 12px rgba(0,0,0,0.3);
-        z-index: 1000;
-        font-size: 13px;
-        line-height: 1.3;
-    "></div> {% endcomment %}
+    <p style="margin-bottom: 1.5em; color: black;">We now continue to the actual task:</p>
+
+    <p style="margin-bottom: -1em; color: black;">Imagine you, your social contacts, a typical Green voter, and a typical AfD voter are placed in a room (the rectangle below). </p>
+
+    <div class="instructions" style="margin: 20px 0; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+        <p style="margin-bottom: 0.5em; color: black;">
+        Arrange the positions in the rectangle so that <strong>individuals who share similar political views</strong> 
+        on questions regarding economic inequality, migration, minorities, and climate change <strong>are placed close together</strong>, while <strong>individuals with differing views 
+        are placed farther apart</strong>.
+        </p>
+    </div>
+
+    <canvas id="dragCanvas" width="560" height="500" style="border: 0px solid #333; background: #fafafa; display: block; margin: 20px 0; cursor: grab;"></canvas>
 
     <input type="hidden" name="positions" id="positions">
     <input type="hidden" name="positions_preP" id="positions_preP">
 
     </div>
-            <div class="instructions" style="margin: 20px 0; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
-        <p style="margin: 0; color: #856404;">
-            {% comment %} <strong>Instructions:</strong> Drag all dots to position them according to political similarity. 
-            Click on any dot to see detailed information.  {% endcomment %}
-            All dots must be within the square boundary to proceed.
+            <div class="instructions" style="margin: 20px 0; padding: 15px; background:rgb(255, 235, 235); border-left: 4px solid rgb(255, 0, 0); border-radius: 4px;">
+        <p style="margin: 0; color:rgb(0, 0, 0);">
+            All dots must be within the square boundary to proceed. You can re-position any dot at any time.
         </p>
     </div>
 

@@ -70,49 +70,75 @@ Some questions about yourself
     }
 </style>
 
-<p>In this final part, we would like you to answer the following questions about yourself.</p>
+<p style="margin-bottom: 1.5em;"> 
+In this final part, we would like you to answer the following questions about yourself.</p>
 
 <div class="card-section">
-
     <!-- Demographic Card -->
     <div class="card">
         <h3>Basic Information</h3>
         <div class="form-group">
             {% formfield player.age %}
+            {{ formfield_errors "age" }}
         </div>
-        <div class="form-group">
-            {% formfield player.political_interest %}
-        </div>
-    </div>
 
+        <div class="form-group">
+            <label class="form-label">
+                How interested would you say you are in politics - are you...
+            </label>
+            <div class="option-cards" data-field="political_interest">
+                {% for choice in ["not at all interested.", "hardly interested.", "quite interested.", "very interested."] %}
+                <label class="option-card">
+                    <input type="radio" name="political_interest" value="{{ choice }}">
+                    {{ choice }}
+                </label>
+                {% endfor %}
+            </div>
+            {{ formfield_errors "political_interest" }}
+        </div> 
+    </div>
+</div> 
+
+<div class="card-section">
     <!-- Political Identity Card -->
     <div class="card">
         <h3>Political Identity</h3>
-        {% comment %} <div class="form-group">
-            {% formfield player.feel_closest %}
-        </div> {% endcomment %}
         <div class="form-group">
-            {% formfield player.feel_closest_party %}
+            <label class="form-label">
+            Do you feel closer to one of the political parties than the others? If so, which one?
+            </label>
+            <div class="option-cards" data-field="feel_closest_party">
+                {% for choice in ["CDU/CSU", "AfD", "SPD", "Grüne", "Linke", "BSW", "FDP", "other", "no party", "refuse to say"] %}
+                <label class="option-card">
+                    <input type="radio" name="feel_closest_party" value="{{ choice }}">
+                    {{ choice }}
+                </label>
+                {% endfor %}
+            </div>
+            {{ formfield_errors "feel_closest_party" }}
         </div>
     </div>
+</div>
 
+<div class="card-section">
     <!-- Polarization Perception Card -->
     <div class="card">
         <h3>Polarization Perception</h3>
         <label class="form-label">
-            People sometimes say that the public polarises on political issues. Would you agree?
+            How politically divided are the people in your country these days?
         </label>
         <div class="option-cards" data-field="how_polarised">
-            {% for choice in ["Strongly Agree", "Somewhat Agree", "Somewhat Disagree", "Strongly Disagree"] %}
+            {% for choice in ["Not at all divided.", "Somewhat divided.", "Very divided.", "Extremely divided."] %}
             <label class="option-card">
                 <input type="radio" name="how_polarised" value="{{ choice }}">
                 {{ choice }}
             </label>
             {% endfor %}
         </div>
+        {{ formfield_errors "how_polarised" }}
     </div>
-
 </div>
+
 
 {{ next_button }}
 
@@ -129,5 +155,11 @@ document.querySelectorAll('.option-cards').forEach(group => {
     });
 });
 </script>
+
+
+
+
+
+
 
 {{ endblock }}

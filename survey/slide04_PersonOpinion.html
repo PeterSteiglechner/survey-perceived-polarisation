@@ -119,6 +119,8 @@
                         </label>
                         {% endfor %}
                     </div>
+                    {{ formfield_errors item.field_name }}
+
                 </td>
             </tr>
             {% endfor %}

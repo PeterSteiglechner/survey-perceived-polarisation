@@ -14,6 +14,10 @@ LIKERT5_de = {1:"Stimme voll und ganz zu", 2:"Stimme eher zu", 3: "Teils/teils",
 LIKERT5 = {1:"strongly agree", 2:"agree", 3: "neutral", 4:"disagree", 5: "strongly disagree"}
 LIKERT5_TO_OP = lambda l: -(l-(1+(5-1)/2))/((5-1)/2)
 OP_TO_LIKERT5 = lambda op: (-op+1)/2 * (5-1) + 1
+
+LIKERT_NUM2TEX = {num:tex for num, tex in LIKERT5.items()}
+LIKERT_TEX2NUM = {tex:num for num, tex in LIKERT5.items()}
+
 #################################
 #####  Group Definitions   #####
 #################################
@@ -33,12 +37,73 @@ df = pd.read_stata(f"~/csh-research/projects/#data/raw/triggerpunkte/ZA8826_v1-0
 #####  Select columns and rename   #####
 #################################
 meta = pd.read_csv("questionaire.csv")
-questions_meta = meta.loc[meta["selected"].dropna().index]
-polQ = questions_meta.loc[questions_meta.topic!="identity", :] 
-vars = polQ["topic"].tolist()
-df = df.rename(columns=dict(zip(questions_meta["var"], questions_meta["topic"])))
-df["identity"] = df["identity"].map(response_to_party)
-df = df[vars+["identity"]]
+
+res =[] 
+for i, row in list(meta.iterrows()):
+    if row["topic"] in ["climate", "migration", "minorities", "inequality"]:
+        groupvars = df.groupby("v302")[row["var"]].std().sort_index()
+        g = [groupvars[r] for r, p in response_to_party.items()]
+        res.append([row["var"], row["question"], df[row["var"]].mean(), df[row["var"]].std(), row["topic"]]+g+[np.mean(g), np.std(g)])
+res = pd.DataFrame(res, columns=["var", "question", "mean", "std", "topic"]+list(response_to_party.values())+["mean_of_group_vars", "var_of_group_vars"])
+res.sort_values("std").sort_values("var_of_group_vars")[["question", "topic", "mean_of_group_vars", "var_of_group_vars", "std"]]
+
+QUESTIONS = ["climate_concern", "gay_marriage", "integration", "econ_inequality"]
+res.loc[[33,19, 10, 0],["question", "mean", "std", "var_of_group_vars"]+parties].rename(columns={p:f"var_{p}" for p in parties})
+vars = res.loc[[33,19, 10, 0], "var"]
+
+questions_meta = meta#.loc[meta["selected"].dropna().index]
+#polQ = questions_meta.loc[questions_meta.topic!="identity", :] 
+#vars = polQ["topic"].tolist()
+
+# df = df.rename(columns=dict(zip(questions_meta["var"], questions_meta["topic"])))
+df = df.rename(columns={v: q for v,q in zip(vars, QUESTIONS)})
+df["identity"] = df["v302"].map(response_to_party)
+df = df[QUESTIONS+["identity"]]
+
+df.groupby("identity")[QUESTIONS].median()
+
+sns.histplot(df)
+
+for p in parties:
+    for var in QUESTIONS:
+        q = 0.75 if df.loc[df.identity==p, var].mean()<3 else 0.25
+        q= 0.5
+        op = df.loc[df.identity==p, var].quantile(q, interpolation='nearest')
+        op = df.loc[df.identity==p, var].mean().round()
+        print(p, var, q, op, LIKERT_NUM2TEX[op])
+
+
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+
+# Define relevant columns
+features = ['climate_concern', 'gay_marriage', 'rights_for_integration', 'econ_inequality']
+
+# Drop rows with missing values in features or identity
+df_valid = df.dropna(subset=features + ['identity']).copy()
+
+# Balance the dataset: equal number of rows per identity
+min_size = df_valid['identity'].value_counts().min()
+df_balanced = df_valid.groupby('identity').sample(n=min_size, random_state=42)
+
+# Standardize features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(df_balanced[features])
+
+# Cluster into 4 personas
+kmeans = KMeans(n_clusters=4, random_state=42)
+df_balanced['persona'] = kmeans.fit_predict(X_scaled)
+
+# Optional: view cluster centers for interpretation
+centers = pd.DataFrame(scaler.inverse_transform(kmeans.cluster_centers_), columns=features)
+for nc, c in centers.iterrows():
+    for q in QUESTIONS:
+        print(nc, q, LIKERT_NUM2TEX[c[q].round()] )
+
+
+
+
+
 
 df["wave"] = 1
 df["participant_weight"] = 1

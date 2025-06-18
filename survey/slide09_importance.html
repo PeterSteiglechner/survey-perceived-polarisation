@@ -3,97 +3,178 @@ Evaluation
 {{ endblock }}
 
 {{ block content }}
-
 <style>
-    .card-section {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 30px;
-        margin: 30px 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
+.card-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    margin: 30px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
 
-    .card {
-        border: 1px solid #ddd;
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        background-color: #fff;
-        transition: box-shadow 0.3s ease;
-    }
+.card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    background-color: #fff;
+    transition: box-shadow 0.3s ease;
+}
 
-    .card:hover {
-        box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-    }
+.card:hover {
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
 
-    .card h3 {
-        margin-top: 0;
-        margin-bottom: 1em;
-        font-size: 20px;
-        color: #2c3e50;
-    }
+.card h3 {
+    margin-top: 0;
+    margin-bottom: 1em;
+    font-size: 20px;
+    color: #2c3e50;
+}
 
-    .form-group {
-        margin-bottom: 1.5em;
-    }
+.form-group {
+    margin-bottom: 1.5em;
+}
 
-    /* Radio Card Styling */
-    .option-cards {
-        display: flex;
-        gap: 15px;
-        margin-top: 15px;
-        flex-wrap: wrap;
-    }
+.form-group label {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    display: block;
+}
 
-    .option-card {
-        border: 2px solid #ccc;
-        border-radius: 10px;
-        padding: 15px 20px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        flex: 1 1 200px;
-    }
+/* Checkbox Card Styling */
+.checkbox-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
 
-    .option-card:hover {
-        border-color: #666;
-        background-color: #f9f9f9;
-    }
+.checkbox-card {
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: #fff;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
-    .option-card input[type="radio"] {
-        display: none;
-    }
+.checkbox-card:hover {
+    border-color: #007bff;
+    background-color: #f8f9fa;
+    transform: translateY(-1px);
+}
 
-    .option-card.selected {
-        border-color: #007bff;
-        background-color: #e6f0ff;
-    }
+.checkbox-card.selected {
+    border-color: #007bff;
+    background-color: #e6f0ff;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+}
+
+.checkbox-card input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #007bff;
+    cursor: pointer;
+}
+
+.checkbox-card .checkbox-label {
+    font-size: 14px;
+    color: #495057;
+    cursor: pointer;
+    margin: 0;
+    flex: 1;
+    line-height: 1.3;
+}
+
+.checkbox-card.selected .checkbox-label {
+    color: #0056b3;
+    font-weight: 500;
+}
+
+/* Hidden field for form submission */
+#topic_importance_hidden {
+    display: none;
+}
 </style>
 
 <div class="card-section">
-
     <!-- Importance Card -->
     <div class="card">
         <div class="form-group">
-            {% formfield player.topic_importance %}
+            <label for="id_topic_importance">In the previous mapping exercise, what topics were important for how you arranged the dots?</label>
+            
+            <!-- Hidden field for actual form submission -->
+            <input type="hidden" name="topic_importance" id="topic_importance_hidden" value="">
+            
+            <div class="checkbox-container">
+                {% for choice in topic_choices %}
+                <div class="checkbox-card" data-value="{{ choice }}">
+                    <input type="checkbox" 
+                           id="checkbox_{{ forloop.counter }}" 
+                           data-choice="{{ choice }}">
+                    <label class="checkbox-label" for="checkbox_{{ forloop.counter }}">
+                        {{ choice }}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+            {{ formfield_errors topic_importance }}
         </div>
     </div>
-
 </div>
 
 {{ next_button }}
 
 <script>
-document.querySelectorAll('.option-cards').forEach(group => {
-    const name = group.dataset.field;
-    group.querySelectorAll('input[type="radio"]').forEach(radio => {
-        radio.addEventListener('change', () => {
-            group.querySelectorAll('.option-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            radio.closest('.option-card').classList.add('selected');
+// Handle checkbox selection and form submission
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxCards = document.querySelectorAll('.checkbox-card');
+    const hiddenField = document.getElementById('topic_importance_hidden');
+    
+    checkboxCards.forEach(card => {
+        const checkbox = card.querySelector('input[type="checkbox"]');
+        
+        // Handle card click
+        card.addEventListener('click', function(e) {
+            if (e.target !== checkbox) {
+                checkbox.checked = !checkbox.checked;
+            }
+            updateCardState(card, checkbox.checked);
+            updateHiddenField();
+        });
+        
+        // Handle checkbox change
+        checkbox.addEventListener('change', function() {
+            updateCardState(card, this.checked);
+            updateHiddenField();
         });
     });
+    
+    function updateCardState(card, isChecked) {
+        if (isChecked) {
+            card.classList.add('selected');
+        } else {
+            card.classList.remove('selected');
+        }
+    }
+    
+    function updateHiddenField() {
+        const selectedValues = [];
+        checkboxCards.forEach(card => {
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            if (checkbox.checked) {
+                selectedValues.push(card.dataset.value);
+            }
+        });
+        hiddenField.value = selectedValues.join(',');
+    }
 });
 </script>
 

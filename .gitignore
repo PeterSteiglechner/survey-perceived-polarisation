@@ -15,3 +15,5 @@ __pycache__/
 *.otreezip
 analysis/data/archive/
 .Rproj.user
+survey/archive
+archive

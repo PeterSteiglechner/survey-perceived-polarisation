@@ -1,76 +1,42 @@
 personas = [
   {
-    "name": "Green Progressive",
-    "description": "Young, urban, left-leaning, pro-equality and climate action.",
+    "name": "Social Democrat",
+    "description": "Center-left, pro-climate, pro-equality, supports regulated migration.",
     "responses": {
-      "climate_concern": "Strongly agree", 
-      "gay_adoption": "Strongly agree",
-      "migration_enriches_culture": "Strongly agree",
-      "govt_reduce_inequ": "Strongly agree",
-      "free_elect": "Strongly agree",
-      "politician_salaries": "Disagree"
+      "climate_concern": "Agree",
+      "gay_marriage": "Strongly agree",
+      "rights_for_integration": "Strongly agree",
+      "econ_inequality": "Strongly agree"
     }
   },
   {
-    "name": "National Populist",
-    "description": "Anti-elite, nationalist, anti-immigration, skeptical of climate action.",
+    "name": "Radical Progressive",
+    "description": "Strongly left-wing, climate-focused, pro-diversity, anti-conditional integration.",
     "responses": {
-      "climate_concern": "Strongly disagree", 
-      "gay_adoption": "Strongly disagree",
-      "migration_enriches_culture": "Strongly disagree",
-      "govt_reduce_inequ": "Disagree",
-      "free_elect": "Agree",
-      "politician_salaries": "Disagree"
+      "climate_concern": "Strongly agree",
+      "gay_marriage": "Strongly agree",
+      "rights_for_integration": "Disagree",
+      "econ_inequality": "Strongly agree"
     }
   },
   {
-    "name": "Economic Liberal",
-    "description": "Pro-market, fiscally conservative, socially moderate.",
+    "name": "Authoritarian Conservative",
+    "description": "Socially traditional, favors order and control, skeptical of liberal norms.",
     "responses": {
-      "climate_concern": "Neutral", 
-      "gay_adoption": "Agree",
-      "migration_enriches_culture": "Neutral",
-      "govt_reduce_inequ": "Strongly disagree",
-      "free_elect": "Agree",
-      "politician_salaries": "Strongly agree"
+      "climate_concern": "Neutral",
+      "gay_marriage": "Disagree",
+      "rights_for_integration": "Agree",
+      "econ_inequality": "Agree"
     }
   },
   {
-    "name": "Left-Conservative",
-    "description": "Economically leftist, culturally traditional, anti-globalization.",
+    "name": "Liberal Centrist",
+    "description": "Moderate, pragmatic, pro-market, mildly progressive on social issues.",
     "responses": {
-      "climate_concern": "Neutral", 
-      "gay_adoption": "Disagree",
-      "migration_enriches_culture": "Disagree",
-      "govt_reduce_inequ": "Strongly agree",
-      "free_elect": "Strongly agree",
-      "politician_salaries": "Strongly disagree"
+      "climate_concern": "Agree",
+      "gay_marriage": "Agree",
+      "rights_for_integration": "Agree",
+      "econ_inequality": "Neutral"
     }
-  },
-  {
-    "name": "Centrist Pragmatist",
-    "description": "Moderate, politically balanced, avoids extremes.",
-    "responses": {
-      "climate_concern": "Agree", 
-      "gay_adoption": "Neutral",
-      "migration_enriches_culture": "Neutral",
-      "govt_reduce_inequ": "Neutral",
-      "free_elect": "Strongly agree",
-      "politician_salaries": "Neutral"
-    }
-  },
-{
-  "name": "Authoritarian Technocrat",
-  "description": "Believes in expert rule and efficient governance over democratic chaos; values order and competence.",
-  "responses": {
-    "climate_concern": "Agree",  # Trusts expert consensus
-    "gay_adoption": "Neutral",   # Not particularly focused on social issues
-    "migration_enriches_culture": "Neutral",  # Pragmatic view
-    "govt_reduce_inequ": "Agree",  # Supports state intervention for stability
-    "free_elect": "Disagree",   # Believes democracy is inefficient/chaotic
-    "politician_salaries": "Neutral"  # paying for competent leadership
   }
-}
 ]
-# 5-point Likert scale options:
-# "Strongly agree", "Agree", "Neutral", "Disagree", "Strongly disagree"

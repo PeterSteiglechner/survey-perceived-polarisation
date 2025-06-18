@@ -116,6 +116,7 @@
                         </label>
                         {% endfor %}
                     </div>
+                    {{ formfield_errors item.field_name }}
                 </td>
             </tr>
             {% endfor %}
@@ -139,7 +140,5 @@ document.querySelectorAll('.option-cards').forEach(group => {
 });
 </script>
 
-
-{{ formfield_errors 'own_govt_reduce_inequ' }}
 
 {% endblock %}

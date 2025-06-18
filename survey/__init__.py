@@ -2,6 +2,7 @@ from otree.api import *
 import json
 import pandas as pd
 import random
+from itertools import combinations
 
 doc = """
 Your app description
@@ -16,68 +17,77 @@ class C(BaseConstants):
     NAME_IN_URL = 'survey'
     PLAYERS_PER_GROUP = None
     NUM_ROUNDS = 1
-    LIKERT11 = list(range(0,11)) + [-999]
-    LIKERT5_string = ["Strongly\nAgree","Agree","Neutral","Disagree","Strongly\nDisagree"] #+ ["Refuse/Don't know"]
-    LIKERT5_string = [
-        (1, 'Strongly agree'),
-        (2, 'Agree'),
-        (3, 'Neutral'),
-        (4, 'Disagree'),
-        (5, 'Strongly disagree'),
-        (-999, "----NA----"),
-    ]
+    LIKERT5 = [1,2,3,4,5] #+ [-999]
+    #LIKERT5_string = ["Strongly\nAgree","Agree","Neutral","Disagree","Strongly\nDisagree"]
     LIKERT5_string_noNA = [
         (1, 'Strongly agree'),
         (2, 'Agree'),
         (3, 'Neutral'),
         (4, 'Disagree'),
         (5, 'Strongly disagree')
-    ]
-    LIKERT_NUM2TEX = {num:tex for num, tex in LIKERT5_string}
-    LIKERT_TEX2NUM = {tex:num for num, tex in LIKERT5_string}
-    
-    LIKERT5 = [1,2,3,4,5] + [-999]
-    SLIDER = list(range(0,101)) +  [-999]
-    QUESTIONS = ["climate_concern", 
-                   "gay_adoption", 
-                    "migration_enriches_culture",
-                   "govt_reduce_inequ",
-                   "free_elect", 
-                   "politician_salaries"]
-    QUESTIONTEXT = dict(zip( QUESTIONS, [
-        'I am very concerned about climate change.', 
-        'Gay and lesbian couples should have the same rights to adopt children as couples consisting of a man and a woman.', 
-        'It is enriching for cultural life in Germany when migrants come here.', 
-        'The state should take measures to reduce income differences more than before.',
-        'That national elections are free and fair is extremely important for democracy.',
-        'Politicians should receive a higher salary during their term of office.'
-        ]))
+        ]
+    LIKERT_NUM2TEX = {num:tex for num, tex in LIKERT5_string_noNA}
+    LIKERT_NUM2TEX[-999] = "NA"
+    LIKERT_TEX2NUM = {tex:num for num, tex in LIKERT5_string_noNA}
+    QUESTIONS = ["climate_concern", "gay_marriage", "rights_for_integration", "econ_inequality"]
+    # QUESTIONS = ["climate_concern", 
+    #                "gay_adoption", 
+    #                 "migration_enriches_culture",
+    #                "govt_reduce_inequ",
+    #                "free_elect", 
+    #                "politician_salaries"]
+    QUESTIONTEXT = dict(zip(QUESTIONS, [
+        "I am very concerned about climate change.",
+        "It is good that marriages between two women or two men are allowed.",
+        "Only migrants who make an effort and integrate should be given the same rights as natives.",
+        "The differences in income and wealth in Germany are too high.",
+    ]))
+    # QUESTIONTEXT = dict(zip( QUESTIONS, [
+    #     'I am very concerned about climate change.', 
+    #     'Gay and lesbian couples should have the same rights to adopt children as couples consisting of a man and a woman.', 
+    #     'It is enriching for cultural life in Germany when migrants come here.', 
+    #     'The state should take measures to reduce income differences more than before.',
+    #     'That national elections are free and fair is extremely important for democracy.',
+    #     'Politicians should receive a higher salary during their term of office.'
+    #     ]))
     QUESTIONSHORTTEXT = dict(zip( QUESTIONS, [
-        "concerned about climate", 
-        "equal adoption rights for gay couples", 
-        "migration enriches culture",
-        "state should act to reduce income differences", 
-        "free & fair elections important", 
-        "higher politician salaries"
-        ]))
+         "concerned about climate change", 
+         "support same-sex marriage",
+         "migrant rights should depend on integration effort",
+         "economic differences too high"
+    ])) 
+    # QUESTIONSHORTTEXT = dict(zip( QUESTIONS, [
+    #     "concerned about climate", 
+    #     "equal adoption rights for gay couples", 
+    #     "migration enriches culture",
+    #     "state should act to reduce income differences", 
+    #     "free & fair elections important", 
+    #     "higher politician salaries"
+    #     ]))
     QUESTIONNAMES = dict(zip( QUESTIONS, [
-        "concern about climate", 
-        "equality in adoption rights for gay couples", 
-        "enriching effect of migration on culture",
-        "state action to reduce income differences", 
-        "free & fair elections", 
-        "higher politician salaries"
+        "Opinion about climate change", 
+        "Opinion about same-sex marriage", 
+        "Opinion about migrant rights depending on integration efforts",
+        "Opinion about inequality",
         ]))
+    # QUESTIONNAMES = dict(zip( QUESTIONS, [
+    #     "concern about climate", 
+    #     "equality in adoption rights for gay couples", 
+    #     "enriching effect of migration on culture",
+    #     "state action to reduce income differences", 
+    #     "free & fair elections", 
+    #     "higher politician salaries"
+    #     ]))
+    
     PERSONAS = pd.read_csv("_static/personas.csv")[QUESTIONS]
     P_OPS =  {f"P{n+1}": row.to_dict()  for n, row in PERSONAS.iterrows()}
 
-    #CHECKTEXT = lambda which: f"To what extent does this actually reflect your perception of political similarity?"
-    #REASONTEXT ="Please briefly describe why (in two to three sentences)" 
     NCONTACTS = 3
     LABELLED = ["Green voter", "AfD voter"]
     LABELLEDCOLORS = dict(zip(LABELLED, ["#46962b", "#009ee0"]))
     NPS = len(P_OPS.keys())
-    NR_CHECKS = 4
+    NR_P_CHECKS = 3
+    NR_OTHER_CHECKS = 5
 
     N_MAX_PRACTICE_RUNS = 5
 
@@ -130,21 +140,20 @@ def define_contact(label, n):
 
 class Player(BasePlayer):
     age = models.IntegerField(label='How old are you?', min=18, max=100)
-    political_interest = models.StringField(label='How interested would you say you are in politics - are you...',
-                                     choices=["Very interested", "Quite interested", "Hardly interested", "Not at all interested"],
-                                     widget=widgets.RadioSelectHorizontal)
+    political_interest = models.StringField(label='', choices=["not at all interested.", "hardly interested.", "quite interested.", "very interested."], widget=widgets.RadioSelect)
 
     # feel_closest = models.StringField(label='Do you feel yourself closer to one of the political parties than the others?',
     #                                  choices=["yes", "no", "refuse to say"],
     #                                  widget=widgets.RadioSelectHorizontal)
-    feel_closest_party = models.StringField(label='Do you feel yourself closer to one of the political parties than the others? If so, which one?',
-                                     choices=["None", "CDU/CSU", "AfD", "SPD", "Grüne", "Linke", "BSW", "FDP", "other", "refuse to say"],
-                                     widget=widgets.RadioSelectHorizontal, 
-                                     blank=True)
-    how_polarised = models.StringField(label='People sometimes say that the public polarises on political issues. Would you agree?',
-                                     choices=["Strongly Agree", "Somewhat Agree", "Somewhat Disagree", "Strongly Disagree"],
+    feel_closest_party = models.StringField(label='',
+                                            choices=["CDU/CSU", "AfD", "SPD", "Grüne", "Linke", "BSW", "FDP", "other", "no party", "refuse to say"],
+                                     widget=widgets.RadioSelect, 
+                                     blank=False)
+    how_polarised = models.StringField(label='',
+                                       choices=["Not at all divided.", "Somewhat divided.", "Very divided.", "Extremely divided."],
+                                       blank=False,
                                      widget=widgets.RadioSelect)
-    topic_importance = models.StringField(label='In the previous mapping exercise, what topic was the most important one for how you arranged the dots?', choices=[q+"." for q in C.QUESTIONNAMES]+["All topics were equally important.", "Other topics.", "I don't know."], widget=widgets.RadioSelect)
+    #topic_importance = models.StringField(label='Which topic(s) were the most important for how you arranged the dots in the previous task?', choices=[qname+"." for q,qname in C.QUESTIONNAMES.items()]+["One or multiple different topics", "I don't know."], widget=widgets.CheckboxSelectMultiple)
     
     #################################
     #####  MAP POSITIONS   #####
@@ -156,6 +165,7 @@ class Player(BasePlayer):
     #################################
     #####  CHecks   #####
     #################################
+    valid_p_checks = models.LongStringField(blank=True)
     check = models.IntegerField(initial=1) 
     check1_p1 =  models.LongStringField(blank=True)
     check1_p2 =  models.LongStringField(blank=True)
@@ -163,14 +173,33 @@ class Player(BasePlayer):
     check2_p2 =  models.LongStringField(blank=True)
     check3_p1 =  models.LongStringField(blank=True)
     check3_p2 =  models.LongStringField(blank=True)
-    check4_p1 =  models.LongStringField(blank=True)
-    check4_p2 =  models.LongStringField(blank=True)
-    check1 = models.StringField(choices=['not at all','somewhat','very much'], label="", widget=widgets.RadioSelectHorizontal,blank=False)
-    check2 = models.StringField(choices=['not at all','somewhat','very much'], label="", widget=widgets.RadioSelectHorizontal,blank=False)
-    check3 = models.StringField(choices=['not at all','somewhat','very much'],label="", widget=widgets.RadioSelectHorizontal,blank=False)
-    check4 = models.StringField(choices=['not at all','somewhat','very much'],label="", widget=widgets.RadioSelectHorizontal,blank=False)
+    # check4_p1 =  models.LongStringField(blank=True)
+    # check4_p2 =  models.LongStringField(blank=True)
+    check1 = models.StringField(choices=['No','Somewhat','Yes'], label="", widget=widgets.RadioSelect,blank=False)
+    check1_explain = models.LongStringField(label="If you think this is not correct, you can use this textbox to explain why:",blank=True)
+    check2 = models.StringField(choices=['No','Somewhat','Yes'], label="", widget=widgets.RadioSelect,blank=False)
+    check2_explain = models.LongStringField(label="If you think this is not correct, you can use this textbox to explain why:",blank=True)
+    check3 = models.StringField(choices=['No','Somewhat','Yes'],label="", widget=widgets.RadioSelect,blank=False)
+    check3_explain = models.LongStringField(label="If you think this is not correct, you can use this textbox to explain why:",blank=True)
+    # check4 = models.StringField(choices=['not at all','somewhat','very much'],label="Is this correct?", widget=widgets.RadioSelectHorizontal,blank=False)
     
-    
+    checkPair = models.IntegerField(initial=1) 
+    checkPair1_dot1 =  models.LongStringField(blank=True)
+    checkPair1_dot2 =  models.LongStringField(blank=True)
+    checkPair2_dot1 =  models.LongStringField(blank=True)
+    checkPair2_dot2 =  models.LongStringField(blank=True)
+    checkPair3_dot1 =  models.LongStringField(blank=True)
+    checkPair3_dot2 =  models.LongStringField(blank=True)
+    checkPair4_dot1 =  models.LongStringField(blank=True)
+    checkPair4_dot2 =  models.LongStringField(blank=True)
+    checkPair5_dot1 =  models.LongStringField(blank=True)
+    checkPair5_dot2 =  models.LongStringField(blank=True)
+    checkPair1 = models.StringField(choices=["Very distant", "More distant than similar",  "Neither distant nor similar", "More similar than distant", "Very similar"],label="", widget=widgets.RadioSelect,blank=False)
+    checkPair2 = models.StringField(choices=["Very distant", "More distant than similar",  "Neither distant nor similar", "More similar than distant", "Very similar"],label="", widget=widgets.RadioSelect,blank=False)
+    checkPair3 = models.StringField(choices=["Very distant", "More distant than similar",  "Neither distant nor similar", "More similar than distant", "Very similar"],label="", widget=widgets.RadioSelect,blank=False)
+    checkPair4 = models.StringField(choices=["Very distant", "More distant than similar",  "Neither distant nor similar", "More similar than distant", "Very similar"],label="", widget=widgets.RadioSelect,blank=False)
+    checkPair5 = models.StringField(choices=["Very distant", "More distant than similar",  "Neither distant nor similar", "More similar than distant", "Very similar"],label="", widget=widgets.RadioSelect,blank=False)
+
     # for toCheck in ["f1f2", "P1P2"]:
     #     exec(f"check_self_{toCheck} = models.StringField(        choices=['not at all','somewhat','very much'],label=C.CHECKTEXT('your contacts'),widget=widgets.RadioSelectHorizontal,blank=False)")
     #     exec(f"reason_{toCheck} =  models.LongStringField(label=C.REASONTEXT)")
@@ -189,7 +218,14 @@ class Player(BasePlayer):
     evaluated_labelledPerson = models.IntegerField(initial=0) 
     ps_placed = models.IntegerField(initial=0)  
     mode = models.StringField(initial="contact")  # 'contact' or 'labelledPerson'
+
+    # importance_other = models.BooleanField('', blank=True)
+    # importance_dontknow = models.BooleanField('', blank=True)
     
+    topic_importance = models.StringField(
+        label='In the previous mapping exercise, what topics were important for how you arranged the dots?',
+        blank=True
+    )
 
 #################################
 #####  OWN POLITICAL OPINIONS   #####
@@ -207,6 +243,11 @@ for n in range(1,C.NCONTACTS+1):
 for name in C.LABELLED:
     for q in C.QUESTIONS:
         setattr(Player, f"{name.replace(" ", "")}_{q}", make_field(''))
+
+# for q in C.QUESTIONS:
+#     setattr(Player, f"importance_{q}", models.BooleanField('', blank=True))  
+
+
 
 # PAGES
 class slide01_Introduction(Page):
@@ -331,37 +372,30 @@ class slide05b_MapTestResult(Page):
         pos = json.loads(player.positionsTest)
         pos = {p["label"]: [p["x"], p["y"]] for p in pos}
         #calculate distances
-        dF = distance(pos["self"], pos["F"])
-        dC = distance(pos["self"], pos["C"])
-        dS = distance(pos["self"], pos["S"])
-        dFS = distance(pos["F"], pos["S"])
-        dFC = distance(pos["F"], pos["C"])
-        dCS = distance(pos["C"], pos["S"])
+        dF = distance(pos["self"], pos["Friend"])
+        dC = distance(pos["self"], pos["Co-worker"])
+        dS = distance(pos["self"], pos["Sister"])
+        dFS = distance(pos["Friend"], pos["Sister"])
+        dFC = distance(pos["Friend"], pos["Co-worker"])
+        dCS = distance(pos["Co-worker"], pos["Sister"])
         # check conditions
         player.isTrainingCondFvC = bool(dF<dC)  # Rule 2/3
         player.isTrainingCondSelfvFC = bool(dFC>dC)  # Rule 4
         player.isTrainingCondSvF = bool(dS>dF) # Rule 5
         player.isTrainingCondSvFC = bool((dFS<dS) and (dCS<dS)) # Rule 6.
         isTrainingPassed = player.isTrainingCondFvC & player.isTrainingCondSelfvFC & player.isTrainingCondSvFC & player.isTrainingCondSvF
-        #print("isTrainingPassed", isTrainingPassed, dF, dS, dFS, dCS)
         player.isTrainingPassed = isTrainingPassed
 
         errors = ""
-        errors += r"- The distance between self and C should be larger than the distance between self and F (bullet points 2/3). <br>" if player.isTrainingCondFvC==0 else ""
-        errors += r"- The distance between F and C should be larger than the distance between self and C (bullet point 4). <br>" if player.isTrainingCondSelfvFC==0 else ""
-        errors += r"- The distance between self and S should be larger than the distance between self and F (bullet point 5). <br>" if player.isTrainingCondSvF==0 else ""
-        errors += r"- The distances between F and S and between C and S should be smaller than the distance between self and S (bullet point 6). <br>" if player.isTrainingCondSvFC==0 else ""
+        errors += r"- The distance between self and co-worker should be larger than the distance between self and friend (bullet points 2/3). <br>" if player.isTrainingCondFvC==0 else ""
+        errors += r"- The distance between your friend and your co-worker should be larger than the distance between self and co-worker (bullet point 4). <br>" if player.isTrainingCondSelfvFC==0 else ""
+        errors += r"- The distance between self and your co-worker should be larger than the distance between self and your friend (bullet point 5). <br>" if player.isTrainingCondSvF==0 else ""
+        errors += r"- The distances between your friend and your sister and between your co-worker and your sister should be smaller than the distance between self and sister (bullet point 6). <br>" if player.isTrainingCondSvFC==0 else ""
         
         return {"passed": player.isTrainingPassed, "errors":errors, "attempt": player.attemptPractice, "max_attempts": C.N_MAX_PRACTICE_RUNS} 
     
     @staticmethod
     def is_displayed(player: Player):
-        print((player.attemptPractice<=C.N_MAX_PRACTICE_RUNS) and ((not player.isTrainingPassed) or (player.isTrainingPassed and player.attemptPractice==1)), 
-              (player.attemptPractice<=C.N_MAX_PRACTICE_RUNS), 
-               ((not player.isTrainingPassed), 
-                (player.isTrainingPassed and player.attemptPractice==0))
-              )
-        
         return (player.attemptPractice<=C.N_MAX_PRACTICE_RUNS) and ((not player.isTrainingPassed) or (player.isTrainingPassed and player.attemptPractice==0))
 
 
@@ -443,7 +477,7 @@ class slide07_SPaM_personas(Page):
             "label": P,
             "name": P,
             "x": 530,
-            "y": 100,
+            "y": 300,
             "dottype": "P",
             "descr": P_text_short
         })
@@ -453,29 +487,54 @@ class slide07_SPaM_personas(Page):
             #"P_text": P_text,
             "P_text_short": P_text_short,
             "dots": init_dots, 
-            "img_source": f"{P}_op.png"
+            "img_source": f"{P}_op.png",
+            "n_ps": C.NPS,
+            "ps_placed": player.ps_placed+1,
         }
     
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         player.ps_placed += 1
 
+        if player.ps_placed==C.NPS:
+            # Find pairs where one distance is >= 1.5 times the other; fill with random ones.
+            positions = json.loads(getattr(player, "positions"))
+            pos = {p["label"]: [p["x"], p["y"]] for p in positions}
+            p_points = [f"P{i}" for i in range(1, C.NPS+1)]
+            distances = {p: distance(pos["self"], pos[p]) for p in p_points}
+            valid_pairs = []
+            for i, p1 in enumerate(p_points):
+                for p2 in p_points[i+1:]:
+                    d1 = distances[p1]
+                    d2 = distances[p2]
+                    if d1 >= 1.5 * d2 or d2 >= 1.5 * d1:
+                        valid_pairs.append((p1, p2))
+            while len(valid_pairs)<C.NR_P_CHECKS:
+                p1, p2 = random.choice(list(combinations(p_points, 2)))
+                if not (p1, p2) in valid_pairs and not (p2, p1) in valid_pairs:
+                    valid_pairs.append((p1,p2))
+            player.valid_p_checks = json.dumps(valid_pairs)
     @staticmethod
     def is_displayed(player):
         return player.ps_placed <= C.NPS  
 
 
-class slide08_plausibilityCheck(Page):
+class slide08a_PlausibilityCheck_Ps(Page):
     form_model = 'player'
     
     @staticmethod
     def get_form_fields(player: Player):
         # get the current iteration number
         i = player.check
-        return [f'check{i}']
+        return [f'check{i}', f'check{i}_explain']
     
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
+        valid_pairs = json.loads(getattr(player, "valid_p_checks"))
+        pair = [player.participant.vars[f'check{player.check}_p1'], player.participant.vars[f'check{player.check}_p2']]
+        valid_pairs.remove(pair)
+        player.valid_p_checks = json.dumps(valid_pairs)
+
         p1_label = player.participant.vars.get(f'check{player.check}_p1')
         p2_label = player.participant.vars.get(f'check{player.check}_p2')
         if p1_label and p2_label:
@@ -492,44 +551,22 @@ class slide08_plausibilityCheck(Page):
     def vars_for_template(player: Player):
         positions = json.loads(getattr(player, "positions"))
         pos = {p["label"]: [p["x"], p["y"]] for p in positions}
-
-        p_points = [f"P{i}" for i in range(1, C.NPS)]
-        focal_point = "self" #if random.random() < 0.5 else (f"contact{int(random.random()*C.NCONTACTS)+1}")
+        p_points = [f"P{i}" for i in range(1, C.NPS+1)]
+        focal_point = "self" 
         focal_point_label= "yourself"
-
-        # Calculate all distances from 'self' to P points
         distances = {p: distance(pos[focal_point], pos[p]) for p in p_points}
-
-        # Find pairs where one distance is >= 1.5 times the other
-        valid_pairs = []
-        for i, p1 in enumerate(p_points):
-            for p2 in p_points[i+1:]:
-                d1 = distances[p1]
-                d2 = distances[p2]
-                if d1 >= 1.5 * d2 or d2 >= 1.5 * d1:
-                    valid_pairs.append((p1, p2))
-        if valid_pairs:
-            p1, p2 = random.choice(valid_pairs)
-            significant = True
-        else:
-            print("no significant differences in P distances")
-            p1, p2 = random.sample(p_points, 2)
-            significant = False
-        # Save to participant.vars so accessible in before_next_page
-        player.participant.vars[f'check{player.check}_p1'] = p1
-        player.participant.vars[f'check{player.check}_p2'] = p2
-        
-
+        valid_pairs = json.loads(player.valid_p_checks)
+        p1,p2 = random.choice(valid_pairs)
         dist_p1 = distances[p1]
         dist_p2 = distances[p2]
-
+        significant = ((dist_p1 >= 1.5 * dist_p2) or (dist_p2 >= 1.5 * dist_p1))
+        player.participant.vars[f'check{player.check}_p1'] = p1
+        player.participant.vars[f'check{player.check}_p2'] = p2
         distantP = p1 if dist_p1 > dist_p2 else p2
         similarP = p2 if dist_p1 > dist_p2 else p1
-
-        isDistF1LargerDistF2 = distance(pos["self"], pos[player.contact1]) > distance(pos["self"], pos[player.contact2])
-        distantFriend = player.contact1 if isDistF1LargerDistF2 else player.contact2
-        similarFriend = player.contact2 if isDistF1LargerDistF2 else player.contact1
-
+        # isDistF1LargerDistF2 = distance(pos["self"], pos[player.contact1]) > distance(pos["self"], pos[player.contact2])
+        # distantFriend = player.contact1 if isDistF1LargerDistF2 else player.contact2
+        # similarFriend = player.contact2 if isDistF1LargerDistF2 else player.contact1
         dot_descrs= {}
         for p in [p1, p2]:
             currP = f"{p}"
@@ -537,8 +574,6 @@ class slide08_plausibilityCheck(Page):
             dot_descrs[currP] = "; ".join([
                 f"{C.QUESTIONSHORTTEXT[q]}: {C.LIKERT_NUM2TEX[op]}"
                 for q, op in zip(C.QUESTIONS, currP_op)])
-
-
         return {
             'p0_coords': pos[focal_point],
             'p1_coords': pos[p1],
@@ -551,37 +586,89 @@ class slide08_plausibilityCheck(Page):
             'descr_p2': dot_descrs[p2],
             'dist_p1': dist_p1,
             'dist_p2': dist_p2,
+            'significant': "much larger" if significant else "larger",
             'distantP': distantP,
             'similarP': similarP,
+            'ncheck': player.check,
+            'nr_tot_checks': C.NR_P_CHECKS + C.NR_OTHER_CHECKS,
             'current_check': f'check{player.check}',
-            'significant': "much larger" if significant else "larger"
+            'current_check_explain': f'check{player.check}_explain',
         }
+
+
+
+class slide08b_PlausibilityCheck_Pairs(Page):
+    form_model = 'player'
+
+    @staticmethod
+    def get_form_fields(player: Player):
+        # get the current iteration number
+        i = player.checkPair
+        return [f'checkPair{i}']
     
-# class slide08_CheckDistance(Page):
-#     form_model = 'player'
-#     form_fields = ['check_self_f1f2', "reason_f1f2", "check_self_P1P2", "reason_P1P2"]
-    
-#     @staticmethod
-#     def vars_for_template(player: Player):
-#         pos = json.loads(getattr(player, f"positions"))
-#         pos = {p["label"]: [p["x"], p["y"]] for p in pos}
-#         isDistF1LargerDistF2 = distance(pos["self"], pos[player.contact1]) > distance(pos["self"], pos[player.contact2])
-#         isDistP1LargerDistP2 = distance(pos["self"], pos["P1"]) > distance(pos["self"], pos["P2"])
-#         distantFriend = player.contact1 if isDistF1LargerDistF2 else player.contact2
-#         similarFriend = player.contact2 if isDistF1LargerDistF2 else player.contact1
-#         distantP = "P1" if isDistP1LargerDistP2 else "P2"
-#         similarP = "P2" if isDistP1LargerDistP2 else "P1"
-#         return {
-#             'distantFriend': distantFriend,
-#             'similarFriend': similarFriend,
-#             'distantP': distantP,
-#             'similarP': similarP,
-#         }
-    
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        p1_label = player.participant.vars.get(f'checkPair{player.check}_dot1')
+        p2_label = player.participant.vars.get(f'checkPair{player.check}_dot2')
+        if p1_label and p2_label:
+            setattr(player, f'checkPair{player.checkPair}_dot1', p1_label)
+            setattr(player, f'checkPair{player.checkPair}_dot2', p2_label)
+        else:
+            # fallback, just set empty string or default
+            setattr(player, f'checkPair{player.checkPair}_dot1', '')
+            setattr(player, f'checkPair{player.checkPair}_dot2', '')
+        player.checkPair += 1
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        points = [
+            ["contact2", C.LABELLED[0]],
+            ["self", C.LABELLED[0]],
+            ["contact1", C.LABELLED[0]],
+            ["contact2", C.LABELLED[1]],
+            ["self", C.LABELLED[1]],
+            ]
+        p1, p2 = points[player.checkPair-1]
+        p1label = f"your contact {getattr(player, p1)}" if "contact" in p1 else ("yourself" if p1=="self" else (f"a typical {p1}" if p1 in C.LABELLED else p1))
+        p2label = f"your contact {getattr(player, p2)}" if "contact" in p2 else ("yourself" if p2=="self" else(f"a typical {p2}" if p2 in C.LABELLED else p2))
+        return {
+            'p1': p1,
+            'p1_label':p1label, 
+            'p2': p2,
+            'p2_label':p2label,
+            'ncheck': player.checkPair,
+            'nr_tot_checks': C.NR_P_CHECKS + C.NR_OTHER_CHECKS,
+            'nr_total_checks':C.NR_P_CHECKS + player.checkPair,
+            'current_check': f'checkPair{player.checkPair}',
+        }
+
 
 class slide09_importance(Page):
     form_model = 'player'
     form_fields = ['topic_importance']
+    
+    @staticmethod
+    def before_next_page(player, timeout_happened):
+        # Optional: Process the selected values if needed
+        if player.topic_importance:
+            #selected_topics = player.topic_importance.split(',')
+            pass
+    @staticmethod
+    def vars_for_template(player):
+        return {
+            'topic_choices': [qname+"." for q,qname in C.QUESTIONNAMES.items()]+["Different topic(s).", "I don't know."]
+        }
+    @staticmethod
+    def error_message(player, values):
+        # Custom validation for multiple checkbox selections
+        if values['topic_importance']:
+            selected_choices = values['topic_importance'].split(',')
+            valid_choices = [qname+"." for q,qname in C.QUESTIONNAMES.items()]+["Different topic(s).", "I don't know."]
+            # Check if all selected choices are valid
+            for choice in selected_choices:
+                if choice.strip() not in valid_choices:
+                    return "Invalid selection detected."
+        return None
 
 # class ResultsWaitPage(WaitPage):
 #     pass
@@ -604,7 +691,8 @@ page_sequence = [slide01_Introduction,
     [slide05a_MapTest, slide05b_MapTestResult] * C.N_MAX_PRACTICE_RUNS +\
     [slide06_SPaM] +\
     [slide07_SPaM_personas] * C.NPS +\
-    [slide08_plausibilityCheck] * C.NR_CHECKS +\
+    [slide08a_PlausibilityCheck_Ps] * C.NR_P_CHECKS +\
+    [slide08b_PlausibilityCheck_Pairs] * C.NR_OTHER_CHECKS +\
     [slide09_importance, slide10_Demographics, 
      slide11_Results]
 
