@@ -13,32 +13,9 @@ QUESTIONTEXT = dict(zip(QUESTIONS, [
 QUESTIONSHORTTEXT = dict(zip( QUESTIONS, [
         "concerned about climate change", 
         "support same-sex marriage",
-        "equal rights for integrated migrants only",
+        "equal rights only for migrants who integrate",
         "economic differences too high"
 ])) 
-# QUESTIONS_SC =["climate_concern", 
-#                    "gay_adoption", 
-#                     "migration_enriches_culture",
-#                    "govt_reduce_inequ",
-#                    "free_elect", 
-#                    "politician_salaries"]
-# questionshorttext =[
-#     "concerned about climate", 
-#     "equal adoption rights for gay couples", 
-#     "migration enriches culture",
-#     "state should act to reduce income differences", 
-#     "free & fair elections important", 
-#     "higher politician salaries"]
-
-# questiontext = [
-#         'I am very concerned about climate change.', 
-#         'Gay and lesbian couples should have the same rights to adopt children as couples consisting of a man and a woman.', 
-#         'It is enriching for cultural life in Germany when migrants come here.', 
-#         'The state should take measures to reduce income differences more than before.',
-#         'That national elections are free and fair is extremely important for democracy.',
-#         'Politicians should receive a higher salary during their term of office.'
-#         ]
-
 
 import pandas as pd
 

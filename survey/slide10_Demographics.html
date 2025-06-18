@@ -40,19 +40,19 @@ Some questions about yourself
     /* Radio Card Styling */
     .option-cards {
         display: flex;
-        gap: 15px;
-        margin-top: 15px;
+        gap: 10px;
+        margin-top: 10px;
         flex-wrap: wrap;
     }
 
     .option-card {
         border: 2px solid #ccc;
         border-radius: 10px;
-        padding: 15px 20px;
+        padding: 10px 10px;
         text-align: center;
         cursor: pointer;
         transition: all 0.2s ease;
-        flex: 1 1 200px;
+        flex: 1 1 100px;
     }
 
     .option-card:hover {
@@ -70,8 +70,8 @@ Some questions about yourself
     }
 </style>
 
-<p style="margin-bottom: 1.5em;"> 
-In this final part, we would like you to answer the following questions about yourself.</p>
+{% comment %} <p style="margin-bottom: 1.5em;"> 
+In this final part, we would like you to answer the following questions about yourself.</p> {% endcomment %}
 
 <div class="card-section">
     <!-- Demographic Card -->
@@ -108,7 +108,7 @@ In this final part, we would like you to answer the following questions about yo
             Do you feel closer to one of the political parties than the others? If so, which one?
             </label>
             <div class="option-cards" data-field="feel_closest_party">
-                {% for choice in ["CDU/CSU", "AfD", "SPD", "Grüne", "Linke", "BSW", "FDP", "other", "no party", "refuse to say"] %}
+                {% for choice in ["CDU/CSU", "AfD", "SPD", "Green Party", "Left Party", "BSW", "FDP", "other", "no party", "refuse to say"] %}
                 <label class="option-card">
                     <input type="radio" name="feel_closest_party" value="{{ choice }}">
                     {{ choice }}
