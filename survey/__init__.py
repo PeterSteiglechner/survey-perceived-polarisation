@@ -53,7 +53,7 @@ class C(BaseConstants):
     QUESTIONSHORTTEXT = dict(zip( QUESTIONS, [
          "concerned about climate change", 
          "support same-sex marriage",
-         "migrant rights should depend on integration effort",
+         "equal rights for integrated migrants only",
          "economic differences too high"
     ])) 
     # QUESTIONSHORTTEXT = dict(zip( QUESTIONS, [
@@ -67,8 +67,8 @@ class C(BaseConstants):
     QUESTIONNAMES = dict(zip( QUESTIONS, [
         "Opinion about climate change", 
         "Opinion about same-sex marriage", 
-        "Opinion about migrant rights depending on integration efforts",
-        "Opinion about inequality",
+        "Opinion about migrants' rights and integration",
+        "Opinion about economic inequality",
         ]))
     # QUESTIONNAMES = dict(zip( QUESTIONS, [
     #     "concern about climate", 

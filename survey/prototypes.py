@@ -13,7 +13,7 @@ QUESTIONTEXT = dict(zip(QUESTIONS, [
 QUESTIONSHORTTEXT = dict(zip( QUESTIONS, [
         "concerned about climate change", 
         "support same-sex marriage",
-        "migrant rights should depend on integration effort",
+        "equal rights for integrated migrants only",
         "economic differences too high"
 ])) 
 # QUESTIONS_SC =["climate_concern", 

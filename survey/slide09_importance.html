@@ -1,5 +1,5 @@
 {{ block title }}
-Evaluation
+Most important topics
 {{ endblock }}
 
 {{ block content }}
@@ -108,7 +108,7 @@ Evaluation
     <!-- Importance Card -->
     <div class="card">
         <div class="form-group">
-            <label for="id_topic_importance">In the previous mapping exercise, what topics were important for how you arranged the dots?</label>
+            <label for="id_topic_importance">In the political mapping task, what topics were important for how you arranged the dots? You can select one or multiple items.</label>
             
             <!-- Hidden field for actual form submission -->
             <input type="hidden" name="topic_importance" id="topic_importance_hidden" value="">
@@ -125,7 +125,7 @@ Evaluation
                 </div>
                 {% endfor %}
             </div>
-            {{ formfield_errors topic_importance }}
+            {{ formfield_errors "topic_importance" }}
         </div>
     </div>
 </div>
