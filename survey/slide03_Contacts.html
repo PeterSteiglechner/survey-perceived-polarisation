@@ -1,14 +1,17 @@
 {{ block title }}
-Social Contacts
+{{page_title}}
 {{ endblock }}
 {{ block content }}
+<p style="margin-bottom: 1.5em; color: black;"> {{instruction_text}}</p>
 
-Think about <strong>{{ ncontacts }} social contacts</strong> that you know well. This can include friends, family
-members,
-colleagues, .... Please write down their names or initials so that you later recognise them.
+{% for field_info in contact_fields %}
+    <div class="form-group">
+        <label for="id_{{ field_info.name }}">{{ field_info.label }}</label>
+        <input type="text" name="{{ field_info.name }}" id="id_{{ field_info.name }}" class="form-control" required>
+    </div>
+{% endfor %}
 
-{{ formfields }}
+<br>
 
 {{next_button}}
-
 {{ endblock }}

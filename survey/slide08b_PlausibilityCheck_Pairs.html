@@ -1,5 +1,5 @@
 {{ block title }}
-Plausibility check {{ nr_total_checks }} of {{ nr_tot_checks }}
+{{page_title}}
 {{ endblock }}
 {{ block content }}
 
@@ -52,9 +52,9 @@ Plausibility check {{ nr_total_checks }} of {{ nr_tot_checks }}
         text-align: center;
         cursor: pointer;
         transition: all 0.2s ease;
-        flex: 1 1 auto; /* Changed from 200px to auto */
-        white-space: nowrap; /* Prevent text wrapping */
-        min-width: 120px; /* Set minimum width */
+        flex: 1; /* Changed from flex: 1 1 auto */
+        white-space: nowrap;
+        min-width: 0; /* Allow shrinking below content size */
     }
 
     .option-card:hover {
@@ -81,16 +81,16 @@ Plausibility check {{ nr_total_checks }} of {{ nr_tot_checks }}
     <div class="card">
         <div class="form-group">
            <p style="margin-bottom: 1.5em;"> 
-            Consider now the two individuals: <strong>{{ p1_label }}</strong> and <strong>{{ p2_label }}</strong>. 
+            {{instru1}} 
         </p>
           <label class="form-label">
-              <p style="margin-bottom: 0.5em;"> How distant or similar do you consider their political views? </p>
+              <p style="margin-bottom: 0.5em;"> {{question}} </p>
           </label>
           <div class="option-cards" data-field="{{ current_check }}">
-              {% for choice in ["Very distant", "More distant than similar",  "Neither distant nor similar", "More similar than distant", "Very similar"] %}
+              {% for choice, label in choices.items %}
               <label class="option-card">
                   <input type="radio" name="{{ current_check }}" value="{{ choice }}">
-                  {{ choice }}
+                  {{ label }}
               </label>
               {% endfor %}
           </div>

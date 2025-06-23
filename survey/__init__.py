@@ -21,49 +21,87 @@ class C(BaseConstants):
     N_MAX_PRACTICE_RUNS = 5
     
     # CONSTANTS 
-    LIKERT5 = [1,2,3,4,5] 
-    LIKERT5_string_noNA = [
-        (1, 'Strongly agree'),
-        (2, 'Agree'),
-        (3, 'Neutral'),
-        (4, 'Disagree'),
-        (5, 'Strongly disagree')
-        ]
-    LIKERT_NUM2TEX = {num:tex for num, tex in LIKERT5_string_noNA}
-    LIKERT_NUM2TEX[-999] = "NA"
-    LIKERT_TEX2NUM = {tex:num for num, tex in LIKERT5_string_noNA}
+    #LIKERT5 = [1,2,3,4,5] 
+    LIKERT5_string_noNA = ['Strongly agree','Agree', 'Neutral','Disagree', 'Strongly disagree']
+    LIKERT5_string_noNA_de = ['Stimme voll zu', 'Stimme eher zu', 'Teils/teils', 'Stimme eher nicht zu', 'Stimme gar nicht zu']
+    LIKERT5_transde = dict(zip(LIKERT5_string_noNA, LIKERT5_string_noNA_de))
+    LIKERT5_transde["NA"] = "NA"
+    # LIKERT_NUM2TEX = {"en":{num:tex for num, tex in LIKERT5_string_noNA}, "de":{num:tex for num, tex in LIKERT5_string_noNA_de}}
+    # LIKERT_NUM2TEX["en"][-999] = "NA"
+    # LIKERT_NUM2TEX["de"][-999] = "NA"
+    # LIKERT_TEX2NUM = {"en":{tex:num for num, tex in LIKERT5_string_noNA}, "de":{tex:num for num, tex in LIKERT5_string_noNA}}
+    # LIKERT_TEX2NUM["en"]["NA"] = -999
+    # LIKERT_TEX2NUM["de"]["NA"] = -999
     QUESTIONS = ["climate_concern", "gay_marriage", "rights_for_integration", "econ_inequality"]
-    QUESTIONTEXT = dict(zip(QUESTIONS, [
+    QUESTIONTEXT = {
+        "en":
+        dict(zip(QUESTIONS, [
         "I am very concerned about climate change.",
         "It is good that marriages between two women or two men are allowed.",
         "Only migrants who make an effort and integrate should be given the same rights as natives.",
         "The differences in income and wealth in Germany are too high.",
+    ])), "de":
+      dict(zip(QUESTIONS, [
+        "Ich bin sehr besorgt über den Klimawandel.",
+        "Es ist gut, dass Ehen zwischen zwei Frauen bzw. zwischen zwei Männern erlaubt sind.",
+        "Nur Migranten, die sich anstrengen und integrieren, sollten die gleichen Rechte bekommen wie Einheimische.",
+        "Die Einkommens- und Vermögensunterschiede in Deutschland sind zu groß.",
     ]))
-    QUESTIONSHORTTEXT = dict(zip( QUESTIONS, [
-         "concerned about climate change", 
+    }
+    QUESTIONSHORTTEXT =  {
+        "en":
+        dict(zip( QUESTIONS, [
+         "extreme concern about climate change", 
          "support same-sex marriage",
          "equal rights only for migrants who integrate",
          "economic differences too high"
-    ])) 
-    QUESTIONNAMES = dict(zip( QUESTIONS, [
+    ])), 
+        "de":
+                dict(zip( QUESTIONS, [
+         "Extreme Besorgnis über Klimawandel", 
+         "Unterstützung für gleichgeschlechtliche Ehe",
+         "Gleichte Rechte für Migranten/-innen nure bei Integration",
+         "Ökonomische Unterschiede sind zu groß"
+    ])),}
+
+    QUESTIONNAMES = {
+        "en":
+        dict(zip( QUESTIONS, [
         "Opinion about climate change", 
         "Opinion about same-sex marriage", 
-        "Opinion about migrants' rights and integration",
+        "Opinion about equal rights for migrants only when they integrate",
         "Opinion about economic inequality",
-        ]))
+        ])), 
+        "de":
+                dict(zip( QUESTIONS, [
+        "Die Meinung der Person zu Klimawandel", 
+        "Die Meinung der Person zu gleichgeschlechtliche Ehe", 
+        "Die Meinung der Person zu gleichen Rechten für Migrant/-innen nur bei Integration",
+        "Die Meinung der Person zu ökonomischer Ungleichheit",
+        ]))}
     
     NCONTACTS = 3
 
-    LABELLED = ["Green voter", "AfD voter"]
-    LABELLEDCOLORS = dict(zip(LABELLED, ["#46962b", "#009ee0"]))
+    LABELLED = ["Green voter", "AfD voter", "FDP voter"]
+    LABELLED_de = dict(zip(LABELLED, ["Grünen Wähler", "AfD Wähler", "FDP Wähler"]))
+    LABELLEDCOLORS = dict(zip(LABELLED, ["#46962b", "#009ee0", "#ffed00"]))
 
     PERSONAS = pd.read_csv("_static/personas.csv")[QUESTIONS]
     P_OPS =  {f"P{n+1}": row.to_dict()  for n, row in PERSONAS.iterrows()}
     NPS = len(P_OPS.keys())
 
-    NR_P_CHECKS = 3
+    NR_P_CHECKS = 4
+    OPTIONS_P_CHECKS = ['No','Somewhat','Yes']
+    NR_OTHER_CHECKS = 5 
+    OPTIONS_OTHER_CHECKS = ["Very different", "Quite different",  "Neither", "Quite similar", "Very similar"]
 
-    NR_OTHER_CHECKS = 5
+    CHOICES_TOPICS= [qname+"." for q,qname in QUESTIONNAMES["en"].items()]+["Different opinion(s) or topic(s).", "I don't know."]
+
+    CHOICES_INTEREST = ["not at all interested.", "hardly interested.", "quite interested.", "very interested."]
+
+    CHOICES_IDENTITY = ["CDU/CSU", "AfD", "SPD", "Green Party", "Left Party", "BSW", "FDP", "Other party", "No party", "Refuse to say/No answer"]
+
+    CHOICES_POLARISED = ["Not at all divided.", "Somewhat divided.", "Very divided.", "Extremely divided."]
 
 class Subsession(BaseSubsession):
     pass
@@ -72,25 +110,33 @@ class Subsession(BaseSubsession):
 class Group(BaseGroup):
     pass
 
-def make_field(label):
+def make_field(label, language="en"):
     return models.StringField(
-        choices=C.LIKERT5_string_noNA[::-1],
+        choices= C.LIKERT5_string_noNA+["NA"],
         label=label,
         widget=widgets.RadioSelect,
     )
 
-def make_slider(label):
-    return models.IntegerField(
-        choices=C.SLIDER,
-        label=label,
-        widget=widgets.RadioSelectHorizontal,
-    )
+# def make_slider(label):
+#     return models.IntegerField(
+#         choices=C.SLIDER,
+#         label=label,
+#         widget=widgets.RadioSelectHorizontal,
+#     )
 
 def define_contact(label, n):
     return  models.LongStringField(label=label, blank=False) # , initial=f"contact {n}",
 
 
 class Player(BasePlayer):
+
+    consent = models.BooleanField(blank=False)
+
+    language = models.StringField(
+        choices=[['en', 'English'], ['de', 'Deutsch']],
+        widget=widgets.RadioSelect,
+        label="Language / Sprache"
+    )
 
     #################################
     #####  DEMOGRAPHICS   #####
@@ -100,32 +146,31 @@ class Player(BasePlayer):
 
     political_interest = models.StringField(
         label='', 
-        choices=["not at all interested.", "hardly interested.", "quite interested.", "very interested."], 
+        choices= C.CHOICES_INTEREST,
         blank=False, 
         widget=widgets.RadioSelect
         )
 
     feel_closest_party = models.StringField(
-        label='', 
-        choices=["CDU/CSU", "AfD", "SPD", "Grüne", "Linke", "BSW", "FDP", "other", "no party", "refuse to say"], 
+        label='',  
+        choices=C.CHOICES_IDENTITY,
         blank=False, 
         widget=widgets.RadioSelect
         )
 
     how_polarised = models.StringField(
         label='',
-        choices=["Not at all divided.", "Somewhat divided.", "Very divided.", "Extremely divided."],
+        choices=C.CHOICES_POLARISED,
         blank=False,
         widget=widgets.RadioSelect
         )
    
-    topic_importance = models.StringField(
-        label='',
-        blank=True
+    topic_importance = models.LongStringField(
+        label='', #choices=C.CHOICES_TOPICS,
+        blank=True,
     )
 
-    importance_comments = models.LongStringField(label="Do you have any thoughts or reflections on which topics are most relevant for how you perceive political similarity or distance between individuals?", blank=True)
-
+    importance_comments = models.LongStringField(blank=True, label="", initial="", null=True)  
     #################################
     #####  MAP POSITIONS   #####
     #################################
@@ -148,12 +193,16 @@ class Player(BasePlayer):
     check2_p2 =  models.LongStringField(blank=True)
     check3_p1 =  models.LongStringField(blank=True)
     check3_p2 =  models.LongStringField(blank=True)
-    check1 = models.StringField(choices=['No','Somewhat','Yes'], label="", widget=widgets.RadioSelect,blank=False)
-    check1_explain = models.LongStringField(label="If you think this is not correct, you can use this textbox to explain why:",blank=True)
-    check2 = models.StringField(choices=['No','Somewhat','Yes'], label="", widget=widgets.RadioSelect,blank=False)
-    check2_explain = models.LongStringField(label="If you think this is not correct, you can use this textbox to explain why:",blank=True)
-    check3 = models.StringField(choices=['No','Somewhat','Yes'],label="", widget=widgets.RadioSelect,blank=False)
-    check3_explain = models.LongStringField(label="If you think this is not correct, you can use this textbox to explain why:",blank=True)
+    check4_p1 =  models.LongStringField(blank=True)
+    check4_p2 =  models.LongStringField(blank=True)
+    check1 = models.StringField(choices=C.OPTIONS_P_CHECKS, label="", widget=widgets.RadioSelect,blank=False)
+    check1_explain = models.LongStringField(label="",blank=True)
+    check2 = models.StringField(choices=C.OPTIONS_P_CHECKS, label="", widget=widgets.RadioSelect,blank=False)
+    check2_explain = models.LongStringField(label="",blank=True)
+    check3 = models.StringField(choices=C.OPTIONS_P_CHECKS,label="", widget=widgets.RadioSelect,blank=False)
+    check3_explain = models.LongStringField(label="",blank=True)
+    check4 = models.StringField(choices=C.OPTIONS_P_CHECKS,label="", widget=widgets.RadioSelect,blank=False)
+    check4_explain = models.LongStringField(label="",blank=True)
     
     # pairwise
     checkPair = models.IntegerField(initial=1) 
@@ -167,11 +216,11 @@ class Player(BasePlayer):
     checkPair4_dot2 =  models.LongStringField(blank=True)
     checkPair5_dot1 =  models.LongStringField(blank=True)
     checkPair5_dot2 =  models.LongStringField(blank=True)
-    checkPair1 = models.StringField(choices=["Very distant", "More distant than similar",  "Neither distant nor similar", "More similar than distant", "Very similar"],label="", widget=widgets.RadioSelect,blank=False)
-    checkPair2 = models.StringField(choices=["Very distant", "More distant than similar",  "Neither distant nor similar", "More similar than distant", "Very similar"],label="", widget=widgets.RadioSelect,blank=False)
-    checkPair3 = models.StringField(choices=["Very distant", "More distant than similar",  "Neither distant nor similar", "More similar than distant", "Very similar"],label="", widget=widgets.RadioSelect,blank=False)
-    checkPair4 = models.StringField(choices=["Very distant", "More distant than similar",  "Neither distant nor similar", "More similar than distant", "Very similar"],label="", widget=widgets.RadioSelect,blank=False)
-    checkPair5 = models.StringField(choices=["Very distant", "More distant than similar",  "Neither distant nor similar", "More similar than distant", "Very similar"],label="", widget=widgets.RadioSelect,blank=False)
+    checkPair1 = models.StringField(choices=C.OPTIONS_OTHER_CHECKS,label="", widget=widgets.RadioSelect,blank=False)
+    checkPair2 = models.StringField(choices=C.OPTIONS_OTHER_CHECKS,label="", widget=widgets.RadioSelect,blank=False)
+    checkPair3 = models.StringField(choices=C.OPTIONS_OTHER_CHECKS,label="", widget=widgets.RadioSelect,blank=False)
+    checkPair4 = models.StringField(choices=C.OPTIONS_OTHER_CHECKS,label="", widget=widgets.RadioSelect,blank=False)
+    checkPair5 = models.StringField(choices=C.OPTIONS_OTHER_CHECKS,label="", widget=widgets.RadioSelect,blank=False)
 
     #################################
     #####  PRACTICE RUN   #####
@@ -227,75 +276,132 @@ for name in C.LABELLED:
 #################################
 
 class slide01_Introduction(Page):
-    pass
+    form_model = 'player'
+    form_fields = ['consent', 'language']
+
 
 class slide02_Opinions(Page):
     form_model = 'player'
     form_fields = [f"own_{q}" for q in C.QUESTIONS]
     @staticmethod
+    def is_displayed(player: Player):
+        return player.consent
+    @staticmethod
     def vars_for_template(player: Player): 
+        lan = player.language
         fields =  [f"own_{q}" for q in C.QUESTIONS]
-        questions = [C.QUESTIONTEXT[q] for q in C.QUESTIONS]
+        questions = [C.QUESTIONTEXT[player.language][q] for q in C.QUESTIONS]
         #d["field_question_pairs"] = list(zip(d["fields"], d["questions"]))
 
         field_question_pairs = []
         for field, question in zip(fields, questions):
-            choices = dict(C.LIKERT5_string_noNA[::-1])  # convert list of tuples to dict
+            choices = dict(zip(C.LIKERT5_string_noNA[::-1], (C.LIKERT5_string_noNA[::-1] if lan=="en" else C.LIKERT5_string_noNA_de[::-1])))   # convert list of tuples to dict
+            print(choices)
             field_question_pairs.append({
                 'field_name': field,
                 'question_text': question,
-                'choices': choices.items(),
+                'choices': choices,
             })
-        return {'field_question_pairs': field_question_pairs}
+        return {
+            'field_question_pairs': field_question_pairs, 
+            'page_title': 'Your political opinions' if player.language == 'en' else 'Ihre politischen Meinungen',
+            'instruction_text': 'Please indicate to what extent you agree or disagree with the following statements.' if player.language == 'en' else 'Bitte geben Sie an, inwieweit Sie den folgenden Aussagen zustimmen oder nicht zustimmen.',
+            'table_head':"Your response" if player.language =="en" else 'Ihre Antworten'
+            }
     
 class slide03_Contacts(Page):
     form_model = 'player'
     form_fields = [f"contact{n}" for n in range(1, C.NCONTACTS+1)]
     @staticmethod
+    def is_displayed(player: Player):
+        return player.consent
+    @staticmethod
     def vars_for_template(player:Player):
-        return {"ncontacts": C.NCONTACTS}
+        lan = player.language
+        contact_fields = []
+        for n in range(1, C.NCONTACTS+1):
+            if lan == "de":
+                label = f"Kontakt {n}:"
+            else:
+                label = f"Contact {n}:"
+            
+            contact_fields.append({
+                'name': f'contact{n}',
+                'label': label
+            })
+        return {
+            "ncontacts": C.NCONTACTS,
+            "contact_fields": contact_fields,
+            'page_title': "Social Contacts" if lan=="en" else "Soziale Kontakte", 
+            'instruction_text': f"Think about <strong>{C.NCONTACTS} social contacts</strong> that you know well. This can include friends, family members, colleagues, .... Please write down their names or initials so that you are later able to recognise them (we will not use that information)." if lan=="en" else f"Denken Sie an <strong>{C.NCONTACTS} soziale Kontakte</strong>, die Sie gut kennen. Das können Freunde, Freundinnen, Familienmitglieder, Kollegen, etc. sein. Bitte notieren Sie die Namen oder Initialen dieser Kontakte in den Feldern unten, damit Sie sie später wiedererkennen (wir werden diese Informationen nicht verwenden).", 
+              }
+    # @staticmethod
+    # def get_form(player: Player, data=None, files=None, **kwargs):
+    #     form = super().get_form(data, files, **kwargs)
+    #     for n in range(1, C.NCONTACTS+1):
+    #         field_name = f"contact{n}"
+    #         if field_name in form.fields:
+    #             if player.language == "de":
+    #                 form.fields[field_name].label = f"Kontakt {n}: "
+    #             else:
+    #                 form.fields[field_name].label = f"Contact {n}: "
+    #     return form
     @staticmethod
     def error_message(player: Player, values):
         contacts = [v.strip() for v in values.values() if v.strip()]
         if len(contacts) < C.NCONTACTS:
-            return "Please fill in all contact fields."
+            return "Please fill in all contact fields." if player.language=="en" else "Bitte füllen Sie alle Felder aus."
         if len(set(contacts)) < len(contacts):
-            return "Each contact must be unique. Please avoid duplicates. You can use nicknames, initials, or anything that you will later recognise."
+            return "Each contact must be unique. Please correct duplicates. You can use nicknames, initials, or anything that you will later recognise." if player.language=="en" else "Jeder Kontakt muss einen eindeutigen Namen haben. Bitte korrigieren Sie Duplikate. Sie können Spitznamen, Initialien oder alles benutzen, was Sie später wiedererkennen."
 
 class slide04_PersonOpinion(Page):
     form_model = "player"
 
     @staticmethod
     def vars_for_template(player: Player):
+        lan = player.language
         if player.which_contact_type == 'contact':
             idx = player.current_contact
             name = getattr(player, f"contact{idx}")
             prefix = f"contact{idx}_"
-            heading = f"{name}"
+            displName = f"{name}"
+            displName1 = f"ihren Kontakt <strong>{name}</strong>"
+            displName2 = f"<strong>{name}</strong>"
+            displName3 = f"<strong>{name}</strong>"
             color = "#ff9600"  # contact color
         else:  # mode == 'labelledPerson'
             idx = player.evaluated_labelledPerson
             name = C.LABELLED[idx]
             prefix = f"{name.replace(" ","")}_"
-            heading = f"a typical {name}"
+            displName = f"a typical {name}" if lan=="en" else f"{C.LABELLED_de[name]}"
             color = C.LABELLEDCOLORS[name]
+            if lan=="de":
+                displName1 = f"eine <strong>typische {C.LABELLED_de[name]}in</strong>/<strong>typischen {C.LABELLED_de[name]}</strong>"
+                displName2 = "diese Person" 
+                displName3 = f"<strong>{C.LABELLED_de[name]}/-in</strong>"
+                # displNamef = f"diese <strong>typische {C.LABELLED_de[name]}in</strong>"
+                # displNameb = f"<strong>{C.LABELLED_de[name]}/-in</strong>"
+
         fields = [f"{prefix}{q}" for q in C.QUESTIONS]
-        questions = [C.QUESTIONTEXT[q] for q in C.QUESTIONS]
+        questions = [C.QUESTIONTEXT[lan][q] for q in C.QUESTIONS]
         field_question_pairs = []
         for field, question in zip(fields, questions):
-            choices = dict(C.LIKERT5_string_noNA[::-1])  # convert list of tuples to dict
+            choices = dict(zip(C.LIKERT5_string_noNA[::-1], (C.LIKERT5_string_noNA[::-1] if lan=="en" else C.LIKERT5_string_noNA_de[::-1])))   # convert list of tuples to dict
             field_question_pairs.append({
                 'field_name': field,
                 'question_text': question,
-                'choices': choices.items(),
+                'choices': choices,
             })
         return {
             "name": name,
             "color": color,
-            "heading": heading,
+            #"heading": displName,
             "fields": fields,
             "questions": questions,
-            "field_question_pairs": field_question_pairs,
+            "field_question_pairs": field_question_pairs,            
+            'page_title': 'Political Opinions of Others' if lan == 'en' else 'Politischen Meinungen von Anderen Menschen',
+            'instruction_text': f'Thinking about <strong>{displName}</strong>, how do you think <strong>{displName}</strong> would respond to those same political questions?' if lan == 'en' else f'Denken Sie nun an {displName1}. Wie würde {displName2} die selben politischen Fragen beantworten?',
+            'table_head':f"<strong>{displName}</strong>'s responses" if lan =="en" else f"Antworten: {displName3}"
         }
 
     @staticmethod
@@ -317,6 +423,8 @@ class slide04_PersonOpinion(Page):
             player.which_contact_type = "labelledPerson"
     @staticmethod
     def is_displayed(player: Player):
+        if not player.consent:
+            return False
         if player.which_contact_type == 'contact':
             return player.current_contact <= C.NCONTACTS
         else:
@@ -334,22 +442,40 @@ class slide05a_MapTest(Page):
     
     @staticmethod
     def is_displayed(player):
-        return not player.isTrainingPassed 
+        return player.consent and (not player.isTrainingPassed)
+    
+    @staticmethod
+    def vars_for_template(player: Player):
+        lan = player.language
+        return {
+    'page_title': "Political Mapping – Practice" if lan=="en" else "Politisches Mapping – Training",
+    'lan':lan,
+    'instruction_text1': 
+    "In the next part of this survey, we will ask you to place people on a political map based on how distant or similar their political views are. Before the actual task, let us do a short <strong>practice round</strong> to help you get used to the task." if lan=="en" else "Im nächsten Teil dieser Umfrage werden wir Sie bitten, Personen auf einer politischen Landkarte einzuordnen, je nachdem, wie ähnlich oder unterschiedlich die politischen Ansichten dieser Personen sind. Vor der eigentlichen Aufgabe machen wir eine kurze <strong>Übungsrunde</strong>, damit Sie sich an die Aufgabe gewöhnen können.", 
+    'instruction_text2': "Imagine you, a friend, a co-worker, and your sister are placed in a room (the rectangle below)." if lan=="en" else "Stellen Sie sich vor, dass Sie, ein Freund, eine Arbeitskollegin und Ihre Schwester sich in einem Raum befinden (das Rechteck unten).",
+    'instruction_text3': "Arrange the positions in the rectangle so that <strong>individuals who share similar political views are placed close together</strong>, while <strong>individuals with differing views are placed farther apart</strong>." if lan=="en" else "Ordnen Sie die Positionen in dem Rechteck so an, dass <strong>Personen die ähnliche politischen Ansichten</strong> haben, <strong>nahe beieinander</strong> liegen während <strong>Personen mit abweichenden Ansichten weiter auseinander liegen</strong>.",
+    'detailed_instructions': "<h4> Detailed instructions</h4><p style='margin-bottom: 0.5em; color: black;'>    You will start with several dots on the right side. Please drag them one by one onto the canvas, based on the instructions below:</p><ol> <li>First, place the dot labeled <em>self</em> anywhere on the canvas. This represents your own political views.</li> <li>Now, place your <em>friend</em> close to you. You think your friend has similar views to yours.</li> <li>Next, add your <em>co-worker</em>. You often disagree with your co-worker, so place them farther away from you.</li> <li>However, you think your friend disagrees even more with your co-worker than you do — so place the co-worker dot such that it is farther from your friend than from you.</li> <li>Now add your <em>sister</em>. You feel that your sister is quite politically different from you, so place the dot representing your sister's views far from the dot representing your views.</li> <li>You think your sister agrees more with your friend and co-worker than with you — so place the dot for your sister closer to the dots for your co-worker and friend than to the dot for yourself.</li> </ol>" if lan=="en" else
+    "<h4>Schritt-für-Schritt Anleitung</h4><p style='margin-bottom: 0.5em; color: black;'>Sie beginnen mit mehreren Punkten auf der rechten Seite. Ziehen Sie diese nacheinander in das Rechteck, wie in der folgenden Anleitung beschrieben:</p><ol><li>Zunächst platzieren Sie den Punkt <em>Ich</em> irgendwo im Rechteck. Dieser Punkt steht für Ihre eigenen politischen Ansichten.</li><li>Nun platzieren Sie Ihren <em>Freund</em> in Ihre Nähe. Sie denken, Ihr Freund hat ähnliche Ansichten wie Sie.</li> <li>Als nächstes fügen Sie Ihre <em>Kollegin</em> hinzu. Sie sind oft anderer Meinung als sie, also platzieren Sie sie weiter weg von <em>Ich</em>.</li> <li>Außerdem glauben Sie, dass Ihr Freund noch mehr anderer Meinung ist als Sie selbst - platzieren Sie also den Punkt der Kollegin so, dass er weiter von Ihrem Freund entfernt ist als von Ihnen selbst.</li> <li>Fügen Sie nun Ihre <em>Schwester</em> hinzu. Sie haben das Gefühl, dass Ihre Schwester politisch ganz anders denkt als Sie, also platzieren Sie den Punkt, der die Ansichten Ihrer Schwester repräsentiert, weit weg von dem Punkt, der Ihre Ansichten repräsentiert.</li> <li>Sie denken, dass Ihre Schwester mehr mit Ihrem Freund und Ihrer Kollegin übereinstimmt als mit Ihnen - also platzieren Sie den Punkt für Ihre Schwester näher an den Punkten für Ihre Kollegin und Ihren Freund als an dem Punkt für Sie selbst.</li> </ol>", 
+    'all_dots_instr': "All dots must be within the square boundary to proceed. You can re-position any dot at any time until satisfied." if lan=="en" else "Um fortzufahren müssen alle Punkte auf im Rechteck platziert werden. Sie können jeden Punkt verschieben bis Sie zufrieden sind."
+
+  }
     
 
 class slide05b_MapTestResult(Page):
     @staticmethod
     def vars_for_template(player: Player):
+        lan = player.language
+
         player.attemptPractice += 1
         pos = json.loads(player.positionsTest)
-        pos = {p["label"]: [p["x"], p["y"]] for p in pos}
+        pos = {p["varname"]: [p["x"], p["y"]] for p in pos}
         #calculate distances
-        dF = distance(pos["self"], pos["Friend"])
-        dC = distance(pos["self"], pos["Co-worker"])
-        dS = distance(pos["self"], pos["Sister"])
-        dFS = distance(pos["Friend"], pos["Sister"])
-        dFC = distance(pos["Friend"], pos["Co-worker"])
-        dCS = distance(pos["Co-worker"], pos["Sister"])
+        dF = distance(pos["self"], pos["friend"])
+        dC = distance(pos["self"], pos["co-worker"])
+        dS = distance(pos["self"], pos["sister"])
+        dFS = distance(pos["friend"], pos["sister"])
+        dFC = distance(pos["friend"], pos["co-worker"])
+        dCS = distance(pos["co-worker"], pos["sister"])
         # check conditions
         player.isTrainingCondFvC = bool(dF<dC)  # Rule 2/3
         player.isTrainingCondSelfvFC = bool(dFC>dC)  # Rule 4
@@ -359,31 +485,55 @@ class slide05b_MapTestResult(Page):
         player.isTrainingPassed = isTrainingPassed
 
         errors = ""
-        errors += r"- The distance between 'Self' and 'Co-worker' should be larger than the distance between 'Self' and 'Friend' (instructions 2/3). <br>" if player.isTrainingCondFvC==0 else ""
-        errors += r"- The distance between 'Friend' and 'Co-worker' should be larger than the distance between 'Self' and 'Co-worker' (instruction 4). <br>" if player.isTrainingCondSelfvFC==0 else ""
-        errors += r"- The distance between 'Self' and 'Sister' should be larger than the distance between 'Self' and 'Friend' (instruction 5). <br>" if player.isTrainingCondSvF==0 else ""
-        errors += r"- The distance between 'Self' and 'Sister' should be larger than the distances between 'Friend' and 'Sister' and between 'Co-worker' and 'Sister' (instruction 6). <br>" if player.isTrainingCondSvFC==0 else ""
+        if lan=="en":
+            errors += r"- The distance between 'Self' and 'Co-worker' should be larger than the distance between 'Self' and 'Friend' (instructions 2/3). <br>" if player.isTrainingCondFvC==0 else ""
+            errors += r"- The distance between 'Friend' and 'Co-worker' should be larger than the distance between 'Self' and 'Co-worker' (instruction 4). <br>" if player.isTrainingCondSelfvFC==0 else ""
+            errors += r"- The distance between 'Self' and 'Sister' should be larger than the distance between 'Self' and 'Friend' (instruction 5). <br>" if player.isTrainingCondSvF==0 else ""
+            errors += r"- The distance between 'Self' and 'Sister' should be larger than the distances between 'Friend' and 'Sister' and between 'Co-worker' and 'Sister' (instruction 6). <br>" if player.isTrainingCondSvFC==0 else ""
+        else:
+            errors += r"- Die Distanz zwischen 'Ich' und 'Kollegin' sollte größer sein als die Distanz zwischen 'Ich' und 'Freund' (Anweisungen 2/3). <br>" if player.isTrainingCondFvC == 0 else ""
+            errors += r"- Die Distanz zwischen 'Freund' und 'Kollegin' sollte größer sein als die Distanz zwischen 'Ich' und 'Kollegin' (Anweisung 4). <br>" if player.isTrainingCondSelfvFC == 0 else ""
+            errors += r"- Die Distanz zwischen 'Ich' und 'Schwester' sollte größer sein als die Distanz zwischen 'Ich' und 'Freund' (Anweisung 5). <br>" if player.isTrainingCondSvF == 0 else ""
+            errors += r"- Die Distanz zwischen 'Ich' und 'Schwester' sollte größer sein als die Distanzen zwischen 'Freund' und 'Schwester' sowie 'Kollegin' und 'Schwester' (Anweisung 6). <br>" if player.isTrainingCondSvFC == 0 else ""
 
-        return {"passed": player.isTrainingPassed, "errors":errors, "attempt": player.attemptPractice, "max_attempts": C.N_MAX_PRACTICE_RUNS} 
+        return {
+            "img_source": f"correctTraining_{lan}.png",
+            "passed": player.isTrainingPassed, 
+            "button_msg": ("Continue" if player.isTrainingPassed else ("Continue Anyway" if player.attemptPractice == C.N_MAX_PRACTICE_RUNS else "Repeat Training")) if lan=="en" else  ("Weiter" if player.isTrainingPassed else ("Trotzdem weiter" if player.attemptPractice == C.N_MAX_PRACTICE_RUNS else "Wiederhole Training")),
+            "attempt_msg": f"Attempt {player.attemptPractice} of {C.N_MAX_PRACTICE_RUNS}" if lan=="en" else f"Versuch {player.attemptPractice} von {C.N_MAX_PRACTICE_RUNS}",
+            "page_title": "Political Mapping – Practice – Results" if lan=="en" else "Politisches Mapping – Training – Ergebnis", 
+            'success_msg': "<strong>Well done!</strong> Your arrangement fulfills all the criteria. Below is another possible example of an arrangement that accurately describes the scenario." if lan=="en" else "<strong>Gut gemacht!</strong> Alle Kriterien sind erfüllt.",
+            'error_msg': f"<strong>Your arrangement does not meet all parts of the description:</strong></p><p style='margin: 0 0 1em 0; white-space: pre-line;'>{errors}</p><p style='margin: 0;'>Please repeat the training and try to arrange the dots so that all criteria are fulfilled. Below is one possible arrangement that meets all the criteria:</p>" if lan=="en" else f"<strong>Ihre Anordnung erfüllt nicht alle Teile der Beschreibung:</strong></p><p style=‚margin: 0 0 1em 0; white-space: pre-line;‘>{errors}</p><p style=‚margin: 0;‘>Bitte wiederholen Sie das Training und versuchen Sie, die Punkte so anzuordnen, dass alle Kriterien erfüllt sind. Nachstehend sehen Sie eine mögliche Anordnung, die alle Kriterien erfüllt:</p>"
+            } 
     
     @staticmethod
     def is_displayed(player: Player):
-        return (player.attemptPractice<=C.N_MAX_PRACTICE_RUNS) and ((not player.isTrainingPassed) or (player.isTrainingPassed and player.attemptPractice==0))
+        return player.consent and (player.attemptPractice<=C.N_MAX_PRACTICE_RUNS) and ((not player.isTrainingPassed) or (player.isTrainingPassed and player.attemptPractice==0))
 
 
 
 class slide06_SPaM(Page):
     form_model = 'player'
     form_fields = ['positions_preP','positions']
-    
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.consent
     @staticmethod
     def vars_for_template(player:Player):
-        names =  ["self"]+[getattr(player, f"contact{f}") for f in range(1,C.NCONTACTS+1)]+[f"{v}" for v in C.LABELLED] 
+        lan = player.language
+        displ_names =  ["Self" if lan=="en" else "Ich"]+[getattr(player, f"contact{f}") for f in range(1,C.NCONTACTS+1)]+[f"{v if lan=="en" else C.LABELLED_de[v]+'/-in'}" for v in C.LABELLED]
         types = ["self"]+["contact"]*C.NCONTACTS + ["labelledPerson"]*len(C.LABELLED)
-        dotnames = ["self"]+[f"contact{f}" for f in range(1,C.NCONTACTS+1)]+[f"{v}" for v in C.LABELLED] 
-        init_dots = [{"dottype": dottype, "label": name, 
-        "name":dotname, "x": 530, "y": 40 + i * 60, "descr": ""} for i, (dottype, name, dotname) in enumerate(zip(types, names, dotnames))]
-        return dict(dots=init_dots)
+        varnames = ["self"]+[f"contact{f}" for f in range(1,C.NCONTACTS+1)]+[f"{v}" for v in C.LABELLED] 
+        init_dots = [{"dottype": dottype, "varname": varname, 
+        "name_disp": name, "x": 530, "y": 40 + i * 60, "descr": ""} for i, (dottype, varname, name) in enumerate(zip(types, varnames, displ_names))]
+        return {
+            "dots":init_dots,
+            "page_title": "Political Mapping – Part 1" if lan=="en" else "Politisches Mapping – Teil 1",
+            "instru1": "We now continue to the actual task." if lan=="en" else "Wir beginnen nun mit dem Hauptteil der Umfrage.",
+            "instruRoom": "Imagine you, your three social contacts, a typical Green voter, and a typical AfD voter are placed in a room (the rectangle below)." if lan=="en" else "Stellen Sie sich vor, dass Sie, Ihre drei Kontakte, eine typische Person, die die Grünen wählt, und eine typische Person, die die AfD wählt in einem Raum stehen (das umrandete Rechteck).",
+            'instru_main': "Arrange the positions in the rectangle so that <strong>individuals who share similar political views</strong> on questions regarding economic inequality, migration, minorities, and climate change <strong>are placed close together</strong>, while <strong>individuals with differing views are placed farther apart</strong>." if lan=="en" else "Ordnen Sie die Positionen in dem Rechteck so an, dass <strong>Personen die ähnliche politischen Ansichten</strong> zu Fragen der wirtschaftlichen Ungleichheit, der Migration, der Minderheiten und des Klimawandels haben, <strong>nahe beieinander</strong> liegen während <strong>Personen mit abweichenden Ansichten</strong> zu diesen Themen <strong>weiter auseinander liegen</strong>.", 
+            'all_dots_instr': "All dots must be within the square boundary to proceed. You can re-position any dot at any time until satisfied." if lan=="en" else "Um fortzufahren müssen alle Punkte im Rechteck platziert werden. Sie können jeden Punkt verschieben bis Sie zufrieden sind."
+}
 
 class slide07_SPaM_personas(Page):
     form_model = 'player'
@@ -391,60 +541,68 @@ class slide07_SPaM_personas(Page):
     
     @staticmethod
     def vars_for_template(player:Player):
-
+        lan = player.language
         def get_ops(prefix, questions):
             return {
-                q: getattr(player, f"{prefix}{q}", -999) or -999
+                q: getattr(player, f"{prefix}{q}", "NA") or "NA"
                 for q in questions
             }
-        def format_ops(ops_dict):
+        def format_ops(ops_dict, lan):
             return "; ".join(
-                f"{C.QUESTIONSHORTTEXT[q]}: {C.LIKERT_NUM2TEX[int(val)]}"
+                f"{C.QUESTIONSHORTTEXT[lan][q]}: {val if lan=="en" else C.LIKERT5_transde[val] }"
                 for q, val in ops_dict.items()
             )
         
         P = f"P{player.ps_placed + 1}"
-        P_op = [C.LIKERT_TEX2NUM[op] for q, op in C.P_OPS[P].items()]
+        P_op = [op for q, op in C.P_OPS[P].items()]
         pos = json.loads(player.positions) if player.positions else []
 
         P_text_short = "; ".join([
-            f"{C.QUESTIONSHORTTEXT[q]}: {C.LIKERT_NUM2TEX[P_op[i]]}"
+            f"{C.QUESTIONSHORTTEXT[lan][q]}: {P_op[i] if lan=='en' else C.LIKERT5_transde[P_op[i]]}"
             for i, q in enumerate(C.QUESTIONS)
         ])
 
         # Write dot descriptions of Self, Contacts, Labelled, and past Personas
-        dot_descrs = {"self": format_ops(get_ops("own_", C.QUESTIONS))}
+        dot_descrs = {"self": format_ops(get_ops("own_", C.QUESTIONS), lan)}
         for f in range(1, C.NCONTACTS + 1):
-            dot_descrs[f"contact{f}"] = format_ops(get_ops(f"contact{f}_", C.QUESTIONS))
+            dot_descrs[f"contact{f}"] = format_ops(get_ops(f"contact{f}_", C.QUESTIONS), lan)
         for v in C.LABELLED:
-            dot_descrs[f"{v}"] = format_ops(get_ops(f"{v.replace(" ", "")}_", C.QUESTIONS))
+            dot_descrs[f"{v}"] = format_ops(get_ops(f"{v.replace(" ", "")}_", C.QUESTIONS), lan)
         for p in range(1, player.ps_placed + 1):
             currP = f"P{p}"
-            currP_op = [C.LIKERT_TEX2NUM[op] for q, op in C.P_OPS[currP].items()]
+            currP_op = [op for q, op in C.P_OPS[currP].items()]
             dot_descrs[currP] = "; ".join([
-                f"{C.QUESTIONSHORTTEXT[q]}: {C.LIKERT_NUM2TEX[op]}"
+                f"{C.QUESTIONSHORTTEXT[lan][q]}: {op if lan=="en" else C.LIKERT5_transde[op]}"
                 for q, op in zip(C.QUESTIONS, currP_op)
             ])
 
         # Prepare initial dot data
         init_dots = [
-                    {"label": p["label"],
-                    "name": p["name"],
+                    {"varname": p["varname"],
+                    "name_disp": p["name_disp"],
                     "x": p["x"],
                     "y": p["y"],
                     "dottype": p["dottype"],
-                    "descr": dot_descrs.get(p["name"], "")}
+                    "descr": dot_descrs.get(p["varname"], "")}
                 for p in pos
             ]
-        init_dots.append({"label": P, "name": P, "x": 530, "y": 300, "dottype": "P", "descr": P_text_short})
+        init_dots.append({"varname": P, "name_disp": P, "x": 530, "y": 300, "dottype": "P", "descr": P_text_short})
 
         return {
             "P": P,
             "P_text_short": P_text_short,
             "dots": init_dots, 
-            "img_source": f"{P}_op.png",
+            "img_source": f"{P}_op_{lan}.png",
             "n_ps": C.NPS,
             "ps_placed": player.ps_placed+1,
+            "page_title": "Political Mapping – Part 2" if lan=="en" else "Politisches Mapping – Teil 2", 
+            "heading": f"Person {player.ps_placed+1} of { C.NPS} " if lan=="en" else f"Person {player.ps_placed+1} von {C.NPS}",
+            'instru_main': "Arrange the positions in the rectangle so that <strong>individuals who share similar political views</strong> on questions regarding economic inequality, migration, minorities, and climate change <strong>are placed close together</strong>, while <strong>individuals with differing views are placed farther apart</strong>." if lan=="en" else
+            "Ordnen Sie die Positionen in dem Rechteck so an, dass <strong>Personen die ähnliche politischen Ansichten</strong> zu Fragen der wirtschaftlichen Ungleichheit, der Migration, der Minderheiten und des Klimawandels haben, <strong>nahe beieinander</strong> liegen während <strong>Personen mit abweichenden Ansichten</strong> zu diesen Themen <strong>weiter auseinander liegen</strong>.", 
+            'instru_p1': f"Next, consider the individual <strong>{P}</strong> and place the red dot corresponding to {P}'s views in the rectangle based on the political distance or similarity to the other individuals." if lan=="en" else f"Als Nächstes betrachten Sie die Person <strong>{P}</strong> und platzieren den roten Punkt, der {P}s Ansichten entspricht, im Rechteck entsprechend der politischen Beziehung zu den anderen Personen.",
+            'instru_p2': f"To get a flavour of {P}'s political views, here are <strong>{P}</strong>'s responses to the questions from the previous slides:" if lan=="en" else f"Um einen Eindruck von {P}s politischen Ansichten zu bekommen, sind hier <strong>{P}</strong>s Antworten auf die Fragen aus den vorherigen Aufgaben:",
+            'instru_click': "You can click on a dot to see detailed information about the individual's opinion." if lan=="en" else "Sie können auf einen der Punkte klicken um detaillierte Information über die Meinungen der Person zu sehen.",
+            'all_dots_instr': "All dots must be within the square boundary to proceed. You can re-position any dot at any time until satisfied." if lan=="en" else "Um fortzufahren müssen alle Punkte im Rechteck platziert werden. Sie können jeden Punkt verschieben bis Sie zufrieden sind."
         }
     
     @staticmethod
@@ -454,7 +612,7 @@ class slide07_SPaM_personas(Page):
         if player.ps_placed==C.NPS:
             # Find NR_P_CHECKS triples for which the distance self-p is >= 1.5 times the self-q; fill the rest with random triples self-p-q.
             positions = json.loads(getattr(player, "positions"))
-            pos = {p["label"]: [p["x"], p["y"]] for p in positions}
+            pos = {p["varname"]: [p["x"], p["y"]] for p in positions}
             p_points = [f"P{i}" for i in range(1, C.NPS+1)]
             distances = {p: distance(pos["self"], pos[p]) for p in p_points}
             valid_pairs = []
@@ -472,12 +630,15 @@ class slide07_SPaM_personas(Page):
     
     @staticmethod
     def is_displayed(player):
-        return player.ps_placed <= C.NPS  
+        return player.consent and (player.ps_placed <= C.NPS)
 
 
 
 class slide08a_PlausibilityCheck_Ps(Page):
     form_model = 'player'
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.consent
     
     @staticmethod
     def get_form_fields(player: Player):
@@ -487,70 +648,85 @@ class slide08a_PlausibilityCheck_Ps(Page):
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         valid_pairs = json.loads(getattr(player, "valid_p1p2self_triples"))
-        pair = [player.participant.vars[f'check{player.check}_p1'], player.participant.vars[f'check{player.check}_p2']]
+        pair = [getattr(player, f'check{player.check}_p1'),  getattr(player, f'check{player.check}_p2')]
         valid_pairs.remove(pair)
         player.valid_p1p2self_triples = json.dumps(valid_pairs)
 
-        p1_label = player.participant.vars.get(f'check{player.check}_p1')
-        p2_label = player.participant.vars.get(f'check{player.check}_p2')
-        if p1_label and p2_label:
-            setattr(player, f'check{player.check}_p1', p1_label)
-            setattr(player, f'check{player.check}_p2', p2_label)
-        else:
-            # fallback, just set empty string or default
-            setattr(player, f'check{player.check}_p1', '')
-            setattr(player, f'check{player.check}_p2', '')
         player.check += 1
 
     @staticmethod
     def vars_for_template(player: Player):
+        lan = player.language
         positions = json.loads(getattr(player, "positions"))
-        pos = {p["label"]: [p["x"], p["y"]] for p in positions}
+        pos = {p["varname"]: [p["x"], p["y"]] for p in positions}
         p_points = [f"P{i}" for i in range(1, C.NPS+1)]
         focal_point = "self" 
-        focal_point_label= "yourself"
+        #focal_point_label= "yourself"
         distances = {p: distance(pos[focal_point], pos[p]) for p in p_points}
         valid_pairs = json.loads(player.valid_p1p2self_triples)
+        print(valid_pairs)
         p1,p2 = random.choice(valid_pairs)
+
+        positions = {dot["varname"]: dot for dot in positions if dot["varname"] in ["self", p1, p2]}
+
         dist_p1 = distances[p1]
         dist_p2 = distances[p2]
         significant = ((dist_p1 >= 1.5 * dist_p2) or (dist_p2 >= 1.5 * dist_p1))
-        player.participant.vars[f'check{player.check}_p1'] = p1
-        player.participant.vars[f'check{player.check}_p2'] = p2
+        setattr(player, f'check{player.check}_p1', p1)
+        setattr(player, f'check{player.check}_p2', p2)
         distantP = p1 if dist_p1 > dist_p2 else p2
         similarP = p2 if dist_p1 > dist_p2 else p1
+        
         dot_descrs= {}
         for p in [p1, p2]:
             currP = f"{p}"
-            currP_op = [C.LIKERT_TEX2NUM[op] for q, op in C.P_OPS[currP].items()]
+            currP_op = [op for q, op in C.P_OPS[currP].items()]
             dot_descrs[currP] = "; ".join([
-                f"{C.QUESTIONSHORTTEXT[q]}: {C.LIKERT_NUM2TEX[op]}"
+                f"{C.QUESTIONSHORTTEXT[lan][q]}: {op if lan=="en" else C.LIKERT5_transde[op]}"
                 for q, op in zip(C.QUESTIONS, currP_op)])
+        
+        dots = [{
+            "varname": p["varname"],
+            "name_disp": p["name_disp"],
+            "x": p["x"],
+            "y": p["y"],
+            "dottype": p["dottype"],
+            "descr": dot_descrs.get(p["varname"], "")}
+            for pname, p in positions.items()]
+        
         return {
             'p0_coords': pos[focal_point],
             'p1_coords': pos[p1],
             'p2_coords': pos[p2],
-            'p0': focal_point,
-            'p0label': focal_point_label,
+            'dots': dots,
             'p1': p1,
             'p2': p2,
-            'descr_p1': dot_descrs[p1],
-            'descr_p2': dot_descrs[p2],
-            'dist_p1': dist_p1,
-            'dist_p2': dist_p2,
-            'significant': "much larger" if significant else "larger",
-            'distantP': distantP,
-            'similarP': similarP,
+            #'descr_p1': dot_descrs[p1],
+            #'descr_p2': dot_descrs[p2],
+            #'dist_p1': dist_p1,
+            #'dist_p2': dist_p2,
+            #'significant': "much larger" if significant else "larger",
+            #'distantP': distantP,
+            #'similarP': similarP,
             'ncheck': player.check,
             'nr_tot_checks': C.NR_P_CHECKS + C.NR_OTHER_CHECKS,
             'current_check': f'check{player.check}',
             'current_check_explain': f'check{player.check}_explain',
-        }
+            'page_title': f"Plausibility check {player.check} of {C.NR_P_CHECKS + C.NR_OTHER_CHECKS}" if lan=="en" else f"Plausibilitätscheck {player.check} von {C.NR_P_CHECKS + C.NR_OTHER_CHECKS}" , 
+            'instru1': "Below we show a subset of the map you created." if lan=="en" else "Im Folgenden zeigen wir Ihnen einen kleinen Teil der von Ihnen erzeugten politischen Landkarte.", 
+            'relation': f"Your arrangement indicates that you perceive a <strong>{'much' if significant else ''} greater political distance to {distantP} than to {similarP}</strong>." if lan=="en" else f"Ihre Anordnung deutet darauf hin, dass Sie eine <strong>{'viel' if significant else ''} größere politische Distanz zu {distantP} empfinden als zu {similarP}</strong>.", 
+            'question': "Is this correct?" if lan=="en" else "Ist das korrekt?", 
+            'choices': dict(zip(["No", "Somewhat", "Yes"], ["No", "Somewhat", "Yes"] if lan=="en" else ["Nein", "Teils/teils", "Ja"])), 
+            "explain_text": "If you think this is not correct, you can use this textbox to explain why." if lan == "en" else "Wenn Sie denken, dass diese Relation nicht stimmt, können Sie die folgende Textbox nutzen um zu erklären warum."
+            }
 
 
 class slide08b_PlausibilityCheck_Pairs(Page):
     form_model = 'player'
-
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.consent
+    
     @staticmethod
     def get_form_fields(player: Player):
         i = player.checkPair
@@ -558,58 +734,63 @@ class slide08b_PlausibilityCheck_Pairs(Page):
     
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        p1_label = player.participant.vars.get(f'checkPair{player.check}_dot1')
-        p2_label = player.participant.vars.get(f'checkPair{player.check}_dot2')
-        if p1_label and p2_label:
-            setattr(player, f'checkPair{player.checkPair}_dot1', p1_label)
-            setattr(player, f'checkPair{player.checkPair}_dot2', p2_label)
-        else:
-            # fallback, just set empty string or default
-            setattr(player, f'checkPair{player.checkPair}_dot1', '')
-            setattr(player, f'checkPair{player.checkPair}_dot2', '')
         player.checkPair += 1
 
     @staticmethod
     def vars_for_template(player: Player):
+        lan = player.language
         points = [
-            ["contact2", C.LABELLED[0]],
-            ["self", C.LABELLED[0]],
-            ["contact1", C.LABELLED[0]],
-            ["contact2", C.LABELLED[1]],
+            ["contact2", C.LABELLED[2]],
             ["self", C.LABELLED[1]],
+            ["contact1", C.LABELLED[2]],
+            [C.LABELLED[2], C.LABELLED[1]],
+            ["contact3", C.LABELLED[0]],
             ]
         p1, p2 = points[player.checkPair-1]
-        p1label = f"your contact {getattr(player, p1)}" if "contact" in p1 else ("yourself" if p1=="self" else (f"a typical {p1}" if p1 in C.LABELLED else p1))
-        p2label = f"your contact {getattr(player, p2)}" if "contact" in p2 else ("yourself" if p2=="self" else(f"a typical {p2}" if p2 in C.LABELLED else p2))
+        setattr(player, f'checkPair{player.checkPair}_dot1', p1)
+        setattr(player, f'checkPair{player.checkPair}_dot2', p2)
+
+        p1label = ("your contact "  if lan=="en" else "Ihr Kontakt ")+f"{getattr(player, p1)}" if "contact" in p1 else (("yourself" if lan=="en" else "Sie selbst")  if p1=="self" else (f"a typical {p1}" if lan=="en" else f"ein typischer {C.LABELLED_de[p1]}/eine typische {C.LABELLED_de[p1]}in" if p1 in C.LABELLED else p1))
+        p2label = ("your contact "  if lan=="en" else "Ihr Kontakt ")+f"{getattr(player, p2)}" if "contact" in p2 else (("yourself" if lan=="en" else "Sie selbst")  if p2=="self" else (f"a typical {p2}" if lan=="en" else f"ein typischer {C.LABELLED_de[p2]}/eine typische {C.LABELLED_de[p2]}in" if p2 in C.LABELLED else p2))
         return {
             'p1': p1,
-            'p1_label':p1label, 
             'p2': p2,
-            'p2_label':p2label,
-            'ncheck': player.checkPair,
-            'nr_tot_checks': C.NR_P_CHECKS + C.NR_OTHER_CHECKS,
-            'nr_total_checks':C.NR_P_CHECKS + player.checkPair,
+            #'ncheck': player.checkPair,
+            #'nr_tot_checks': C.NR_P_CHECKS + C.NR_OTHER_CHECKS,
+            #'nr_total_checks':C.NR_P_CHECKS + player.checkPair,
             'current_check': f'checkPair{player.checkPair}',
+            'page_title': f"Plausibilitätscheck {player.check+player.checkPair} von {C.NR_P_CHECKS + C.NR_OTHER_CHECKS}" if lan=="en" else f"Plausibility check {player.check+player.checkPair-1} of {C.NR_P_CHECKS + C.NR_OTHER_CHECKS}", 
+            'question': "How different or similar do you consider their political views?" if lan=="en" else "Wie unterschiedlich oder ähnlich empfinden Sie die politischen Ansichten dieser beiden Personen?",
+            'instru1': f"Consider now the following two individuals:<br><strong>{p1label}</strong> and <strong>{p2label}</strong>." if lan=="en" else f"Denken Sie nun and die folgenden zwei Personen:<br><strong>{p1label}</strong> und <strong>{p2label}</strong>.",
+            'choices': dict(zip(C.OPTIONS_OTHER_CHECKS, (C.OPTIONS_OTHER_CHECKS if lan=="en" else ["Sehr unterschiedlich", "Eher unterschiedlich",  "Weder noch", "Eher ähnlich", "Sehr ähnlich"]))),
         }
 
 
 class slide09_Importance(Page):
     form_model = 'player'
     form_fields = ['topic_importance', 'importance_comments']
-    
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.consent
+     
     @staticmethod
     def vars_for_template(player):
+        lan = player.language
         return {
-            'topic_choices': [qname+"." for q,qname in C.QUESTIONNAMES.items()]+["Different topic(s).", "I don't know."]
+            'topic_choices': dict(zip(C.CHOICES_TOPICS, C.CHOICES_TOPICS if lan == "en" else [qname+"." for q,qname in C.QUESTIONNAMES["de"].items()]+["Andere Meinungen oder Themen.", "Ich weiß nicht."])), 
+            'page_title': "Relevance of political topics" if lan=="en" else "Relevanz verschiedener politischer Themen",
+            'question': "What topics were important for how you arranged the dots in the previous political mapping tasks? You can select one or multiple items." if lan=="en" else "Welche Themen waren für Sie besonders wichtig beim Anordnen der Punkte im Rechteck? Sie können eine oder mehrere Antworten auswählen.",
+            'explain_text': "Optional: Please feel free to comment on your choices or share any thoughts you had while deciding which political topics were most important to you." if lan == "en" else "Optional: Sie können hier gerne kommentieren, warum Sie bestimmte Themen ausgewählt haben oder welche Gedanken Sie bei Ihrer Entscheidung hatten."
         }
     @staticmethod
     def error_message(player, values):
+        lan = player.language
         if values['topic_importance']:
             selected_choices = values['topic_importance'].split(',')
-            valid_choices = [qname+"." for q,qname in C.QUESTIONNAMES.items()]+["Different topic(s).", "I don't know."]
+            valid_choices = C.CHOICES_TOPICS
             for choice in selected_choices:
                 if choice.strip() not in valid_choices:
-                    return "Invalid selection detected."
+                    return "Invalid selection detected." if lan=="en" else "Ungültige Eingabe."
         return None
 
 
@@ -617,7 +798,22 @@ class slide09_Importance(Page):
 class slide10_Demographics(Page):
     form_model = 'player'
     form_fields = ['age', 'political_interest', 'feel_closest_party', "how_polarised"]
-
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.consent
+    @staticmethod 
+    def vars_for_template(player: Player):
+        lan = player.language
+        return {
+            'page_title': "Final questions about yourself" if lan=="en" else "Abschließende Fragen über Sie", 
+            'qu_age': "How old are you?"if lan=="en" else "Wie alt sind Sie?",
+            'qu_interest': 'How interested would you say you are in politics – are you...' if lan=="en" else "Wie sehr sind Sie persönlich an Politik interessiert? Sind Sie ...?", 
+            'choices_interest': dict(zip(C.CHOICES_INTEREST, C.CHOICES_INTEREST if lan=="en" else ["überhaupt nicht interessiert.", "kaum interessiert.", "ziemlich interested.", "sehr interesiert."])),
+            'qu_identity': 'Do you feel closer to one of the political parties in Germany than the others? If so, which one?' if lan=="en" else "Gibt es eine bestimmte politische Partei in Deutschland, der Sie sich mehr verbunden fühlen als allen anderen Parteien? Welcher?", 
+            'choices_identity': dict(zip(C.CHOICES_IDENTITY, C.CHOICES_IDENTITY if lan=="en" else ["CDU/CSU", "AfD", "SPD", "Bündnis 90/Die Grünen", "Die Linke", "BSW", "FDP", "Andere Partei", "Keiner Partei", "Keine Antwort"])),
+            'qu_polarization': "How politically divided are the people in your country these days?" if lan=="en" else "Wie politisch gespalten sind die Menschen in Ihrem Land heutzutage?",
+            'choices_pol':  dict(zip(C.CHOICES_POLARISED, C.CHOICES_POLARISED if lan=="en" else ["Überhaupt nicht gespalten.", "Etwas gespalten.", "Sehr gespalten.", "Extrem gespalten."])) 
+        }
 
 
 class slide11_Results(Page):
@@ -628,8 +824,7 @@ class slide11_Results(Page):
 #page_sequence = [Introduction, Opinions, Friends]+[FriendOpinions]*C.NCONTACTS+[Green_Opinions, AfD_Opinions]+[MapTest, MapTestResult] * 5 + [Map]+[MapP]*C.NPS+[CheckDistance, Demographics, Results]
 
 #[FriendOpinions]*C.NCONTACTS+[Voter_Opinions] * len(C.LABELLED)
-page_sequence = [slide01_Introduction, 
-    slide02_Opinions, 
+page_sequence = [slide01_Introduction,    slide02_Opinions, 
     slide03_Contacts] + \
     [slide04_PersonOpinion] * (C.NCONTACTS + len(C.LABELLED)) + \
     [slide05a_MapTest, slide05b_MapTestResult] * C.N_MAX_PRACTICE_RUNS +\

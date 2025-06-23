@@ -64,17 +64,17 @@
     opacity:0.5
 }
 
-.option-card[data-value="5"] { background-color: #ffcdd2; color: black; } /* Strong disagreement - light red */
-.option-card[data-value="4"] { background-color: #fce4ec; color: black; } /* Disagreement - very light red */
-.option-card[data-value="3"] { background-color: #fff9c4; color: black; } /* Neutral - light yellow */
-.option-card[data-value="2"] { background-color: #c8e6c9; color: black; } /* Agreement - light green */
-.option-card[data-value="1"] { background-color: #a5d6a7; color: black; } /* Strong agreement - medium green */
+.option-card[data-value="Strongly disagree"] { background-color: #ffcdd2; color: black; } /* Strong disagreement - light red */
+.option-card[data-value="Disagree"] { background-color: #fce4ec; color: black; } /* Disagreement - very light red */
+.option-card[data-value="Neutral"] { background-color: #fff9c4; color: black; } /* Neutral - light yellow */
+.option-card[data-value="Agree"] { background-color: #c8e6c9; color: black; } /* Agreement - light green */
+.option-card[data-value="Strongly agree"] { background-color: #a5d6a7; color: black; } /* Strong agreement - medium green */
 
-.option-card[data-value="1"]:hover,
-.option-card[data-value="2"]:hover,
-.option-card[data-value="3"]:hover,
-.option-card[data-value="4"]:hover,
-.option-card[data-value="5"]:hover { 
+.option-card[data-value="Strongly agree"]:hover,
+.option-card[data-value="Agree"]:hover,
+.option-card[data-value="Neutral"]:hover,
+.option-card[data-value="Disagree"]:hover,
+.option-card[data-value="Strongly disagree"]:hover { 
     opacity: 0.9; 
 }
 
@@ -89,18 +89,18 @@
 }
 </style>
 
-<h2>Your political opinions</h2>
+<h2>{{page_title}}</h2>
 
 <br> 
 
-<p style="font-size: 20px;">Please indicate to what extent you agree or disagree with the following statements.</p>
+<p style="font-size: 20px;"> {{instruction_text}}</p>
 
 
 <form method="post">
     <table class="survey-table-clean">
         <thead>
             <tr>
-                <th style="width: 100%;">Your response </th>
+                <th style="width: 100%;">{{table_head}} </th>
             </tr>
         </thead>
         <tbody>
@@ -109,7 +109,7 @@
                 <td>
                     <div class="statement-cell">{{ item.question_text }}</div>
                     <div class="option-cards" data-field="{{ item.field_name }}">
-                        {% for value, label in item.choices %}
+                        {% for value, label in item.choices.items %}
                         <label class="option-card" data-value="{{ value }}">
                             <input type="radio" name="{{ item.field_name }}" value="{{ value }}">
                             {{ label }}

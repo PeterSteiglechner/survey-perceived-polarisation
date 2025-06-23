@@ -1,7 +1,3 @@
-{{ block title }}
-Some questions about yourself
-{{ endblock }}
-
 {{ block content }}
 
 <style>
@@ -70,13 +66,16 @@ Some questions about yourself
     }
 </style>
 
-{% comment %} <p style="margin-bottom: 1.5em;"> 
-In this final part, we would like you to answer the following questions about yourself.</p> {% endcomment %}
+<h2>{{page_title}}</h2>
+
+
 
 <div class="card-section">
     <!-- Demographic Card -->
     <div class="card">
-        <h3>Basic Information</h3>
+          <label class="form-label">
+                {{qu_age}}
+            </label>
         <div class="form-group">
             {% formfield player.age %}
             {{ formfield_errors "age" }}
@@ -84,13 +83,13 @@ In this final part, we would like you to answer the following questions about yo
 
         <div class="form-group">
             <label class="form-label">
-                How interested would you say you are in politics - are you...
+                                {{qu_interest}}
             </label>
             <div class="option-cards" data-field="political_interest">
-                {% for choice in ["not at all interested.", "hardly interested.", "quite interested.", "very interested."] %}
+                {% for choice, label in choices_interest.items %}
                 <label class="option-card">
                     <input type="radio" name="political_interest" value="{{ choice }}">
-                    {{ choice }}
+                    {{ label }}
                 </label>
                 {% endfor %}
             </div>
@@ -100,18 +99,16 @@ In this final part, we would like you to answer the following questions about yo
 </div> 
 
 <div class="card-section">
-    <!-- Political Identity Card -->
     <div class="card">
-        <h3>Political Identity</h3>
         <div class="form-group">
             <label class="form-label">
-            Do you feel closer to one of the political parties than the others? If so, which one?
+            {{qu_identity}}
             </label>
             <div class="option-cards" data-field="feel_closest_party">
-                {% for choice in ["CDU/CSU", "AfD", "SPD", "Green Party", "Left Party", "BSW", "FDP", "other", "no party", "refuse to say"] %}
+                {% for choice, label in choices_identity.items %}
                 <label class="option-card">
                     <input type="radio" name="feel_closest_party" value="{{ choice }}">
-                    {{ choice }}
+                    {{ label }}
                 </label>
                 {% endfor %}
             </div>
@@ -123,15 +120,14 @@ In this final part, we would like you to answer the following questions about yo
 <div class="card-section">
     <!-- Polarization Perception Card -->
     <div class="card">
-        <h3>Polarization Perception</h3>
         <label class="form-label">
-            How politically divided are the people in your country these days?
+            {{qu_polarization}}
         </label>
         <div class="option-cards" data-field="how_polarised">
-            {% for choice in ["Not at all divided.", "Somewhat divided.", "Very divided.", "Extremely divided."] %}
+            {% for choice, label in choices_pol.items %}
             <label class="option-card">
                 <input type="radio" name="how_polarised" value="{{ choice }}">
-                {{ choice }}
+                {{ label }}
             </label>
             {% endfor %}
         </div>

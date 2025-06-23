@@ -1,24 +1,21 @@
 {% block content %}
 <div class="container">
 
-<h2>Political Mapping – Practice run</h2>
+<h2>{{page_title}}</h2>
 
 
-<p style="margin-bottom: 1.5em; color: black;">In the next part of this survey, we will ask you to place people on a political map based on how distant or similar their political views are. Before the actual task, let us do a short <strong>practice round</strong> to help you get used to the task.
-    
-    <p style="margin-bottom: -1em; color: black;">Imagine you, a friend, a co-worker, and your sister are placed in a room (the rectangle below). </p>
+<p style="margin-bottom: 1.5em; color: black;">
+    {{instruction_text1}}
+    <p style="margin-bottom: -1em; color: black;">{{instruction_text2}}</p>
 
     <div class="instructions" style="margin: 20px 0; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
         <p style="margin-bottom: 0.5em; color: black;">
-        Arrange the positions in the rectangle so that <strong>individuals who share similar political views are placed close together</strong>, while <strong>individuals with differing views are placed farther apart</strong>.
+        {{instruction_text3}}
         </p>
     </div>
 <p style="margin-bottom: 0.5em; color: black;"> </p>
 
-    <h4> Detailed instructions</h4>
-    <p style="margin-bottom: 0.5em; color: black;">
-    You will start with several dots on the right side. Please drag them one by one onto the canvas, based on the instructions below:</p>
-<ol> <li>First, place the dot labeled <em>self</em> anywhere on the canvas. This represents your own political views.</li> <li>Now, place your <em>friend</em> close to you. You think your friend has similar views to yours.</li> <li>Next, add your <em>co-worker</em>. You often disagree with your co-worker, so place them farther away from you.</li> <li>However, you think your friend disagrees even more with your co-worker than you do — so place the co-worker dot such that it is farther from your friend than from you.</li> <li>Now add your <em>sister</em>. You feel that your sister is quite politically different from you, so place the dot representing your sister's views far from the dot representing your views.</li> <li>You think your sister agrees more with your friend and co-worker than with you — so place the dot for your sister closer to the dots for your co-worker and friend than to the dot for yourself.</li> </ol> 
+    {{detailed_instructions}}
 
     <canvas id="dragCanvas" width="560" height="500" style="border: 0px solid #333; background:rgb(250, 250, 250); display: block; margin: 20px auto; cursor: grab;"></canvas>
 
@@ -28,7 +25,7 @@
     </div>
             <div class="instructions" style="margin: 20px 0; padding: 15px; background:rgb(255, 235, 235); border-left: 4px solid rgb(255, 0, 0); border-radius: 4px;">
         <p style="margin: 0; color:rgb(0, 0, 0);">
-            All dots must be within the square boundary to proceed. You can re-position any dot at any time.
+            {{all_dots_instr}}
         </p>
     </div>
 
@@ -54,10 +51,10 @@
         const canvas = document.getElementById("dragCanvas");
         const ctx = canvas.getContext("2d");
         const points = [
-            { label: "self", x: 530, y: 100, radius: 12, color:"grey"},
-            { label: "Co-worker", x: 530, y: 150, radius: 12, color:"blue"},
-            { label: "Friend", x: 530, y: 200,radius: 12, color:"blue"},
-            { label: "Sister", x: 530, y: 250, radius: 12, color:"blue"}
+            { varname: "self",  name_disp: "{{ lan }}" === "en" ? "Self" : "Ich", x: 530, y: 100, radius: 12, color:"grey"},
+            { varname: "co-worker",  name_disp: "{{ lan }}" === "en" ? "Co-worker": "Kollegin", x: 530, y: 150, radius: 12, color:"blue"},
+            { varname: "friend",  name_disp: "{{ lan }}" === "en" ? "Friend": "Freund", x: 530, y: 200,radius: 12, color:"blue"},
+            { varname: "sister",  name_disp: "{{ lan }}" === "en" ? "Sister": "Schwester", x: 530, y: 250, radius: 12, color:"blue"}
         ];
         //const popup = document.getElementById("popup");
 
@@ -90,12 +87,12 @@
                 ctx.lineWidth = p === hoveredPoint ? 3 : 2;
                 ctx.stroke();
 
-                // Draw label with better positioning
+                // Draw name with better positioning
                 ctx.fillStyle = "#333";
                 ctx.font = "12px Arial";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "bottom";
-                ctx.fillText(p.label, p.x, p.y - 18);
+                ctx.fillText(p.name_disp, p.x, p.y - 18);
             });
         }
 

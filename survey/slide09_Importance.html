@@ -1,5 +1,5 @@
 {{ block title }}
-Most important topics
+{{page_title}}
 {{ endblock }}
 
 {{ block content }}
@@ -108,19 +108,19 @@ Most important topics
     <!-- Importance Card -->
     <div class="card">
         <div class="form-group">
-            <label for="id_topic_importance">In the political mapping task, what topics were important for how you arranged the dots? You can select one or multiple items.</label>
+            <label for="id_topic_importance">{{question}}</label>
             
             <!-- Hidden field for actual form submission -->
             <input type="hidden" name="topic_importance" id="topic_importance_hidden" value="">
             
             <div class="checkbox-container">
-                {% for choice in topic_choices %}
+                {% for choice, label in topic_choices.items %}
                 <div class="checkbox-card" data-value="{{ choice }}">
                     <input type="checkbox" 
                            id="checkbox_{{ forloop.counter }}" 
                            data-choice="{{ choice }}">
                     <label class="checkbox-label" for="checkbox_{{ forloop.counter }}">
-                        {{ choice }}
+                        {{ label }}
                     </label>
                 </div>
                 {% endfor %}
@@ -128,13 +128,16 @@ Most important topics
             {{ formfield_errors "topic_importance" }}
         </div>
     </div>
-     <!-- Comment Card -->
+     
+    <!-- Comment Card -->
     <div class="card">
-        {{ formfield "importance_comments" }}
+    {{explain_text}} 
+    {{ formfield "importance_comments" }}
+    {{ formfield_errors "importance_comments" }}
+
     </div>
+
 </div>
-
-
 
 {{ next_button }}
 

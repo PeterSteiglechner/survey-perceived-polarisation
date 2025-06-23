@@ -1,9 +1,6 @@
-{{ block title }}
-Plausibility check {{ ncheck }} of {{ nr_tot_checks }}
-{{ endblock }}
 {{ block content }}
 
-
+<h2>{{ page_title }}</h2>
 <style>
     .card-section {
         display: grid;
@@ -37,23 +34,27 @@ Plausibility check {{ ncheck }} of {{ nr_tot_checks }}
         margin-bottom: 1.5em;
     }
 
-    /* Radio Card Styling */
-    .option-cards {
-        display: flex;
-        gap: 15px;
-        margin-top: 5px;
-        flex-wrap: wrap;
-    }
+.option-cards {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+    justify-content: left; /* center the group */
+    flex-wrap: wrap;
+}
 
-    .option-card {
-        border: 2px solid #ccc;
-        border-radius: 10px;
-        padding: 10px 15px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        flex: 1 1 200px;
-    }
+.option-card {
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 6px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 120px; /* fixed width */
+    min-height: 40px;
+    display: flex;
+    align-items: left;
+    justify-content: center;
+}
 
     .option-card:hover {
         border-color: #666;
@@ -72,37 +73,45 @@ Plausibility check {{ ncheck }} of {{ nr_tot_checks }}
 
 
 <div>
-  <p style="margin-bottom: 0.5em;"> Below we show a subset of your responses. </p>
+  <p style="margin-bottom: 0.5em;"> {{instru1}} </p>
   <canvas id="dragCanvas" width="500" height="500" style="border: 0px solid #333; background: #fafafa; display: block; margin: 20px 0; cursor: grab;"></canvas>  
 
+  <br>
 
-  <div class="card-section">
-    <!-- Demographic Card -->
-    <div class="card">
+   <p style="margin-bottom: 0.5em;">
+            {{relation}}
+    </p>
+
+    <br>
         <div class="form-group">
-          <p style="margin-bottom: 0.5em;">
-            Your arrangement of dots indicates that you see the political distance between <strong>{{ p0label }}</strong> and <strong>{{distantP}}</strong> as {{significant}} than the political distance between <strong>{{p0label}}</strong> and <strong>{{similarP}}</strong>.
-          </p>
+          <div class="card">
           <label class="form-label">
-              Is this correct?
+            {{question}}
           </label>
           <div class="option-cards" data-field="{{ current_check }}">
-              {% for choice in ["No", "Somewhat", "Yes"] %}
+              {% for choice, label in choices.items %}
               <label class="option-card">
                   <input type="radio" name="{{ current_check }}" value="{{ choice }}">
-                  {{ choice }}
+                  {{ label }}
               </label>
               {% endfor %}
           </div>
           {{ formfield_errors current_check }}
       </div>
-    </div>
-  </div>
+      </div>
 
+  <br>
+
+    <div class="card">
+  {{explain_text}} 
    {{ formfield current_check_explain }}
+    </div>
 
+    <br> 
+    
     {{ next_button}}  
 </div>
+
 
 <!-- Two popups that stick to canvas -->
 <div id="distantPopup" style="
@@ -140,25 +149,46 @@ Plausibility check {{ ncheck }} of {{ nr_tot_checks }}
   const p1Pos = {{ p1_coords }};
   const p2Pos = {{ p2_coords }};
 
-  // Descriptions for P1 and P2 (passed in the template context)
-  const descr_p1 = `{{ descr_p1 }}`;
-  const descr_p2 = `{{ descr_p2 }}`;
-
   // Define points with metadata for interaction
   const points = [
-    {label: '{{ p0 }}', x: p0Pos[0], y: p0Pos[1], color: 'grey', radius: 12, descr: null},
-    {label: '{{ p1 }}', x: p1Pos[0], y: p1Pos[1], color: 'red', radius: 12, descr: descr_p1},
-    {label: '{{ p2 }}', x: p2Pos[0], y: p2Pos[1], color: 'red', radius: 12, descr: descr_p2},
-  ];
+    {% for dot in dots %}
+                {
+                name_disp: "{{ dot.name_disp }}", 
+                varname: "{{ dot.varname }}", 
+                x: {{ dot.x }}, 
+                y: {{ dot.y }}, 
+                dottype: "{{ dot.dottype }}" ,
+                descr:"{{ dot.descr }}",
+                radius: 12
+                },    
+            {% endfor %}
+  ]
+  function drawDot(p) {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                
+                // Set fill color based on type
+                ctx.fillStyle =
+                    p.dottype === "self" ? "grey" :
+                        p.varname === "Green voter" ? "#46962b" :
+                            p.varname === "FDP voter" ?  "#ffed00" :
+                                p.varname === "AfD voter" ?  "#009ee0" :
+                                    p.dottype === "contact" ? "#ff9600":
+                                        p.dottype === "P" ? "red":
+                                            "pink"; 
+                ctx.fill();
+                
+                // Add border with hover effect
+                ctx.strokeStyle = "#333";
+                ctx.lineWidth = 2;
+                ctx.stroke();
 
-  function drawDot(point) {
-    ctx.fillStyle = point.color;
-    ctx.beginPath();
-    ctx.arc(point.x, point.y, point.radius, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.fillStyle = '#000';
-    ctx.font = "14px Arial";
-    ctx.fillText(point.label, point.x + point.radius + 4, point.y + 4);
+                // Draw label with better positioning
+                ctx.fillStyle = "#333";
+                ctx.font = "12px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "bottom";
+                ctx.fillText(p.name_disp, p.x, p.y - 18);
   }
 
   function drawLine(start, end, color, width=3) {
@@ -170,51 +200,64 @@ Plausibility check {{ ncheck }} of {{ nr_tot_checks }}
     ctx.stroke();
   }
 
-  // Function to get color styling based on answer value
+    // Function to get color styling based on answer value
   function getAnswerStyling(answer) {
-    const trimmedAnswer = answer.toLowerCase().trim();
-    let backgroundColor = '';
-    
-    if (trimmedAnswer === 'strongly disagree') {
-      backgroundColor = '#ffcdd2'; // Light red
-    } else if (trimmedAnswer === 'disagree') {
-      backgroundColor = '#fce4ec'; // Very light red
-    } else if (trimmedAnswer === 'neutral') {
-      backgroundColor = '#fff9c4'; // Light yellow
-    } else if (trimmedAnswer === 'agree') {
-      backgroundColor = '#c8e6c9'; // Light green
-    } else if (trimmedAnswer === 'strongly agree') {
-      backgroundColor = '#a5d6a7'; // Medium green
-    }
-    
-    return backgroundColor ? `background-color: ${backgroundColor}; color: black; padding: 2px 6px; border-radius: 3px;` : '';
+      const trimmedAnswer = answer.toLowerCase().trim();
+      let backgroundColor = '';
+      
+      if ((trimmedAnswer === 'strongly disagree') | (trimmedAnswer === 'stimme gar nicht zu')){
+          backgroundColor = '#ff9aa4'; // Light red
+      } else if ((trimmedAnswer === 'disagree') | (trimmedAnswer === 'stimme eher nicht zu')) {
+          backgroundColor = '#fce4ec'; // Very light red
+      } else if ((trimmedAnswer === 'neutral') | (trimmedAnswer === 'teils/teils')) {
+          backgroundColor = '#fff9c4'; // Light yellow
+      } else if ((trimmedAnswer === 'agree') | (trimmedAnswer === 'stimme eher zu')){
+          backgroundColor = '#c8e6c9'; // Light green
+      } else if ((trimmedAnswer === 'strongly agree') | (trimmedAnswer === 'stimme voll zu')) {
+          backgroundColor = '#82c685'; // Medium green
+      }
+      
+      
+      return backgroundColor ? `background-color: ${backgroundColor}; color: black; padding: 2px 0px; border-radius: 0px;` : '';
   }
-
-  // Function to create table content from description
-  function createTableContent(descr) {
+  function createTableContent(point) {
+    // Create table from description
     let tableContent = '';
-    if (descr && descr.includes(';')) {
-      const lines = descr.split(';').map(line => line.trim()).filter(line => line);
-      tableContent = lines.map(line => {
-        const colonIndex = line.indexOf(':');
-        if (colonIndex !== -1) {
-          const question = line.substring(0, colonIndex);
-          const answer = line.substring(colonIndex + 1).trim();
-          const answerStyling = getAnswerStyling(answer);
-          
-          return `<tr><td style="padding: 4px 8px 4px 0; vertical-align: top; border-bottom: 1px solid #eee; width: 70%; word-wrap: break-word; line-height: 1.3;">${question}:</td><td style="padding: 4px 0; vertical-align: top; border-bottom: 1px solid #eee; font-weight: bold; width: 30%; white-space: nowrap;"><span style="${answerStyling}">${answer}</span></td></tr>`;
+    if (point.descr && point.descr.includes(';')) {
+        const lines = point.descr.split(';').map(line => line.trim()).filter(line => line);
+        tableContent = lines.map(line => {
+            const colonIndex = line.indexOf(':');
+            if (colonIndex !== -1) {
+                const question = line.substring(0, colonIndex);
+                const answer = line.substring(colonIndex + 1).trim();
+                const answerStyling = getAnswerStyling(answer);
+                
+                return `<tr><td style="padding: 4px 4px 4px 0; vertical-align: top; border-bottom: 1px solid #eee; width: 65%; word-wrap: break-word; line-height: 1.3;">${question}:</td><td style="padding: 4px 0; vertical-align: top; border-bottom: 1px solid #eee; font-weight: bold; width: 32%; word-wrap: break-word;"><span style="${answerStyling}">${answer}</span></td></tr>`;
+            }
+            return `<tr><td colspan="2" style="padding: 10px 0px; border-bottom: 1px solid #eee;">${line}</td></tr>`;
+        }).join('');
+        } else {
+            tableContent = `<tr><td style="padding: 4px 0;">${point.descr || 'No description available'}</td></tr>`;
         }
-        return `<tr><td colspan="2" style="padding: 4px 0; border-bottom: 1px solid #eee;">${line}</td></tr>`;
-      }).join('');
-    } else {
-      tableContent = `<tr><td style="padding: 4px 0;">${descr || 'No description available'}</td></tr>`;
+        return tableContent;
     }
-    return tableContent;
-  }
+
+    {% comment %} popup.innerHTML = `
+        <strong style="font-size: 13px;">${point.name_disp}</strong><br><br>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+            ${tableContent}
+        </table>
+    `;
+    popup.style.display = "block"; {% endcomment %}
 
   // Clear canvas and draw everything
   function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the boundary square with enhanced styling
+    ctx.strokeStyle = "#333";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, 0, canvas.height, canvas.height);
 
     const distP1 = Math.hypot(p0Pos[0] - p1Pos[0], p0Pos[1] - p1Pos[1]);
     const distP2 = Math.hypot(p0Pos[0] - p2Pos[0], p0Pos[1] - p2Pos[1]);
@@ -254,12 +297,12 @@ Plausibility check {{ ncheck }} of {{ nr_tot_checks }}
     // Setup distant popup - position relative to canvas
     const distantPopup = document.getElementById('distantPopup');
     distantPopup.style.left = `${canvasOffsetLeft + 505}px`;
-    distantPopup.style.top = `${canvasOffsetTop}px`;
+    distantPopup.style.top = `${canvasOffsetTop + 250}px`;
     
-    const distantTableContent = createTableContent(distantPoint.descr);
+    const distantTableContent = createTableContent(distantPoint);
     distantPopup.innerHTML = `
-      <strong style="font-size: 14px;">${distantPoint.label} (More Distant)</strong><br><br>
-      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+      <strong style="font-size: 13px;">${distantPoint.name_disp} (More Distant)</strong><br><br>
+      <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
         ${distantTableContent}
       </table>
     `;
@@ -267,12 +310,12 @@ Plausibility check {{ ncheck }} of {{ nr_tot_checks }}
     // Setup similar popup - positioned below the distant one
     const similarPopup = document.getElementById('similarPopup');
     similarPopup.style.left = `${canvasOffsetLeft + 505}px`;
-    similarPopup.style.top = `${canvasOffsetTop + 250}px`;
+    similarPopup.style.top = `${canvasOffsetTop}px`;
     
-    const similarTableContent = createTableContent(similarPoint.descr);
+    const similarTableContent = createTableContent(similarPoint);
     similarPopup.innerHTML = `
-      <strong style="font-size: 14px;">${similarPoint.label} (More Similar)</strong><br><br>
-      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+      <strong style="font-size: 13px;">${similarPoint.name_disp} (More Similar)</strong><br><br>
+      <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
         ${similarTableContent}
       </table>
     `;

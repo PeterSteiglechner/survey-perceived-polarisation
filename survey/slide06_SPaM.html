@@ -1,17 +1,15 @@
 {% block content %}
 <div class="container">
 
-    <h2>Political Mapping - Part 1 </h2>
+    <h2>{{page_title}} </h2>
 
-    <p style="margin-bottom: 1.5em; color: black;">We now continue to the actual task:</p>
+    <p style="margin-bottom: 1.5em; color: black;">{{instru1}}</p>
 
-    <p style="margin-bottom: -1em; color: black;">Imagine you, your social contacts, a typical Green voter, and a typical AfD voter are placed in a room (the rectangle below). </p>
+    <p style="margin-bottom: -1em; color: black;">{{instruRoom}} </p>
 
     <div class="instructions" style="margin: 20px 0; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
         <p style="margin-bottom: 0.5em; color: black;">
-        Arrange the positions in the rectangle so that <strong>individuals who share similar political views</strong> 
-        on questions regarding economic inequality, migration, minorities, and climate change <strong>are placed close together</strong>, while <strong>individuals with differing views 
-        are placed farther apart</strong>.
+        {{instru_main}}
         </p>
     </div>
 
@@ -23,7 +21,7 @@
     </div>
             <div class="instructions" style="margin: 20px 0; padding: 15px; background:rgb(255, 235, 235); border-left: 4px solid rgb(255, 0, 0); border-radius: 4px;">
         <p style="margin: 0; color:rgb(0, 0, 0);">
-            All dots must be within the square boundary to proceed. You can re-position any dot at any time.
+            {{all_dots_instr}}
         </p>
     </div>
 
@@ -51,8 +49,8 @@
         const points = [
             {% for dot in dots %}
                 {
-                label: "{{ dot.label }}", 
-                name: "{{ dot.name }}", 
+                name_disp: "{{ dot.name_disp }}", 
+                varname: "{{ dot.varname }}", 
                 x: {{ dot.x }}, 
                 y: {{ dot.y }}, 
                 dottype: "{{ dot.dottype }}" ,
@@ -84,13 +82,13 @@
                 ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                 
                 // Set fill color based on type
-                ctx.fillStyle =
-                    p.dottype === "self" ? "grey" :
-                        p.name === "Green voter" ? "#46962b" :
-                            p.name === "AfD voter" ?  "#009ee0" :
-                                p.dottype === "contact" ? "#ff9600":
-                                    p.dottype === "P" ? "red":
-                                        "pink";       
+                ctx.fillStyle = p.dottype === "self" ? "grey" :
+                        p.varname === "Green voter" ? "#46962b" :
+                            p.varname === "AfD voter" ?  "#009ee0" :
+                                p.varname === "FDP voter" ?  "#ffed00" :
+                                    p.dottype === "contact" ? "#ff9600":
+                                        p.dottype === "P" ? "red":
+                                            "pink";        
                 ctx.fill();
                 
                 // Add border with hover effect
@@ -103,7 +101,7 @@
                 ctx.font = "12px Arial";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "bottom";
-                ctx.fillText(p.label, p.x, p.y - 18);
+                ctx.fillText(p.name_disp, p.x, p.y - 18);
             });
         }
 

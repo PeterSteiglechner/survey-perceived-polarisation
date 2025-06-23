@@ -9,8 +9,17 @@ SESSION_CONFIGS = [
         dict(
          name='SURVEY',
          app_sequence=['survey'],
-         num_demo_participants=1,
+         num_demo_participants=50,
      ),
+     
+]
+
+
+ROOMS = [
+    dict(
+        name='Scenario_Pretest_Pilot_20250520',
+        display_name='Scenario_Pretest_Pilot_20250520',
+    )
 ]
 
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs
