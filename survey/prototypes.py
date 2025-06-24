@@ -32,7 +32,7 @@ QUESTIONSHORTTEXT =  {
             dict(zip( QUESTIONS, [
         "Extreme Besorgnis über Klimawandel", 
         "Unterstützung für gleichgeschlechtliche Ehe",
-        "Gleichte Rechte für Migranten/-innen"+"\n"+"nur bei Integration",
+        "Gleiche Rechte nur für Migranten/  -innen,"+"\n"+"die sich integrieren",
         "Ökonomische Unterschiede zu groß"
 ])),}
 
