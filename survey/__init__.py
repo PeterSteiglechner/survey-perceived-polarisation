@@ -307,9 +307,9 @@ class slide02_Opinions(Page):
             })
         return {
             'field_question_pairs': field_question_pairs, 
-            'page_title': 'Your political opinions' if player.language == 'en' else 'Ihre politischen Meinungen',
-            'instruction_text': 'Please indicate to what extent you agree or disagree with the following statements.' if player.language == 'en' else 'Bitte geben Sie an, inwieweit Sie den folgenden Aussagen zustimmen oder nicht zustimmen.',
-            'table_head':"Your response" if player.language =="en" else 'Ihre Antworten'
+            'page_title': 'Your political views' if player.language == 'en' else 'Ihre politischen Ansichten',
+            'instruction_text': '<p style="margin-bottom: 0.5em;" >At the beginning of this survey, we are interested in your own political opinions. </p><p style="margin-bottom: 0.5em;" >Please indicate to what extent you agree or disagree with the following statements. There are no right or wrong answers; we are most interested in which response option is most aligned with your views.</p>' if player.language == 'en' else '<p style="margin-bottom: 0.5em;">Zum Start dieser Umfrage interessieren wir uns für Ihre politischen Ansichten.</p><p style="margin-bottom: 0.5em;" > Bitte geben Sie an, inwieweit Sie den folgenden Aussagen zustimmen oder nicht zustimmen. Es gibt keine richtigen oder falschen Antworten; wir interessieren uns dafür welche Antwortmöglichkeiten am Ehesten ihren Ansichten entspricht.</p>',
+            'table_head':"Your responses" if player.language =="en" else 'Ihre Antworten'
             }
     
 class slide03_Contacts(Page):
