@@ -19,15 +19,20 @@
     </p>
     
      <div>
-        <img src="{% static img_source %}" alt="Political opinion profile" style="width: 480px; height: 400px; border: 1px solid #ddd; border-radius: 4px; margin: 8px 0;">
+        <img src="{% static img_source %}" alt="Political opinion profile" style="width: 480px; border: 1px solid #ddd; border-radius: 4px; margin: 8px 0;">
      </div>
     
     <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-left: 4px solid #007bff; border-radius: 4px;">
             {{instru_click}}     
     </div> 
 
+    <canvas id="dragCanvas" width="560" height="500" style="border: 0px solid #333; background: #fafafa; display: block; margin: 20px 0; cursor: grab; touch-action: none;"></canvas>  
 
-    <canvas id="dragCanvas" width="560" height="500" style="border: 0px solid #333; background: #fafafa; display: block; margin: 20px 0; cursor: grab;"></canvas>  
+    <div style="margin: 10px 0; padding: 15px; background: #f8f9fa; border-left: 4px solid #007bff; border-radius: 4px;">
+            <button type="button" id="toggleHelpingLines" class="btn btn-secondary" style="padding: 2px 4px; background: rgba(220,220,220,1); color: black; border: grey; border-radius: 4px; cursor: pointer;">
+            {{helping_lines}}
+        </button>  
+    </div> 
 
     <div id="popup" style="
         display: none;
@@ -46,14 +51,29 @@
     <input type="hidden" name="positions" id="positions">
 
     </div>
-            <div class="instructions" style="margin: 20px 0; padding: 15px; background:rgb(255, 235, 235); border-left: 4px solid rgb(255, 0, 0); border-radius: 4px;">
+            <div class="instructions" style="margin: 10px 0; padding: 15px; background:rgb(255, 235, 235); border-left: 4px solid rgb(255, 0, 0); border-radius: 4px;">
         <p style="margin: 0; color:rgb(0, 0, 0);">
             {{all_dots_instr}}
         </p>
     </div>
 
-    {{ next_button }}
+    </div>
+        <div class="instructions" style="margin: 10px 0; padding: 15px; background:rgb(255, 235, 235); border-left: 4px solid rgb(255, 0, 0); border-radius: 4px;">
+    <p style="margin: 0; color:rgb(0, 0, 0);">
+        {{reminder}}
+    </p>
+    </div>
+    
 
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    {% if lan_en %}
+        {{ next_button }}
+        <div style="margin-left: auto;">Page {{nslide}}/19</div>
+    {% else %}
+        <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
+        <div style="margin-left: auto;">Seite {{nslide}}/19</div>
+    {% endif %}
+</div>
 </div>
 
 <style>
@@ -65,6 +85,9 @@
     
     #dragCanvas:active {
         cursor: grabbing;
+    }
+    #toggleHelpingLines:hover {
+        background: #5a6268 !important;
     }
     
 </style>
@@ -91,8 +114,102 @@
         let draggingPoint = null;
         let hoveredPoint = null;
         let selectedPoint = null;
+        let showCircles = false;
+        let circleCenter = { x: 0, y: 0 };
+        let circleScale = 1;
+        let draggingScale = false;
+        let scaleControlPos = { x: 0, y: 0 };
+        let lastMousePos = { x: 0, y: 0 };
+        let lastTouchPos = { x: 0, y: 0 };
+        
+        let helpingLinesEnabled = false;
         
         console.log("Loaded points:", points);
+
+        const toggleButton = document.getElementById("toggleHelpingLines");
+        
+        toggleButton.addEventListener("click", function() {
+            helpingLinesEnabled = !helpingLinesEnabled;
+            
+            if (helpingLinesEnabled) {
+                toggleButton.textContent = "{{helping_lines}}"; // Should be "Disable Helping Lines" or similar
+                toggleButton.style.color = "white";
+                toggleButton.style.background = "rgba(70,70,70,1)";
+            } else {
+                toggleButton.textContent = "{{helping_lines}}"; // You can make this a template variable too
+                toggleButton.style.background = "rgba(220,220,220,1)";
+                toggleButton.style.color = "black";
+
+                // Hide circles if helping lines are disabled
+                showCircles = false;
+                selectedPoint = null;
+            }
+            
+            drawCanvas();
+        });
+
+        function drawScaleControl() {
+            if (!showCircles || !helpingLinesEnabled) return;
+            
+            // Position the scale control on the smallest circle (100px radius)
+            const smallestRadius = 70 * circleScale;
+            scaleControlPos.x = circleCenter.x + smallestRadius;
+            scaleControlPos.y = circleCenter.y;
+            
+            // Draw double arrow (expand/contract symbol) - smaller, no background
+            ctx.strokeStyle = "#333";
+            ctx.lineWidth = 3;
+            ctx.lineCap = "round";
+            
+            // Left arrow (contract) - smaller
+            ctx.beginPath();
+            ctx.moveTo(scaleControlPos.x - 7, scaleControlPos.y);
+            ctx.lineTo(scaleControlPos.x - 4, scaleControlPos.y - 4);
+            ctx.moveTo(scaleControlPos.x - 7, scaleControlPos.y);
+            ctx.lineTo(scaleControlPos.x - 4, scaleControlPos.y + 4);
+            
+            // Right arrow (expand) - smaller
+            ctx.moveTo(scaleControlPos.x + 7, scaleControlPos.y);
+            ctx.lineTo(scaleControlPos.x + 4, scaleControlPos.y - 4);
+            ctx.moveTo(scaleControlPos.x + 7, scaleControlPos.y);
+            ctx.lineTo(scaleControlPos.x + 4, scaleControlPos.y + 4);
+            
+            ctx.stroke();
+        }
+
+        function drawCircles() {
+            if (!showCircles || !helpingLinesEnabled) return;
+            
+            const radii = [70, 140, 210];
+            const labels = ["{{labelClose}}", "", "{{ labelFar }}"];
+            
+            // Draw circles
+            radii.forEach((radius, index) => {
+                ctx.beginPath();
+                ctx.arc(circleCenter.x, circleCenter.y, radius * circleScale, 0, Math.PI * 2);
+                ctx.strokeStyle = "#666";
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            });
+            
+            // Draw labels
+            ctx.fillStyle = "#666";
+            ctx.font = "12px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            
+            radii.forEach((radius, index) => {
+                if (labels[index]) {
+                    const scaledRadius = radius * circleScale;
+                    ctx.fillText(labels[index], circleCenter.x, circleCenter.y - scaledRadius - 10);
+                }
+            });
+            
+            // Draw scale control
+            drawScaleControl();
+        }
 
         function drawCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -102,6 +219,8 @@
             ctx.lineWidth = 1;
             ctx.strokeRect(0, 0, canvas.height, canvas.height);
             
+            // Draw circles first (behind dots)
+            drawCircles();
        
             // Draw all points
             points.forEach(p => {
@@ -109,14 +228,14 @@
                 ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                 
                 // Set fill color based on type
-                ctx.fillStyle =
-                    p.dottype === "self" ? "grey" :
-                        p.varname === "Green voter" ? "#46962b" :
-                            p.varname === "FDP voter" ?  "#ffed00" :
-                                p.varname === "AfD voter" ?  "#009ee0" :
-                                    p.dottype === "contact" ? "#ff9600":
-                                        p.dottype === "P" ? "red":
-                                            "pink"; 
+                ctx.fillStyle = p.dottype === "self" ? "grey" :
+                        p.varname === "Green Party" ? "#46962b" :
+                            p.varname === "AfD" ?  "#009ee0" :
+                                p.varname === "Left Party" ?  "#FF0000" :
+                                    p.varname === "FDP" ?  "#ffed00" :
+                                        p.dottype === "contact" ? "#00ff80":
+                                            p.dottype === "P" ? "pink":
+                                                "white";  
                 ctx.fill();
                 
                 // Add border with hover effect
@@ -141,8 +260,21 @@
             };
         }
 
-        function findPoint(mousePos) {
-            return points.find(p => Math.hypot(p.x - mousePos.x, p.y - mousePos.y) < p.radius);
+        function getTouchPos(touch) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: touch.clientX - rect.left,
+                y: touch.clientY - rect.top
+            };
+        }
+
+        function findPoint(pos) {
+            return points.find(p => Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius);
+        }
+
+        function isOnScaleControl(pos) {
+            if (!showCircles || !helpingLinesEnabled) return false;
+            return Math.hypot(pos.x - scaleControlPos.x, pos.y - scaleControlPos.y) < 15; // Larger touch target
         }
 
         function showPopup(point, mouseX, mouseY) {
@@ -158,24 +290,24 @@
             function getAnswerStyling(answer) {
                 const trimmedAnswer = answer.toLowerCase().trim();
                 let backgroundColor = '';
-                
-                if ((trimmedAnswer === 'strongly disagree') | (trimmedAnswer === 'stimme gar nicht zu')){
-                    backgroundColor = '#ff9aa4'; // Light red
+                let texcolor = "black";
+                if ((trimmedAnswer === 'strongly disagree') | (trimmedAnswer === 'stimme überhaupt nicht zu')){
+                    backgroundColor = 'rgba(230,97,1, 1)'; // Light red
+                    texcolor = "rgb(255, 255, 255)";
                 } else if ((trimmedAnswer === 'disagree') | (trimmedAnswer === 'stimme eher nicht zu')) {
-                    backgroundColor = '#fce4ec'; // Very light red
+                    backgroundColor = 'rgba(253,184,99, 0.5)'; // Very light red
                 } else if ((trimmedAnswer === 'neutral') | (trimmedAnswer === 'teils/teils')) {
-                    backgroundColor = '#fff9c4'; // Light yellow
+                    backgroundColor =  'rgba(165,165,165, 0.15)'; // Light yellow
                 } else if ((trimmedAnswer === 'agree') | (trimmedAnswer === 'stimme eher zu')){
-                    backgroundColor = '#c8e6c9'; // Light green
-                } else if ((trimmedAnswer === 'strongly agree') | (trimmedAnswer === 'stimme voll zu')) {
-                    backgroundColor = '#82c685'; // Medium green
-                }
-               
-                
-                return backgroundColor ? `background-color: ${backgroundColor}; color: black; padding: 2px 0px; border-radius: 0px;` : '';
+                    backgroundColor = 'rgba(178,171,210, 0.5)'; // Light green
+                } else if ((trimmedAnswer === 'strongly agree') | (trimmedAnswer === 'stimme voll und ganz zu')) {
+                    backgroundColor = 'rgba(94,60,153, 1)'; // Medium green
+                    texcolor = "rgb(255, 255, 255)";
+                }                
+                return backgroundColor ? `background-color: ${backgroundColor}; color: ${texcolor}; padding: 4px 0px; border-radius: 0px;` : '';
             }
             
-                // Create table from description
+            // Create table from description
             let tableContent = '';
             if (point.descr && point.descr.includes(';')) {
                 const lines = point.descr.split(';').map(line => line.trim()).filter(line => line);
@@ -186,34 +318,112 @@
                         const answer = line.substring(colonIndex + 1).trim();
                         const answerStyling = getAnswerStyling(answer);
                         
-                        return `<tr><td style="padding: 4px 4px 4px 0; vertical-align: top; border-bottom: 1px solid #eee; width: 65%; word-wrap: break-word; line-height: 1.3;">${question}:</td><td style="padding: 4px 0; vertical-align: top; border-bottom: 1px solid #eee; font-weight: bold; width: 32%; word-wrap: break-word;"><span style="${answerStyling}">${answer}</span></td></tr>`;
+                        return `<tr><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; width: 55%; word-wrap: break-word; line-height: 1.3;">${question}</td></td><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; font-weight: bold; width: 39%; word-wrap: break-word;line-height:1.8"><span style="${answerStyling}">${answer}</span></td></tr>`;
                     }
                     return `<tr><td colspan="2" style="padding: 10px 0px; border-bottom: 1px solid #eee;">${line}</td></tr>`;
                 }).join('');
             } else {
-                tableContent = `<tr><td style="padding: 4px 0;">${point.descr || 'No description available'}</td></tr>`;
+                tableContent = `<tr><td style="padding: 0px 0;">${point.descr || 'No description available'}</td></tr>`;
             }
             popup.innerHTML = `
-                <strong style="font-size: 13px;">${point.name_disp}</strong><br><br>
-                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                    ${tableContent}
+                <strong style="font-size: 12px;">${point.name_disp}</strong><br><br>
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                    ${tableContent} 
                 </table>
             `;
             popup.style.display = "block";
         }
 
+        // Touch event handlers
+        canvas.addEventListener("touchstart", function (evt) {
+            const touch = evt.touches[0];
+            const touchPos = getTouchPos(touch);
+            const touchedPoint = findPoint(touchPos);
+            lastTouchPos = touchPos;
 
+            if (isOnScaleControl(touchPos)) {
+                draggingScale = true;
+            } else if (touchedPoint && helpingLinesEnabled) {
+                draggingPoint = touchedPoint;
+                selectedPoint = touchedPoint;
+                showCircles = true;
+                circleCenter = { x: touchedPoint.x, y: touchedPoint.y };
+                drawCanvas();
+                showPopup(touchedPoint, touchPos.x, touchPos.y);
+            } else if (touchedPoint) {
+                // Allow dragging even when helping lines are disabled
+                draggingPoint = touchedPoint;
+                showPopup(touchedPoint, touchPos.x, touchPos.y);
+            } else {
+                selectedPoint = null;
+                showCircles = false;
+                popup.style.display = "none";
+                drawCanvas();
+            }
+            evt.preventDefault();
+        }, { passive: false });
+
+        canvas.addEventListener("touchmove", function (evt) {
+            const touch = evt.touches[0];
+            const touchPos = getTouchPos(touch);
+
+            if (draggingScale) {
+                // Scale based on horizontal touch movement
+                const deltaX = touchPos.x - lastTouchPos.x;
+                const scaleFactor = 1 + (deltaX * 0.01);
+                circleScale = Math.max(0.1, Math.min(3, circleScale * scaleFactor));
+                drawCanvas();
+            } else if (draggingPoint) {
+                draggingPoint.x = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, touchPos.x));
+                draggingPoint.y = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, touchPos.y));
+                
+                if (showCircles && selectedPoint === draggingPoint) {
+                    circleCenter = { x: draggingPoint.x, y: draggingPoint.y };
+                }
+                
+                drawCanvas();
+
+                if (selectedPoint === draggingPoint) {
+                    showPopup(draggingPoint, draggingPoint.x, draggingPoint.y);
+                }
+            }
+            
+            lastTouchPos = touchPos;
+            evt.preventDefault();
+        }, { passive: false });
+
+        canvas.addEventListener("touchend", function () {
+            draggingPoint = null;
+            draggingScale = false;
+            hoveredPoint = null;
+            drawCanvas();
+        }, { passive: false });
+
+        // Mouse event handlers (for desktop)
         canvas.addEventListener("mousedown", function (evt) {
             const mousePos = getMousePos(evt);
             const clickedPoint = findPoint(mousePos);
+            lastMousePos = mousePos;
 
-            if (clickedPoint) {
+            if (isOnScaleControl(mousePos)) {
+                draggingScale = true;
+                canvas.style.cursor = "ew-resize";
+            } else if (clickedPoint && helpingLinesEnabled) {
                 draggingPoint = clickedPoint;
                 selectedPoint = clickedPoint;
+                showCircles = true;
+                circleCenter = { x: clickedPoint.x, y: clickedPoint.y };
+                drawCanvas();
+                showPopup(clickedPoint, mousePos.x, mousePos.y);
+            } else if (clickedPoint) {
+                // Allow dragging even when helping lines are disabled
+                draggingPoint = clickedPoint;
                 showPopup(clickedPoint, mousePos.x, mousePos.y);
             } else {
                 selectedPoint = null;
+                showCircles = false;
                 popup.style.display = "none";
+                drawCanvas();
             }
         });
 
@@ -221,29 +431,55 @@
             const mousePos = getMousePos(evt);
             const newHoveredPoint = findPoint(mousePos);
             
+            // Update cursor based on what we're hovering over
+            if (isOnScaleControl(mousePos)) {
+                canvas.style.cursor = "ew-resize";
+            } else if (newHoveredPoint) {
+                canvas.style.cursor = "grab";
+            } else {
+                canvas.style.cursor = "default";
+            }
+            
             if (newHoveredPoint !== hoveredPoint) {
                 hoveredPoint = newHoveredPoint;
                 drawCanvas();
             }
             
-            if (draggingPoint) {
+            if (draggingScale && helpingLinesEnabled) {
+                // Scale based on horizontal mouse movement
+                const deltaX = mousePos.x - lastMousePos.x;
+                const scaleFactor = 1 + (deltaX * 0.01);
+                circleScale = Math.max(0.1, Math.min(3, circleScale * scaleFactor));
+                drawCanvas();
+            } else if (draggingPoint) {
                 draggingPoint.x = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, mousePos.x));
                 draggingPoint.y = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, mousePos.y));
+                
+                if (showCircles && selectedPoint === draggingPoint && helpingLinesEnabled) {
+                    circleCenter = { x: draggingPoint.x, y: draggingPoint.y };
+                }
+                
                 drawCanvas();
 
                 if (selectedPoint === draggingPoint) {
                     showPopup(draggingPoint, draggingPoint.x, draggingPoint.y);
                 }
             }
+            
+            lastMousePos = mousePos;
         });
 
         canvas.addEventListener("mouseup", function () {
             draggingPoint = null;
+            draggingScale = false;
+            canvas.style.cursor = "default";
         });
 
         canvas.addEventListener("mouseleave", function () {
             draggingPoint = null;
+            draggingScale = false;
             hoveredPoint = null;
+            canvas.style.cursor = "default";
             drawCanvas();
         });
           
@@ -251,6 +487,8 @@
             if (!canvas.contains(e.target) && !popup.contains(e.target)) {
                 popup.style.display = "none";
                 selectedPoint = null;
+                showCircles = false;
+                drawCanvas();
             }
         });
 
@@ -270,7 +508,11 @@
             nextButton.addEventListener("click", function (e) {
                 e.preventDefault();
                 if (!allPointsInsideBox()) {
+                    {% if lan_en %}
                     alert("Please place all dots inside the positioning square before continuing.");
+                    {% else %}
+                    alert("Platzieren Sie bitte alle Punkte innerhalb des Rechtecks.");
+                    {% endif %}
                     return;
                 }
                 document.getElementById("positions").value = JSON.stringify(points);

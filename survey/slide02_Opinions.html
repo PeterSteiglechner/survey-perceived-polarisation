@@ -53,48 +53,47 @@
 }
 
 .option-card {
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    padding: 8px 10px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    flex: 1;
-    font-size: 15px;
-    opacity:0.4
+ border: 2px solid #ccc;
+border-radius: 10px;
+padding: 8px 10px;
+text-align: center;
+cursor: pointer;
+transition: all 0.2s ease;
+flex: 1;
+font-size: 15px;
 }
 
-.option-card[data-value="Strongly disagree"] { background-color: #ffcdd2; color: black; } /* Strong disagreement - light red */
-.option-card[data-value="Disagree"] { background-color: #fce4ec; color: black; } /* Disagreement - very light red */
-.option-card[data-value="Neutral"] { background-color: #fff9c4; color: black; } /* Neutral - light yellow */
-.option-card[data-value="Agree"] { background-color: #c8e6c9; color: black; } /* Agreement - light green */
-.option-card[data-value="Strongly agree"] { background-color: #a5d6a7; color: black; } /* Strong agreement - medium green */
+.option-card[data-value="Strongly disagree"] { background-color: rgba(230,97,1, 0.12); color: #222; }
+.option-card[data-value="Disagree"] { background-color: rgba(253,184,99, 0.10); color: #222; }
+.option-card[data-value="Neutral"] { background-color: rgba(165,165,165, 0.15); color: #222; }
+.option-card[data-value="Agree"] { background-color: rgba(178,171,210, 0.12); color: #222; }
+.option-card[data-value="Strongly agree"] { background-color: rgba(94,60,153, 0.14); color: #222; }
 
-.option-card[data-value="Strongly agree"]:hover,
-.option-card[data-value="Agree"]:hover,
-.option-card[data-value="Neutral"]:hover,
-.option-card[data-value="Disagree"]:hover,
-.option-card[data-value="Strongly disagree"]:hover { 
-    opacity: 0.9; 
-}
+.option-card[data-value="Strongly disagree"]:hover { background-color: rgba(230,97,1, 0.5); }
+.option-card[data-value="Disagree"]:hover { background-color: rgba(253,184,99, 0.5); }
+.option-card[data-value="Neutral"]:hover { background-color: rgba(165,165,165, 0.5); }
+.option-card[data-value="Agree"]:hover { background-color: rgba(178,171,210, 0.5); }
+.option-card[data-value="Strongly agree"]:hover { background-color: rgba(94,60,153, 0.5); }
+
+.option-card.selected[data-value="Strongly disagree"] { background-color: rgba(230,97,1, 0.7); }
+.option-card.selected[data-value="Disagree"] { background-color: rgba(253,184,99, 0.7); }
+.option-card.selected[data-value="Neutral"] { background-color: rgba(165,165,165, 0.7); }
+.option-card.selected[data-value="Agree"] { background-color: rgba(178,171,210, 0.7); }
+.option-card.selected[data-value="Strongly agree"] { background-color: rgba(94,60,153, 0.7); }
 
 .option-card input[type="radio"] {
-    display: none;
+display: none;
 }
+
 .option-card.selected {
-    border: 3px solid #ccc;
-    border-color:rgb(0, 0, 0);
-    opacity: 1;
-    padding: 6px 9px;
+border: 3px solid black;
+padding: 6px 9px;
 }
 </style>
 
 <h2>{{page_title}}</h2>
 
-<br> 
-
-<p style="font-size: 20px;"> {{instruction_text}}</p>
-
+{{instruction_text}}
 
 <form method="post">
     <table class="survey-table-clean">
@@ -123,7 +122,15 @@
         </tbody>
     </table>
 
-    {{ next_button }}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    {% if lan_en %}
+        {{ next_button }}
+        <div style="margin-left: auto;">Page 2/19</div>
+    {% else %}
+        <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
+        <div style="margin-left: auto;">Seite 2/19</div>
+    {% endif %}
+</div>
 </form>
 
 <script>

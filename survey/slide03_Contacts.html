@@ -6,12 +6,20 @@
 
 {% for field_info in contact_fields %}
     <div class="form-group">
-        <label for="id_{{ field_info.name }}">{{ field_info.label }}</label>
+        <label for="id_{{ field_info.name }}" style='margin-top: 1em;'>{{ field_info.label }}</label>
         <input type="text" name="{{ field_info.name }}" id="id_{{ field_info.name }}" class="form-control" required>
     </div>
 {% endfor %}
 
 <br>
 
-{{next_button}}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    {% if lan_en %}
+        {{ next_button }}
+        <div style="margin-left: auto;">Page 3/19</div>
+    {% else %}
+        <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
+        <div style="margin-left: auto;">Seite 3/19</div>
+    {% endif %}
+</div>
 {{ endblock }}

@@ -1,0 +1,22 @@
+{{ block title }}
+{% if lan_en %}
+    Ein Fehler ist aufgetreten oder Sie haben nicht Ihr Einverständnis gegeben an dieser Studie teilzunehmen. 
+{% else %}
+    An error has occurred or you did not declare your consent for participation in this survey 
+{% endif %}
+{{ endblock }}
+
+{{ block content }}
+
+{% if lan_en %}
+<p style="margin-bottom:1.5em;">Please contact us via <a href= "mailto:collectivemindslab@csh.ac.at
+">collectivemindslab@csh.ac.at</a>, if you have any questions.</p>
+{% else %}
+<p style="margin-bottom:1.5em;">Bitte kontaktieren Sie uns über <a href= "mailto:collectivemindslab@csh.ac.at
+">collectivemindslab@csh.ac.at</a>, wenn Sie Fragen haben.</p>
+    {% endif %}
+
+
+{{ endblock }}
+
+

@@ -114,6 +114,9 @@
             </div>
             {{ formfield_errors "feel_closest_party" }}
         </div>
+
+        <p style="margin-bottom:-0.5em;">{{qu_party_comment}}</p>
+        {{formfield "party_comment"}}
     </div>
 </div>
 
@@ -136,7 +139,16 @@
 </div>
 
 
-{{ next_button }}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    {% if lan_en %}
+    <button type="submit" class="otree-btn-next btn btn-primary">Complete survey</button>
+        <div style="margin-left: auto;">Page {{nslide}}/19</div>
+    {% else %}
+    <button type="submit" class="otree-btn-next btn btn-primary">Umfrage abschließen</button>
+        <div style="margin-left: auto;">Seite {{nslide}}/19</div>
+    {% endif %}
+</div>
+
 
 <script>
 document.querySelectorAll('.option-cards').forEach(group => {

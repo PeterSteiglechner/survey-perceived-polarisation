@@ -74,17 +74,16 @@
 
 <div>
   <p style="margin-bottom: 0.5em;"> {{instru1}} </p>
-  <canvas id="dragCanvas" width="500" height="500" style="border: 0px solid #333; background: #fafafa; display: block; margin: 20px 0; cursor: grab;"></canvas>  
+  <canvas id="dragCanvas" width="300" height="300" style="border: 0px solid #333; background: #fafafa; display: block; margin: 20px 0; cursor: grab;"></canvas>  
 
-  <br>
-
-   <p style="margin-bottom: 0.5em;">
-            {{relation}}
-    </p>
 
     <br>
         <div class="form-group">
           <div class="card">
+            <p style="margin-bottom: 1.5em;">
+            {{relation}}
+            </p>
+
           <label class="form-label">
             {{question}}
           </label>
@@ -109,7 +108,16 @@
 
     <br> 
     
-    {{ next_button}}  
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    {% if lan_en %}
+        {{ next_button }}
+        <div style="margin-left: auto;">Page {{nslide}}/19</div>
+    {% else %}
+        <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
+        <div style="margin-left: auto;">Seite {{nslide}}/19</div>
+    {% endif %}
+</div>
+
 </div>
 
 
@@ -159,7 +167,7 @@
                 y: {{ dot.y }}, 
                 dottype: "{{ dot.dottype }}" ,
                 descr:"{{ dot.descr }}",
-                radius: 12
+                radius: 8
                 },    
             {% endfor %}
   ]
@@ -168,14 +176,14 @@
                 ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                 
                 // Set fill color based on type
-                ctx.fillStyle =
-                    p.dottype === "self" ? "grey" :
-                        p.varname === "Green voter" ? "#46962b" :
-                            p.varname === "FDP voter" ?  "#ffed00" :
-                                p.varname === "AfD voter" ?  "#009ee0" :
-                                    p.dottype === "contact" ? "#ff9600":
-                                        p.dottype === "P" ? "red":
-                                            "pink"; 
+                ctx.fillStyle = p.dottype === "self" ? "grey" :
+                        p.varname === "Green Party" ? "#46962b" :
+                            p.varname === "AfD" ?  "#009ee0" :
+                                p.varname === "Left Party" ?  "#FF0000" :
+                                    p.varname === "FDP" ?  "#ffed00" :
+                                        p.dottype === "contact" ? "#00ff80":
+                                            p.dottype === "P" ? "pink":
+                                                "white";    
                 ctx.fill();
                 
                 // Add border with hover effect
@@ -204,21 +212,21 @@
   function getAnswerStyling(answer) {
       const trimmedAnswer = answer.toLowerCase().trim();
       let backgroundColor = '';
-      
-      if ((trimmedAnswer === 'strongly disagree') | (trimmedAnswer === 'stimme gar nicht zu')){
-          backgroundColor = '#ff9aa4'; // Light red
-      } else if ((trimmedAnswer === 'disagree') | (trimmedAnswer === 'stimme eher nicht zu')) {
-          backgroundColor = '#fce4ec'; // Very light red
-      } else if ((trimmedAnswer === 'neutral') | (trimmedAnswer === 'teils/teils')) {
-          backgroundColor = '#fff9c4'; // Light yellow
-      } else if ((trimmedAnswer === 'agree') | (trimmedAnswer === 'stimme eher zu')){
-          backgroundColor = '#c8e6c9'; // Light green
-      } else if ((trimmedAnswer === 'strongly agree') | (trimmedAnswer === 'stimme voll zu')) {
-          backgroundColor = '#82c685'; // Medium green
-      }
-      
-      
-      return backgroundColor ? `background-color: ${backgroundColor}; color: black; padding: 2px 0px; border-radius: 0px;` : '';
+        let texcolor = "black";
+        if ((trimmedAnswer === 'strongly disagree') | (trimmedAnswer === 'stimme überhaupt nicht zu')){
+            backgroundColor = 'rgba(230,97,1, 1)'; // Light red
+            texcolor = "rgb(255, 255, 255)";
+        } else if ((trimmedAnswer === 'disagree') | (trimmedAnswer === 'stimme eher nicht zu')) {
+            backgroundColor = 'rgba(253,184,99, 0.5)'; // Very light red
+        } else if ((trimmedAnswer === 'neutral') | (trimmedAnswer === 'teils/teils')) {
+            backgroundColor =  'rgba(165,165,165, 0.15)'; // Light yellow
+        } else if ((trimmedAnswer === 'agree') | (trimmedAnswer === 'stimme eher zu')){
+            backgroundColor = 'rgba(178,171,210, 0.5)'; // Light green
+        } else if ((trimmedAnswer === 'strongly agree') | (trimmedAnswer === 'stimme voll und ganz zu')) {
+            backgroundColor = 'rgba(94,60,153, 1)'; // Medium green
+            texcolor = "rgb(255, 255, 255)";
+        }                
+        return backgroundColor ? `background-color: ${backgroundColor}; color: ${texcolor}; padding: 4px 0px; border-radius: 0px;` : '';
   }
   function createTableContent(point) {
     // Create table from description
@@ -232,23 +240,16 @@
                 const answer = line.substring(colonIndex + 1).trim();
                 const answerStyling = getAnswerStyling(answer);
                 
-                return `<tr><td style="padding: 4px 4px 4px 0; vertical-align: top; border-bottom: 1px solid #eee; width: 65%; word-wrap: break-word; line-height: 1.3;">${question}:</td><td style="padding: 4px 0; vertical-align: top; border-bottom: 1px solid #eee; font-weight: bold; width: 32%; word-wrap: break-word;"><span style="${answerStyling}">${answer}</span></td></tr>`;
-            }
-            return `<tr><td colspan="2" style="padding: 10px 0px; border-bottom: 1px solid #eee;">${line}</td></tr>`;
+                    return `<tr><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; width: 55%; word-wrap: break-word; line-height: 1.3;">${question}</td></td><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; font-weight: bold; width: 39%; word-wrap: break-word;line-height:1.8"><span style="${answerStyling}">${answer}</span></td></tr>`;
+                    }
+                    return `<tr><td colspan="2" style="padding: 10px 0px; border-bottom: 1px solid #eee;">${line}</td></tr>`;
         }).join('');
         } else {
-            tableContent = `<tr><td style="padding: 4px 0;">${point.descr || 'No description available'}</td></tr>`;
+            tableContent = `<tr><td style="padding: 0px 0;">${point.descr || 'No description available'}</td></tr>`;
         }
         return tableContent;
     }
 
-    {% comment %} popup.innerHTML = `
-        <strong style="font-size: 13px;">${point.name_disp}</strong><br><br>
-        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-            ${tableContent}
-        </table>
-    `;
-    popup.style.display = "block"; {% endcomment %}
 
   // Clear canvas and draw everything
   function render() {
@@ -296,26 +297,26 @@
 
     // Setup distant popup - position relative to canvas
     const distantPopup = document.getElementById('distantPopup');
-    distantPopup.style.left = `${canvasOffsetLeft + 505}px`;
-    distantPopup.style.top = `${canvasOffsetTop + 250}px`;
+    distantPopup.style.left = `${canvasOffsetLeft + 645}px`;
+    distantPopup.style.top = `${canvasOffsetTop }px`;
     
     const distantTableContent = createTableContent(distantPoint);
     distantPopup.innerHTML = `
-      <strong style="font-size: 13px;">${distantPoint.name_disp} (More Distant)</strong><br><br>
-      <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+      <strong style="font-size: 12px;">${distantPoint.name_disp} (More Distant)</strong><br>
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
         ${distantTableContent}
       </table>
     `;
 
     // Setup similar popup - positioned below the distant one
     const similarPopup = document.getElementById('similarPopup');
-    similarPopup.style.left = `${canvasOffsetLeft + 505}px`;
+    similarPopup.style.left = `${canvasOffsetLeft + 305}px`;
     similarPopup.style.top = `${canvasOffsetTop}px`;
     
     const similarTableContent = createTableContent(similarPoint);
     similarPopup.innerHTML = `
-      <strong style="font-size: 13px;">${similarPoint.name_disp} (More Similar)</strong><br><br>
-      <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+      <strong style="font-size: 12px;">${similarPoint.name_disp} (More Similar)</strong><br>
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
         ${similarTableContent}
       </table>
     `;

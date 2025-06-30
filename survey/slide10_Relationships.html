@@ -1,0 +1,188 @@
+{{ block content }}
+
+<style>
+    .card-section {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        margin: 20px 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .card {
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        background-color: #fff;
+        transition: box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    }
+
+    .card h3 {
+        margin-top: 0;
+        margin-bottom: 1em;
+        font-size: 15px;
+        color: #2c3e50;
+    }
+
+    .form-group {
+        margin-bottom: 1.5em;
+    }
+
+    /* Radio Card Styling */
+.option-cards {
+    display: flex;
+    flex-direction: row; 
+    gap: 7px;
+    margin-top: 3px;
+    flex-wrap: nowrap;
+    overflow-x: auto; 
+}
+    .option-card {
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        padding: 4px 7px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex: 1; /* Changed from flex: 1 1 auto */
+        {% comment %} white-space: nowrap; {% endcomment %}
+        min-width: 0; /* Allow shrinking below content size */
+    }
+
+
+.option-card:hover {
+    border-color: #666;
+    background-color: #f9f9f9;
+}
+
+.option-card input[type="radio"] {
+    display: none;
+    margin-right: 10px;
+}
+
+
+    .option-card.selected {
+        border-color: #007bff;
+        background-color: #e6f0ff;
+    }
+
+    .extra-space {
+        margin-top: 4em;
+        border-top: 1px solid #ccc;
+        padding-top: 4em;
+    }
+.survey-table-clean {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 25px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+
+
+.survey-table-clean td {
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: top;
+    font-size: 15px;
+}
+
+.survey-table-clean tr:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+}
+
+.survey-table-clean .statement-cell {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.option-separator {
+    height: 20px;
+    background-color: #ccc;
+    margin: 8px 8px;
+}
+
+.option-card.no-answer {
+    opacity: 0.7; 
+    background-color: "rgb(150,150,150)";
+    font-style: italic;
+}
+
+</style>
+
+
+<h2>{{page_title}}</h2>
+
+<br>
+
+<p style="font-size: 20px;"> {{qu_closeness}}</p>
+
+
+<form method="post">
+    <table class="survey-table-clean">
+        <tbody>
+            {% for item in field_question_pairs %}
+            <tr>
+                <!-- Question text in the first column -->
+                <td class="question-cell" width="30%">
+                    {{ item.question_text }}
+                </td>
+
+                <td class="options-cell">
+                    <div class="option-cards" data-field="{{ item.field_name }}">
+                        {% for value, label in item.choices.items %}
+                         {% if value == "No answer" %}
+                            <div class="option-separator"></div> 
+                        {% endif %}
+                        <label class="option-card" data-value="{{ value }}">
+                            <input type="radio" name="{{ item.field_name }}" value="{{ value }}">
+                            {{ label }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                    {{ formfield_errors item.field_name }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+
+
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    {% if lan_en %}
+        {{ next_button }}
+        <div style="margin-left: auto;">Page {{nslide}}/19</div>
+    {% else %}
+        <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
+        <div style="margin-left: auto;">Seite {{nslide}}/19</div>
+    {% endif %}
+</div>
+
+<script>
+document.querySelectorAll('.option-cards').forEach(group => {
+    const name = group.dataset.field;
+    group.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            group.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            radio.closest('.option-card').classList.add('selected');
+        });
+    });
+});
+</script>
+
+
+
+{{endblock}}

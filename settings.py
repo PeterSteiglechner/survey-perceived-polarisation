@@ -9,7 +9,7 @@ SESSION_CONFIGS = [
         dict(
          name='SURVEY',
          app_sequence=['survey'],
-         num_demo_participants=50,
+         num_demo_participants=1,
      ),
      
 ]
@@ -17,8 +17,8 @@ SESSION_CONFIGS = [
 
 ROOMS = [
     dict(
-        name='Scenario_Pretest_Pilot_20250520',
-        display_name='Scenario_Pretest_Pilot_20250520',
+        name='20250630_Pretest',
+        display_name='20250630_Pretest',
     )
 ]
 

@@ -181,7 +181,12 @@
 
 
 <br>
-{{ next_button }}
+
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <button type="submit" id="next-btn" class="otree-btn-next btn btn-primary">Next</button>
+    <div id="pagedispl" style="margin-left: auto;">Page 1/19</div>
+</div>
+</form>
 
 
 <script>
@@ -227,6 +232,8 @@ document.querySelectorAll('.option-cards').forEach(group => {
 // Update text based on selected language
 function updateLanguage(lang) {
     const t = translations[lang];
+    document.getElementById('next-btn').textContent = lang === 'de' ? 'Weiter' : 'Next';
+    document.getElementById('pagedispl').textContent = lang === 'de' ? 'Seite 1/19' : 'Page 1/19';
     document.getElementById('consent-title').textContent = t.consentTitle;
     document.getElementById('consent-text').textContent = t.consentText;
     document.getElementById('consent-yes').textContent = t.consentYes;

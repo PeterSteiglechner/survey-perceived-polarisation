@@ -139,7 +139,17 @@
 
 </div>
 
-{{ next_button }}
+
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    {% if lan_en %}
+        {{ next_button }}
+        <div style="margin-left: auto;">Page {{nslide}}/19</div>
+    {% else %}
+        <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
+        <div style="margin-left: auto;">Seite {{nslide}}/19</div>
+    {% endif %}
+</div>
+
 
 <script>
 // Handle checkbox selection and form submission
