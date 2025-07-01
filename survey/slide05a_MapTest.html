@@ -13,11 +13,25 @@
         {{instruction_text3}}
         </p>
     </div>
-<p style="margin-bottom: 0.5em; color: black;"> </p>
+    
+<p style="margin-bottom: 1.5em; color: black;"> {{ disclaimer }}</p>
 
+{{detailed_instructions_1}}
+<div style="display: flex; justify-content: center; align-items: flex-start; gap: 20px; margin-top: 20px;">
+  
+  <div style="flex: 1; max-width: 400px;">
+    {{detailed_instructions_2}}
+  </div>
+  
+  <canvas id="dragCanvas" width="360" height="300" 
+    style="border: 0px solid #333; background: rgb(250, 250, 250); display: block; cursor: grab; touch-action: none;">
+  </canvas>
+  
+</div>
+{% comment %} 
     {{detailed_instructions}}
 
-    <canvas id="dragCanvas" width="360" height="300" style="border: 0px solid #333; background:rgb(250, 250, 250); display: block; margin: 20px auto; cursor: grab; touch-action: none;"></canvas>
+    <canvas id="dragCanvas" width="360" height="300" style="border: 0px solid #333; background:rgb(250, 250, 250); display: block; margin: 20px auto; cursor: grab; touch-action: none;"></canvas> {% endcomment %}
 
     <input type="hidden" id="positionsTest" name="positionsTest">
 
