@@ -45,15 +45,16 @@
 <div style="display: flex; justify-content: space-between; align-items: center;">
     {% if lan_en %}
         {{ next_button }}
-        <div style="margin-left: auto;">Page {{nslide}}/19</div>
+        <div style="margin-left: auto;">Page {{nslide}}/{{maxslides}}</div>
     {% else %}
         <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
-        <div style="margin-left: auto;">Seite {{nslide}}/19</div>
+        <div style="margin-left: auto;">Seite {{nslide}}/{{maxslides}}</div>
     {% endif %}
 </div>
 
 
 <script>
+
     document.addEventListener("DOMContentLoaded", function () {
         const canvas = document.getElementById("dragCanvas");
         const ctx = canvas.getContext("2d");
@@ -66,7 +67,9 @@
                 y: {{ dot.y }}, 
                 dottype: "{{ dot.dottype }}" ,
                 descr:"{{ dot.descr }}",
-                radius: 12
+                radius: 12, 
+                t_last_moved: null,
+                t_first_moved: null,
                 },    
             {% endfor %}
         ];
@@ -105,6 +108,15 @@
                     selectedPoint = null;
                 }
         });
+
+        function recordMove(dot) {
+            const now = Math.floor(Date.now() / 1000);
+            if (dot.t_first_moved === null) {
+                dot.t_first_moved = now;
+            }
+            dot.t_last_moved = now;
+        }
+
         function drawScaleControl() {
             if (!showCircles || !helpingLinesEnabled) return;
 
@@ -286,11 +298,15 @@
         }, { passive: false });
 
         canvas.addEventListener("touchend", function () {
+            if (draggingPoint) {
+                recordMove(draggingPoint);
+            }
             draggingPoint = null;
             draggingScale = false;
             hoveredPoint = null;
             drawCanvas();
         }, { passive: false });
+
 
         // Mouse event handlers (for desktop)
         canvas.addEventListener("mousedown", function (evt) {
@@ -356,10 +372,14 @@
         });
 
         canvas.addEventListener("mouseup", function () {
+            if (draggingPoint) {
+                recordMove(draggingPoint);
+            }
             draggingPoint = null;
             draggingScale = false;
             canvas.style.cursor = "default";
         });
+
 
         canvas.addEventListener("mouseleave", function () {
             draggingPoint = null;

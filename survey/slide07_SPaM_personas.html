@@ -84,10 +84,10 @@
 <div style="display: flex; justify-content: space-between; align-items: center;">
     {% if lan_en %}
         {{ next_button }}
-        <div style="margin-left: auto;">Page {{nslide}}/19</div>
+        <div style="margin-left: auto;">Page {{nslide}}/{{maxslides}}</div>
     {% else %}
         <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
-        <div style="margin-left: auto;">Seite {{nslide}}/19</div>
+        <div style="margin-left: auto;">Seite {{nslide}}/{{maxslides}}</div>
     {% endif %}
 </div>
 </div>
@@ -105,7 +105,9 @@
                 y: {{ dot.y }}, 
                 dottype: "{{ dot.dottype }}" ,
                 descr:"{{ dot.descr }}",
-                radius: 12
+                radius: 12,
+                t_first_moved: null,
+                t_last_moved: null
                 },    
             {% endfor %}
         ];
@@ -154,6 +156,15 @@
             
             drawCanvas();
         });
+
+     
+        function recordMove(dot) {
+            const now = Math.floor(Date.now() / 1000);
+            if (dot.t_first_moved === null) {
+                dot.t_first_moved = now;
+            }
+            dot.t_last_moved = now;
+        }
 
         function getAnswerStyling(answer) {
             const trimmedAnswer = answer.toLowerCase().trim();
@@ -430,6 +441,9 @@
         }, { passive: false });
 
         canvas.addEventListener("touchend", function () {
+            if (draggingPoint) {
+                recordMove(draggingPoint);
+            }
             draggingPoint = null;
             draggingScale = false;
             hoveredPoint = null;
@@ -506,7 +520,11 @@
             lastMousePos = mousePos;
         });
 
+      
         canvas.addEventListener("mouseup", function () {
+            if (draggingPoint) {
+                recordMove(draggingPoint);
+            }
             draggingPoint = null;
             draggingScale = false;
             canvas.style.cursor = "default";

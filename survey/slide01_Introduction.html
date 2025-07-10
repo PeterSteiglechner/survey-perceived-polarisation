@@ -37,16 +37,22 @@
 
             <p><strong data-i18n="purposeTitle"></strong></p>
             <p data-i18n="purposeBody"></p>
+            <p data-i18n="rightWrong"></p>
+            <p data-i18n="benefitsBody1"></p>
+            
+            <p><strong data-i18n="eligibility"></strong></p>
+            <p data-i18n="eligibilityBody"></p>
+            
 
             <p><strong data-i18n="procedureTitle"></strong></p>
             <p data-i18n="procedureBody"></p>
 
             <p data-i18n="duration"></p>
 
-            <p><strong data-i18n="benefitsTitle"></strong></p>
-            <p data-i18n="benefitsBody1"></p>
-            <p data-i18n="benefitsBody2"></p>
+            <p><strong data-i18n="paymentTitle"></strong></p>
+            <p data-i18n="paymentBody"></p>
 
+            <p><strong data-i18n="withdrawal"></strong></p>
             <p data-i18n="withdrawalInfo"></p>
             <p data-i18n="contactInfo"></p><p style="margin-top:-1em"><a href='mailto:collectivemindslab@csh.ac.at'>collectivemindslab@csh.ac.at</a></p>
 
@@ -60,10 +66,10 @@
             <p data-i18n="questionsBody"></p><p style="margin-top:-1em"><a href='mailto:collectivemindslab@csh.ac.at'>collectivemindslab@csh.ac.at</a></p>
 
             <p data-i18n="ethicsReview"></p>
-
+{% comment %} 
             <div class="instructions">
                 <p data-i18n="consentDisclaimer"></p>
-            </div>
+            </div> {% endcomment %}
             
             <div class="instructions" style="margin: 10px 0; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
                 <p data-i18n="consentDecl"></p>
@@ -102,15 +108,19 @@ const translations = {
         dearParticipant: "Dear participant,",
         consentText: "Thank you for participating in our survey. Please read the following and indicate your consent.",
         purposeTitle: "What is the purpose of this study?",
-        purposeBody: "The purpose of this study is to explore how people perceive and interpret political differences or similarities based on how they view those people's political opinions. You are being asked to take part in this study because you are living in Germany and are at least 18 years old.",
+        purposeBody: "The purpose of this study is to explore how people perceive and interpret political differences or similarities based on how they view other people's political opinions. ",
+        benefitsBody1: "The findings from this project will provide information on whether people perceive opinions and polarisation in society similarly or whether there are systematic differences in perception.",
+        eligibility: "Eligibility:", 
+        eligibilityBody: "You are eligible to take part in this study because you are living in Germany and are at least 18 years old.",
         procedureTitle: "What is the procedure of the study?",
-        procedureBody: "We will first ask a few questions about your political beliefs. Next, we ask you to name 3 people that you know well. You will estimate how they would respond to the same questions. You will also estimate how typical voters of the Green Party, the AfD, the Left Party or the FDP would respond. In the main part of the survey, we ask you to place these opinions—including your own—on a political map. In the final part, we ask questions about your age, your political identity, your perception of political polarisation, and your interest in politics.",
-        duration: "This study will last for about 20–30 minutes.",
-        benefitsTitle: "What are the benefits of participating in the study?",
-        benefitsBody1: "The findings from this project will provide information on whether people perceive opinions and polarisation in society in a shared way or whether there are systematic differences in perception.",
-        benefitsBody2: "You will also be compensated for the duration of the study according to standard hourly rates: 6 USD for 30 minutes.",
+        procedureBody: "Firstly, we will ask you a few questions about your political views. Then we ask you to name 6 people you know well. We ask you to assess what political attitudes these people have. We also ask you to estimate how typical voters of the Greens, the AfD, the Left or the FDP would answer. In the main section, you position these opinions on a political map. Finally, there are a few short, more specific questions about your perception of political distance and a few questions about yourself.",
+        rightWrong: "There are no right or wrong answers. We are interested in your personal perceptions.",
+        duration: "The study will last for about 30 minutes.",
+        paymentTitle: "Payment:",
+        paymentBody: "You will be compensated for the duration of the study according to standard hourly rates: 6 USD for 30 minutes.",
+        withdrawal: "Can I withdraw?",
         withdrawalInfo: "Your participation in this research study is voluntary. You may refuse to participate or stop at any time without penalty.",
-        contactInfo: "If you complete the study but want your data removed, please contact within 30 days the study coordinators Mirta Galesic and Peter Steiglechner at",
+        contactInfo: "If you complete the study but want your data removed, please contact the study coordinators Mirta Galesic and Peter Steiglechner within 30 days at",
         dataUsageTitle: "How will the data collected in this study be used?",
         dataUsage1: "All metadata collected in this study that could identify you—such as your Prolific ID—will be kept strictly confidential and only disclosed with your explicit permission.",
         dataUsage2: "Identifying information is stored separately from your survey responses and will not be included in any published or shared data.",
@@ -119,12 +129,11 @@ const translations = {
         questionsTitle: "Possibility to discuss further questions",
         questionsBody: "If you have any further questions about the study, please contact the study coordinators Mirta Galesic and Peter Steiglechner at",
         ethicsReview: "This study has been reviewed by SFI Ethics XX.",
-        consentDisclaimer: "There are no right or wrong answers. Responses are anonymous and used solely for academic research.",
         consentDecl: "I have read the information provided above. By clicking 'I give consent' I indicate my voluntary agreement to participate in this research study.",
         consentYes: "I give consent.",
         consentNo: "I do not give consent.",
         nextBtn: "Next",
-        pageText: "Page 1/19"
+        pageText: "Page 1/21"
     },
     de: {
         welcomeTitle: "Willkommen zu unserer Umfrage zu Wahrnehmung von politischen Meinungen!",
@@ -133,13 +142,17 @@ const translations = {
         dearParticipant: "Liebe Teilnehmerin, lieber Teilnehmer,",
         consentText: "Vielen Dank für die Teilnahme an unserer Umfrage. Bitte lesen Sie das Folgende und geben Sie Ihr Einverständnis.",
         purposeTitle: "Was ist das Ziel dieser Studie?",
-        purposeBody: "Das Ziel dieser Studie ist es, zu erforschen, wie Menschen politische Unterschiede oder Gemeinsamkeiten wahrnehmen, basierend auf deren politischen Meinungen. Sie nehmen teil, weil Sie in Deutschland leben und mindestens 18 Jahre alt sind.",
+        purposeBody: "Das Ziel dieser Studie ist es, zu erforschen, wie Menschen politische Unterschiede oder Gemeinsamkeiten wahrnehmen, basierend auf den politischen Meinungen von anderen. Sie nehmen teil, weil Sie in Deutschland leben und mindestens 18 Jahre alt sind.",
+        rightWrong: "Es gibt keine richtigen oder falschen Antworten. Wir sind ausschließlich an Ihren eigenen Wahrnehmungen interessiert.",
+        benefitsBody1: "Die Ergebnisse dieser Studie werden zeigen, ob Menschen politische Meinungen und Polarisierung ähnlich wahrnehmen oder ob es systematische Unterschiede in der Wahrnehmung gibt.",
+        eligibility: "Teilnahmebedingungen:",
+        eligibilityBody: "Sie sind zur Teilnahme an dieser Studie berechtigt, da Sie in Deutschland leben und mindestens 18 Jahre alt sind.",
         procedureTitle: "Wie läuft die Studie ab?",
-        procedureBody: "Zuerst stellen wir einige Fragen zu Ihren politischen Einstellungen. Dann bitten wir Sie, 3 Personen zu nennen, die Sie gut kennen. Sie schätzen ein, wie diese Personen auf dieselben Fragen antworten würden. Außerdem schätzen Sie, wie typische Wähler:innen der Grünen, AfD, Linken oder FDP antworten würden. Im Hauptteil ordnen Sie diese Meinungen auf einer politischen Karte ein. Zum Schluss folgen demographische Fragen.",
-        duration: "Diese Studie dauert etwa 20–30 Minuten.",
-        benefitsTitle: "Was sind die Vorteile einer Teilnahme?",
-        benefitsBody1: "Die Ergebnisse dieser Studie zeigen, ob Menschen Meinungen und Polarisierung ähnlich wahrnehmen oder ob systematische Unterschiede bestehen.",
-        benefitsBody2: "Sie erhalten eine Vergütung entsprechend der Dauer: 6 USD für 30 Minuten.",
+        procedureBody: "Zuerst stellen wir Ihnen ein paar Fragen zu Ihren politischen Einstellungen. Dann bitten wir Sie, 6 Personen zu nennen, die Sie gut kennen. Wir bitten Sie einzuschätzen, welche politischen Einstellungen diese Personen haben. Außerdem bitten wir Sie einzuschätzen, wie typische Wähler oder Wählerinnen der Grünen, der AfD, der Linken oder der FDP antworten würden. Im Hauptteil ordnen Sie diese Meinungen auf einer politischen Karte ein. Zum Schluss folgen ein paar kurze konkretere Fragen zu Ihrer Wahrnehmung von politischer Distanz und ein paar Fragen über Sie selbst.",
+        duration: "Die Studie dauert etwa 30 Minuten.",
+        paymentTitle: "Vergütung:",
+        paymentBody: "Sie erhalten eine Aufwandsentschädigung entsprechend der Studiendauer: 6 USD für ca. 30 Minuten Teilnahme.",
+        withdrawal: "Kann ich die Studie abbrechen?",
         withdrawalInfo: "Die Teilnahme ist freiwillig. Sie können jederzeit ohne Angabe von Gründen abbrechen.",
         contactInfo: "Wenn Sie Ihre Daten nach Abschluss löschen lassen möchten, kontaktieren Sie die Koordinator:innen der Studie Mirta Galesic und Peter Steiglechner innerhalb von 30 Tagen unter",
         dataUsageTitle: "Wie werden die gesammelten Daten verwendet?",
@@ -150,12 +163,11 @@ const translations = {
         questionsTitle: "Möglichkeit zur Rückfrage",
         questionsBody: "Bei Fragen wenden Sie sich bitte an die Koordinator:innen der Studie Mirta Galesic und Peter Steiglechner unter",
         ethicsReview: "Diese Studie wurde von der SFI-Ethikkommission geprüft.",
-        consentDisclaimer: "Es gibt keine richtigen oder falschen Antworten. Die Teilnahme ist anonym und dient ausschließlich wissenschaftlichen Zwecken.",
         consentDecl: "Ich habe die oben stehenden Informationen gelesen. Durch einen Klick auf 'Ich gebe mein Einverständnis' erkläre ich mich freiwillig bereit, an dieser Studie teilzunehmen.",
         consentYes: "Ich gebe mein Einverständnis.",
         consentNo: "Ich gebe mein Einverständnis nicht.",
         nextBtn: "Weiter",
-        pageText: "Seite 1/19"
+        pageText: "Seite 1/21"
     }
 };
 

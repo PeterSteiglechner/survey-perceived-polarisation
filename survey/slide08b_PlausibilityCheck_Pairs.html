@@ -6,20 +6,6 @@
 {{ block content }}
 
 <div>
-<table style="width: 100%; border-collapse: separate; border-spacing: 1em 0;">
-  <tr>
-    <td style="width: 50%; vertical-align: top;">
-      {% if img1 %}
-        <div id="popup1" class="popup-box"></div>
-      {% endif %}
-    </td>
-    <td style="width: 50%; vertical-align: top;">
-      {% if img2 %}
-        <div id="popup2" class="popup-box"></div>
-      {% endif %}
-    </td>
-  </tr>
-</table>
 
 {% comment %} 
 
@@ -58,7 +44,7 @@
       max="{{ satisfaction_max }}" 
       step="1"
       value="{{ 5 }}"
-      oninput="document.getElementById('sliderValue').textContent = this.value"
+      oninput="document.getElementById('sliderValue').textContent = this.value +' / 10'"
       required
     >
     <div style="display: flex; justify-content: space-between; margin-top: 5px;">
@@ -66,22 +52,40 @@
   <span>{{ satisfaction_max_label }}</span>
 </div>
     <div  style="text-align: center; margin-top: 15px;">
-      {% if lan_en %} Selected value: {% else %} Ausgewählter Wert: {%endif%}<span id="sliderValue">{{ 5 }}</span>
+      {% if lan_en %} Selected value: {% else %} Ausgewählter Wert: {%endif%}<span id="sliderValue">{{ 5 }} / 10</span>
     </div>
 
     {{ formfield_errors current_check  }}
   </div>
 </div>
 
+<table style="width: 100%; border-collapse: separate; border-spacing: 1em 0;">
+  <tr>
+    <td style="width: 50%; vertical-align: top;">
+      {% if img1 %}
+        <div id="popup1" class="popup-box"></div>
+      {% endif %}
+    </td>
+    <td style="width: 50%; vertical-align: top;">
+      {% if img2 %}
+        <div id="popup2" class="popup-box"></div>
+      {% endif %}
+    </td>
+  </tr>
+</table>
+
+<br>
+
+
 
 
   <div style="display: flex; justify-content: space-between; align-items: center;">
     {% if lan_en %}
     {{ next_button }}
-    <div style="margin-left: auto;">Page {{ nslide }}/19</div>
+    <div style="margin-left: auto;">Page {{nslide}}/{{maxslides}}</div>
     {% else %}
     <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
-    <div style="margin-left: auto;">Seite {{ nslide }}/19</div>
+    <div style="margin-left: auto;">Seite {{nslide}}/{{maxslides}}</div>
     {% endif %}
   </div>
 </div>
