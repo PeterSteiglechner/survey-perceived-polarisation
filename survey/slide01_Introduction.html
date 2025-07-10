@@ -1,138 +1,18 @@
-{{block content}}
+{% block styles %}
+    <link rel="stylesheet" href="{{ static 'main.css' }}">
+{% endblock %}
 
-<style>
-    .card-section {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 30px;
-        margin: 30px 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
+{% block content %}
 
-    .card {
-        border: 1px solid #ddd;
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        background-color: #fff;
-        transition: box-shadow 0.3s ease;
-    }
+<h2>Welcome to our survey on the perception of political opinions!<br>Willkommen zu unserer Umfrage zu Wahrnehmung von politischen Meinungen!
+</h2>
 
-    .card:hover {
-        box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-    }
 
-    .card h3 {
-        margin-top: 0;
-        margin-bottom: 1em;
-        font-size: 20px;
-        color: #2c3e50;
-    }
-
-    .form-group {
-        margin-bottom: 1.5em;
-    }
-
-    /* Radio Card Styling */
-    .option-cards {
-        display: flex;
-        gap: 15px;
-        margin-top: 10px;
-        flex-wrap: wrap;
-    }
-
-    .option-card {
-        border: 2px solid #ccc;
-        border-radius: 10px;
-        padding: 12px 20px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        flex: 1;
-        min-width: 120px;
-        max-width: 200px;
-    }
-
-    .option-card:hover {
-        border-color: #666;
-        background-color: #f9f9f9;
-    }
-
-    .option-card input[type="radio"] {
-        display: none;
-    }
-
-    .option-card.selected {
-        border-color: #007bff;
-        background-color: #e6f0ff;
-    }
-
-    .language-section, .consent-section {
-        margin-bottom: 20px;
-    }
-
-    /* Override for consent section only - make horizontal and add colors */
-    .consent-section .option-cards {
-        flex-direction: row !important;
-        gap: 15px;
-    }
-
-    .consent-section .option-card {
-        flex: 1;
-        max-width: none;
-        padding: 15px;
-    }
-
-    /* Consent Yes - Light Green */
-    .consent-section .option-card:first-child {
-        background-color:rgb(215, 240, 215);
-        border-color: #90ee90;
-    }
-
-    .consent-section .option-card:first-child:hover {
-        background-color:rgb(170, 220, 170);
-        border-color: #7dd87d;
-    }
-
-    .consent-section .option-card:first-child.selected {
-        background-color:rgb(130, 200, 130);
-        border-color:rgb(38, 135, 60);
-        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
-    }
-
-    /* Consent No - Light Red */
-    .consent-section .option-card:last-child {
-        background-color: #fdf0f0;
-        border-color: #ffb3b3;
-    }
-
-    .consent-section .option-card:last-child:hover {
-        background-color: #f8e8e8;
-        border-color: #ff9999;
-    }
-
-    .consent-section .option-card:last-child.selected {
-        background-color: #f8d7da;
-        border-color:rgb(200, 23, 41);
-        box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
-    }
-
-    h3 {
-        color: #333;
-        margin-bottom: 15px;
-    }
-</style>
-
-<h2>Welcome to our survey on the perception of political opinions! / Willkommen zu unserer Umfrage zu Wahrnehmung von politischen Meinungen!</h2>
-
-<br>
-
+<!-- Language Selection -->
 <div class="language-section">
     <div class="card">
         <div class="form-group">
-            <label class="form-label">
-                Please select your preferred language / Bitte wählen Sie Ihre bevorzugte Sprache:
-            </label>
+            <label class="form-label" data-i18n="selectLanguage">Please select your preferred language / Bitte wählen Sie Ihre bevorzugte Sprache:</label>
             <div class="option-cards" data-field="language">
                 <label class="option-card">
                     <input type="radio" name="language" value="en"> English
@@ -142,7 +22,6 @@
                 </label>
             </div>
         </div>
-                    {{ formfield_errors "language" }}
     </div>
 </div>
 
@@ -152,95 +31,185 @@
 <div class="consent-section" id="consent-section" style="display: none;">
     <div class="card">
         <div class="form-group">
-            <label class="form-label">
-                <h3 id="consent-title">Consent / Einverständnis</h3>
-                <p id="consent-text" style="margin-bottom: 1.5em; color: black;">
-                    Thank you for participating in our survey. Please read the following and indicate your consent. / Vielen Dank für die Teilnahme in unserer Studie. Bitte lesen Sie das Folgende und geben Sie Ihr Einverständnis.
-                </p>
-                <p id="consent-body" style="margin-bottom: 1.5em; color: black;">
-                   In this survey, we first ask a few questions about your political beliefs. Next, we ask you to name 3 people that you know well. You will estimate how they would respond to the same questions. You will also estimate how a typical Green, AfD, or FDP voter would respond. In the main part of the survey, we ask you to place these opinions—including your own—on a political map. In the final part, we ask questions about your age, your political identity, your perception of political polarisation, and your interest in politics.
-                </p>
-                <div class="instructions" style="margin: 20px 0; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
-                    <p id="consent-disclaimer" style="margin: 0; color: #856404;">There are no right or wrong answers. Responses are anonymous and used solely for academic research.</p>
-                </div>
+            <h3 data-i18n="consentTitle"></h3>
+            <p data-i18n="dearParticipant"></p>
+            <p data-i18n="consentText"></p>
+
+            <p><strong data-i18n="purposeTitle"></strong></p>
+            <p data-i18n="purposeBody"></p>
+
+            <p><strong data-i18n="procedureTitle"></strong></p>
+            <p data-i18n="procedureBody"></p>
+
+            <p data-i18n="duration"></p>
+
+            <p><strong data-i18n="benefitsTitle"></strong></p>
+            <p data-i18n="benefitsBody1"></p>
+            <p data-i18n="benefitsBody2"></p>
+
+            <p data-i18n="withdrawalInfo"></p>
+            <p data-i18n="contactInfo"></p><p style="margin-top:-1em"><a href='mailto:collectivemindslab@csh.ac.at'>collectivemindslab@csh.ac.at</a></p>
+
+            <p><strong data-i18n="dataUsageTitle"></strong></p>
+            <p data-i18n="dataUsage1"></p>
+            <p data-i18n="dataUsage2"></p>
+            <p data-i18n="dataUsage3"></p>
+            <p data-i18n="dataUsage4"></p>
+
+            <p><strong data-i18n="questionsTitle"></strong></p>
+            <p data-i18n="questionsBody"></p><p style="margin-top:-1em"><a href='mailto:collectivemindslab@csh.ac.at'>collectivemindslab@csh.ac.at</a></p>
+
+            <p data-i18n="ethicsReview"></p>
+
+            <div class="instructions">
+                <p data-i18n="consentDisclaimer"></p>
+            </div>
+            
+            <div class="instructions" style="margin: 10px 0; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+                <p data-i18n="consentDecl"></p>
+            </div>
+
                 <div class="option-cards" data-field="consent">
                     <label class="option-card">
                         <input type="radio" name="consent" value="1">
-                        <span id="consent-yes">I consent to participate in the survey.</span>
+                        <span data-i18n="consentYes"></span>
                     </label>
                     <label class="option-card">
                         <input type="radio" name="consent" value="0">
-                        <span id="consent-no">I do not consent.</span>
+                        <span data-i18n="consentNo"></span>
                     </label>
                 </div>
-            </label>
+            </div>
         </div>
-            {{ formfield_errors "consent" }}
     </div>
 </div>
-
 
 <br>
 
 <div style="display: flex; justify-content: space-between; align-items: center;">
-    <button type="submit" id="next-btn" class="otree-btn-next btn btn-primary">Next</button>
-    <div id="pagedispl" style="margin-left: auto;">Page 1/19</div>
+    {{ next_button }}
+    <div id="pagedispl"></div>
 </div>
-</form>
+
 
 
 <script>
-// Translations
 const translations = {
     en: {
+        welcomeTitle: "Welcome to our survey on the perception of political opinions!",
+        selectLanguage: "Please select your preferred language:",
         consentTitle: "Consent",
-        consentText: "Please read the following and indicate your consent.",
-        consentYes: "I consent to participate in the survey.",
-        consentNo: "I do not consent.",
-        consentBody: "In this survey, we first ask a few questions about your political beliefs. Next, we ask you to name 3 people that you know well. You will estimate how they would respond to the same questions. You will also estimate how a typical Green, AfD, or FDP voter would respond. In the main part of the survey, we ask you to place these opinions—including your own—on a political map. In the final part, we ask questions about your age, your political identity, your perception of political polarisation, and your interest in politics.",
-        consentDisclaimer: "There are no right or wrong answers. Responses are anonymous and used solely for academic research."
+        dearParticipant: "Dear participant,",
+        consentText: "Thank you for participating in our survey. Please read the following and indicate your consent.",
+        purposeTitle: "What is the purpose of this study?",
+        purposeBody: "The purpose of this study is to explore how people perceive and interpret political differences or similarities based on how they view those people's political opinions. You are being asked to take part in this study because you are living in Germany and are at least 18 years old.",
+        procedureTitle: "What is the procedure of the study?",
+        procedureBody: "We will first ask a few questions about your political beliefs. Next, we ask you to name 3 people that you know well. You will estimate how they would respond to the same questions. You will also estimate how typical voters of the Green Party, the AfD, the Left Party or the FDP would respond. In the main part of the survey, we ask you to place these opinions—including your own—on a political map. In the final part, we ask questions about your age, your political identity, your perception of political polarisation, and your interest in politics.",
+        duration: "This study will last for about 20–30 minutes.",
+        benefitsTitle: "What are the benefits of participating in the study?",
+        benefitsBody1: "The findings from this project will provide information on whether people perceive opinions and polarisation in society in a shared way or whether there are systematic differences in perception.",
+        benefitsBody2: "You will also be compensated for the duration of the study according to standard hourly rates: 6 USD for 30 minutes.",
+        withdrawalInfo: "Your participation in this research study is voluntary. You may refuse to participate or stop at any time without penalty.",
+        contactInfo: "If you complete the study but want your data removed, please contact within 30 days the study coordinators Mirta Galesic and Peter Steiglechner at",
+        dataUsageTitle: "How will the data collected in this study be used?",
+        dataUsage1: "All metadata collected in this study that could identify you—such as your Prolific ID—will be kept strictly confidential and only disclosed with your explicit permission.",
+        dataUsage2: "Identifying information is stored separately from your survey responses and will not be included in any published or shared data.",
+        dataUsage3: "Your anonymized data may be shared in an Open Data Repository for non-commercial, scientific use.",
+        dataUsage4: "Your personal data will never be used for purposes that are incompatible with the goals of this study.",
+        questionsTitle: "Possibility to discuss further questions",
+        questionsBody: "If you have any further questions about the study, please contact the study coordinators Mirta Galesic and Peter Steiglechner at",
+        ethicsReview: "This study has been reviewed by SFI Ethics XX.",
+        consentDisclaimer: "There are no right or wrong answers. Responses are anonymous and used solely for academic research.",
+        consentDecl: "I have read the information provided above. By clicking 'I give consent' I indicate my voluntary agreement to participate in this research study.",
+        consentYes: "I give consent.",
+        consentNo: "I do not give consent.",
+        nextBtn: "Next",
+        pageText: "Page 1/19"
     },
     de: {
+        welcomeTitle: "Willkommen zu unserer Umfrage zu Wahrnehmung von politischen Meinungen!",
+        selectLanguage: "Bitte wählen Sie Ihre bevorzugte Sprache:",
         consentTitle: "Einverständnis",
-        consentText: "Bitte lesen Sie das Folgende und geben Sie Ihr Einverständnis.",
-        consentYes: "Ich stimme der Teilnahme an der Umfrage zu.",
-        consentNo: "Ich stimme nicht zu.",
-        consentBody: "In dieser Umfrage stellen wir Ihnen zunächst ein paar Fragen zu Ihren politischen Überzeugungen. Dann bitten wir Sie, 3 Personen zu nennen, die Sie gut kennen. Sie werden einschätzen, wie diese Personen auf dieselben Fragen antworten würden. Sie werden auch einschätzen, wie ein typischer Wähler oder eine typische Wählerin der Grünen, der AfD oder der FDP antworten würde. Im Hauptteil der Umfrage bitten wir Sie, diese Meinungen - einschließlich Ihrer eigenen - auf einer politischen Landkarte zu verordnen. Im letzten Teil stellen wir Fragen zu Ihrem Alter, Ihrer politischen Identität, Ihrer Wahrnehmung von politischer Polarisierung und Ihrem Interesse an Politik.",
-        consentDisclaimer: "Es gibt keine richtigen oder falschen Antworten. Die Antworten sind anonym und werden ausschließlich für wissenschaftliche Forschung verwendet."
+        dearParticipant: "Liebe Teilnehmerin, lieber Teilnehmer,",
+        consentText: "Vielen Dank für die Teilnahme an unserer Umfrage. Bitte lesen Sie das Folgende und geben Sie Ihr Einverständnis.",
+        purposeTitle: "Was ist das Ziel dieser Studie?",
+        purposeBody: "Das Ziel dieser Studie ist es, zu erforschen, wie Menschen politische Unterschiede oder Gemeinsamkeiten wahrnehmen, basierend auf deren politischen Meinungen. Sie nehmen teil, weil Sie in Deutschland leben und mindestens 18 Jahre alt sind.",
+        procedureTitle: "Wie läuft die Studie ab?",
+        procedureBody: "Zuerst stellen wir einige Fragen zu Ihren politischen Einstellungen. Dann bitten wir Sie, 3 Personen zu nennen, die Sie gut kennen. Sie schätzen ein, wie diese Personen auf dieselben Fragen antworten würden. Außerdem schätzen Sie, wie typische Wähler:innen der Grünen, AfD, Linken oder FDP antworten würden. Im Hauptteil ordnen Sie diese Meinungen auf einer politischen Karte ein. Zum Schluss folgen demographische Fragen.",
+        duration: "Diese Studie dauert etwa 20–30 Minuten.",
+        benefitsTitle: "Was sind die Vorteile einer Teilnahme?",
+        benefitsBody1: "Die Ergebnisse dieser Studie zeigen, ob Menschen Meinungen und Polarisierung ähnlich wahrnehmen oder ob systematische Unterschiede bestehen.",
+        benefitsBody2: "Sie erhalten eine Vergütung entsprechend der Dauer: 6 USD für 30 Minuten.",
+        withdrawalInfo: "Die Teilnahme ist freiwillig. Sie können jederzeit ohne Angabe von Gründen abbrechen.",
+        contactInfo: "Wenn Sie Ihre Daten nach Abschluss löschen lassen möchten, kontaktieren Sie die Koordinator:innen der Studie Mirta Galesic und Peter Steiglechner innerhalb von 30 Tagen unter",
+        dataUsageTitle: "Wie werden die gesammelten Daten verwendet?",
+        dataUsage1: "Personenbezogene Metadaten wie Ihre Prolific ID werden streng vertraulich behandelt und nur mit Ihrer Zustimmung weitergegeben.",
+        dataUsage2: "Identifizierende Informationen werden getrennt gespeichert und nicht veröffentlicht.",
+        dataUsage3: "Anonymisierte Daten können in Open-Data-Repositorien zu wissenschaftlichen Zwecken geteilt werden.",
+        dataUsage4: "Ihre Daten werden niemals zweckentfremdet.",
+        questionsTitle: "Möglichkeit zur Rückfrage",
+        questionsBody: "Bei Fragen wenden Sie sich bitte an die Koordinator:innen der Studie Mirta Galesic und Peter Steiglechner unter",
+        ethicsReview: "Diese Studie wurde von der SFI-Ethikkommission geprüft.",
+        consentDisclaimer: "Es gibt keine richtigen oder falschen Antworten. Die Teilnahme ist anonym und dient ausschließlich wissenschaftlichen Zwecken.",
+        consentDecl: "Ich habe die oben stehenden Informationen gelesen. Durch einen Klick auf 'Ich gebe mein Einverständnis' erkläre ich mich freiwillig bereit, an dieser Studie teilzunehmen.",
+        consentYes: "Ich gebe mein Einverständnis.",
+        consentNo: "Ich gebe mein Einverständnis nicht.",
+        nextBtn: "Weiter",
+        pageText: "Seite 1/19"
     }
 };
 
-// Handle option card selection
-document.querySelectorAll('.option-cards').forEach(group => {
-    const name = group.dataset.field;
-    group.querySelectorAll('input[type="radio"]').forEach(radio => {
-        radio.addEventListener('change', () => {
-            group.querySelectorAll('.option-card').forEach(card => {
-                card.classList.remove('selected');
+    // Initially hide oTree's next button
+    document.addEventListener("DOMContentLoaded", function () {
+        const nextButton = document.querySelector('button[type="submit"]');
+
+        // Handle language + consent selection
+        document.querySelectorAll('.option-cards').forEach(group => {
+            const field = group.dataset.field;
+            group.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    // Remove all selected
+                    group.querySelectorAll('.option-card').forEach(card => card.classList.remove('selected'));
+                    radio.closest('.option-card').classList.add('selected');
+
+                    if (field === 'language') {
+                        document.getElementById('consent-section').style.display = 'block';
+                        updateLanguage(radio.value);
+                    }
+                });
             });
-            radio.closest('.option-card').classList.add('selected');
-            
-            // Show consent section when language is selected
-            if (name === 'language') {
-                document.getElementById('consent-section').style.display = 'block';
-                updateLanguage(radio.value);
-            }
         });
     });
-});
 
-// Update text based on selected language
-function updateLanguage(lang) {
-    const t = translations[lang];
-    document.getElementById('next-btn').textContent = lang === 'de' ? 'Weiter' : 'Next';
-    document.getElementById('pagedispl').textContent = lang === 'de' ? 'Seite 1/19' : 'Page 1/19';
-    document.getElementById('consent-title').textContent = t.consentTitle;
-    document.getElementById('consent-text').textContent = t.consentText;
-    document.getElementById('consent-yes').textContent = t.consentYes;
-    document.getElementById('consent-no').textContent = t.consentNo;
-    document.getElementById('consent-body').textContent = t.consentBody;
-    document.getElementById('consent-disclaimer').textContent = t.consentDisclaimer;
-}
+
+
+        function updateLanguage(lang) {
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+        }
+
+        // Option card selection handling
+        document.querySelectorAll('.option-cards').forEach(group => {
+            const field = group.dataset.field;
+            group.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    // Remove all selected
+                    group.querySelectorAll('.option-card').forEach(card => card.classList.remove('selected'));
+                    // Add selected class to the parent
+                    radio.closest('.option-card').classList.add('selected');
+
+                    // Handle language change
+                    if (field === 'language') {
+                        document.getElementById('consent-section').style.display = 'block';
+                        updateLanguage(radio.value);
+                    }
+                });
+            });
+        });
 </script>
-
-{{endblock}}
+{% endblock %}

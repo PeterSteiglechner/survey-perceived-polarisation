@@ -1,26 +1,42 @@
+{% block styles %}
+    <link rel="stylesheet" href="{{ static 'main.css' }}">
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <h2>{{page_title}} </h2>
-    <h4>{{heading}}</h4>
 
-        <div class="instructions" style="margin: 20px 0; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
-        <p style="margin-bottom: 0.5em; color: grey;">
-            {{instru_main}}
-        </p>
+    <div class="instructions" style="margin: 10px 0; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+        {{instru_main}}
+    </div>
+    
+    <div class="instructions" style="margin: 10px 0; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+        {{no_wrong_answers}}
     </div>
 
-    <p style="margin-bottom: 0.5em;">
+
+    <p>
         {{instru_p1}}
     </p>
 
-    <p style="margin-bottom: 0.5em;">
+    <h3>{{heading}}</h3>
+      <p>
         {{instru_p2}}
         
     </p>
     
-     <div>
-        <img src="{% static img_source %}" alt="Political opinion profile" style="width: 480px; border: 1px solid #ddd; border-radius: 4px; margin: 8px 0;">
-     </div>
+    <!-- Static popup for currentP dot -->
+    <div id="staticPopup" style="
+        width: 480px;
+        padding: 8px;
+        background: white;
+        border: 2px solid #333;
+        border-radius: 6px;
+        box-shadow: 4px 4px 12px rgba(0,0,0,0.3);
+        font-size: 15px;
+        line-height: 1.3;
+        margin: 8px 0;
+    "></div>
     
     <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-left: 4px solid #007bff; border-radius: 4px;">
             {{instru_click}}     
@@ -56,13 +72,13 @@
             {{all_dots_instr}}
         </p>
     </div>
-
+{% comment %} 
     </div>
         <div class="instructions" style="margin: 10px 0; padding: 15px; background:rgb(255, 235, 235); border-left: 4px solid rgb(255, 0, 0); border-radius: 4px;">
     <p style="margin: 0; color:rgb(0, 0, 0);">
         {{reminder}}
     </p>
-    </div>
+    </div> {% endcomment %}
     
 
 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -75,22 +91,6 @@
     {% endif %}
 </div>
 </div>
-
-<style>
-    .container {
-        max-width: 800px;
-        margin: 0 auto;
-        font-family: Arial, sans-serif;
-    }
-    
-    #dragCanvas:active {
-        cursor: grabbing;
-    }
-    #toggleHelpingLines:hover {
-        background: #5a6268 !important;
-    }
-    
-</style>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -110,6 +110,7 @@
             {% endfor %}
         ];
         const popup = document.getElementById("popup");
+        const staticPopup = document.getElementById("staticPopup");
 
         let draggingPoint = null;
         let hoveredPoint = null;
@@ -125,6 +126,12 @@
         let helpingLinesEnabled = false;
         
         console.log("Loaded points:", points);
+
+        // Find the currentP dot and display its static popup
+        const currentPDot = points.find(p => p.varname === "{{ P }}");
+        if (currentPDot) {
+            displayStaticPopup(currentPDot);
+        }
 
         const toggleButton = document.getElementById("toggleHelpingLines");
         
@@ -147,6 +154,54 @@
             
             drawCanvas();
         });
+
+        function getAnswerStyling(answer) {
+            const trimmedAnswer = answer.toLowerCase().trim();
+            let backgroundColor = '';
+            let texcolor = "black";
+            if ((trimmedAnswer === 'strongly disagree') | (trimmedAnswer === 'stimme überhaupt nicht zu')){
+                backgroundColor = 'rgba(230,97,1, 1)'; // Light red
+                texcolor = "rgb(255, 255, 255)";
+            } else if ((trimmedAnswer === 'disagree') | (trimmedAnswer === 'stimme eher nicht zu')) {
+                backgroundColor = 'rgba(253,184,99, 0.5)'; // Very light red
+            } else if ((trimmedAnswer === 'neutral') | (trimmedAnswer === 'teils/teils')) {
+                backgroundColor =  'rgba(165,165,165, 0.15)'; // Light yellow
+            } else if ((trimmedAnswer === 'agree') | (trimmedAnswer === 'stimme eher zu')){
+                backgroundColor = 'rgba(178,171,210, 0.5)'; // Light green
+            } else if ((trimmedAnswer === 'strongly agree') | (trimmedAnswer === 'stimme voll und ganz zu')) {
+                backgroundColor = 'rgba(94,60,153, 1)'; // Medium green
+                texcolor = "rgb(255, 255, 255)";
+            }                
+            return backgroundColor ? `background-color: ${backgroundColor}; color: ${texcolor}; padding: 4px 0px; border-radius: 0px;` : '';
+        }
+
+        function displayStaticPopup(point) {
+            // Create table from description
+            let tableContent = '';
+            if (point.descr && point.descr.includes(';')) {
+                const lines = point.descr.split(';').map(line => line.trim()).filter(line => line);
+                tableContent = lines.map(line => {
+                    const colonIndex = line.indexOf(':');
+                    if (colonIndex !== -1) {
+                        const question = line.substring(0, colonIndex);
+                        const answer = line.substring(colonIndex + 1).trim();
+                        const answerStyling = getAnswerStyling(answer);
+                        
+                        return `<tr><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; width: 65%; word-wrap: break-word; line-height: 1.3;">${question}</td></td><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; font-weight: bold; width: 34%; word-wrap: break-word;line-height:1.8"><span style="${answerStyling}">${answer}</span></td></tr>`;
+                    }
+                    return `<tr><td colspan="2" style="padding: 10px 0px; border-bottom: 1px solid #eee;">${line}</td></tr>`;
+                }).join('');
+            } else {
+                tableContent = `<tr><td style="padding: 0px 0;">${point.descr || 'No description available'}</td></tr>`;
+            }
+            
+            staticPopup.innerHTML = `
+                <strong style="font-size: 18px;">${point.name_disp}</strong><br><br>
+                <table style="width: 100%; border-collapse: collapse;">
+                    ${tableContent} 
+                </table>
+            `;
+        }
 
         function drawScaleControl() {
             if (!showCircles || !helpingLinesEnabled) return;
@@ -278,6 +333,9 @@
         }
 
         function showPopup(point, mouseX, mouseY) {
+            // Don't show popup for currentP dot since it's already displayed statically
+            if (point.varname === "currentP") return;
+            
             const canvasRect = canvas.getBoundingClientRect();
             const canvasOffsetTop = canvas.offsetTop;
             const canvasOffsetLeft = canvas.offsetLeft;
@@ -285,27 +343,6 @@
             // Position popup to the right of canvas, starting at x=510px from canvas left
             popup.style.left = `${canvasOffsetLeft + 505}px`;
             popup.style.top = `${canvasOffsetTop}px`;
-            
-            // Function to get color styling based on answer value
-            function getAnswerStyling(answer) {
-                const trimmedAnswer = answer.toLowerCase().trim();
-                let backgroundColor = '';
-                let texcolor = "black";
-                if ((trimmedAnswer === 'strongly disagree') | (trimmedAnswer === 'stimme überhaupt nicht zu')){
-                    backgroundColor = 'rgba(230,97,1, 1)'; // Light red
-                    texcolor = "rgb(255, 255, 255)";
-                } else if ((trimmedAnswer === 'disagree') | (trimmedAnswer === 'stimme eher nicht zu')) {
-                    backgroundColor = 'rgba(253,184,99, 0.5)'; // Very light red
-                } else if ((trimmedAnswer === 'neutral') | (trimmedAnswer === 'teils/teils')) {
-                    backgroundColor =  'rgba(165,165,165, 0.15)'; // Light yellow
-                } else if ((trimmedAnswer === 'agree') | (trimmedAnswer === 'stimme eher zu')){
-                    backgroundColor = 'rgba(178,171,210, 0.5)'; // Light green
-                } else if ((trimmedAnswer === 'strongly agree') | (trimmedAnswer === 'stimme voll und ganz zu')) {
-                    backgroundColor = 'rgba(94,60,153, 1)'; // Medium green
-                    texcolor = "rgb(255, 255, 255)";
-                }                
-                return backgroundColor ? `background-color: ${backgroundColor}; color: ${texcolor}; padding: 4px 0px; border-radius: 0px;` : '';
-            }
             
             // Create table from description
             let tableContent = '';
@@ -318,7 +355,7 @@
                         const answer = line.substring(colonIndex + 1).trim();
                         const answerStyling = getAnswerStyling(answer);
                         
-                        return `<tr><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; width: 55%; word-wrap: break-word; line-height: 1.3;">${question}</td></td><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; font-weight: bold; width: 39%; word-wrap: break-word;line-height:1.8"><span style="${answerStyling}">${answer}</span></td></tr>`;
+                        return `<tr><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; width: 59%; word-wrap: break-word; line-height: 1.3;">${question}</td></td><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; font-weight: bold; width: 41 %; word-wrap: break-word;line-height:1.8"><span style="${answerStyling}">${answer}</span></td></tr>`;
                     }
                     return `<tr><td colspan="2" style="padding: 10px 0px; border-bottom: 1px solid #eee;">${line}</td></tr>`;
                 }).join('');
@@ -326,8 +363,8 @@
                 tableContent = `<tr><td style="padding: 0px 0;">${point.descr || 'No description available'}</td></tr>`;
             }
             popup.innerHTML = `
-                <strong style="font-size: 12px;">${point.name_disp}</strong><br><br>
-                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                <strong style="font-size:16px;margin-bottom:-0.5em;">${point.name_disp}</strong><br><br>
+                <table style="width: 100%; border-collapse: collapse;">
                     ${tableContent} 
                 </table>
             `;

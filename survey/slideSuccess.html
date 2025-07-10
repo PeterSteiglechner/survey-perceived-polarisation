@@ -1,3 +1,8 @@
+{% block styles %}
+    <link rel="stylesheet" href="{{ static 'main.css' }}">
+{% endblock %}
+
+
 {{ block title }}
 {% if lan_en %}
     Thank you for filling in our survey.
@@ -9,10 +14,10 @@
 {{ block content }}
 
 {% if lan_en %}
-<p style="margin-bottom:1.5em;">Please feel very welcome to contact us via <a href= "mailto:collectivemindslab@csh.ac.at
+<p >Please feel very welcome to contact us via <a href= "mailto:collectivemindslab@csh.ac.at
 ">collectivemindslab@csh.ac.at</a>, if you have any questions, feedback, or want to know more about the study and the results.</p>
 {% else %}
-<p style="margin-bottom:1.5em;">Kontaktieren Sie uns sehr gerne über <a href= "mailto:collectivemindslab@csh.ac.at
+<p >Kontaktieren Sie uns sehr gerne über <a href= "mailto:collectivemindslab@csh.ac.at
 ">collectivemindslab@csh.ac.at</a>, wenn Sie Fragen haben, Feedback geben wollen oder mehr über die Studie und die Resultate wissen wollen.</p>
     {% endif %}
 

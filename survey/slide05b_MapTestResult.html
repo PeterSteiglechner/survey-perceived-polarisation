@@ -1,6 +1,6 @@
-{% load static %}
-
-
+{% block styles %}
+    <link rel="stylesheet" href="{{ static 'main.css' }}">
+{% endblock %}
 
 {{ block content }}
 <h2> {{ page_title }}</h2>

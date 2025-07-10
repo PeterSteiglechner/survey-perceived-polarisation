@@ -1,18 +1,23 @@
+{% block styles %}
+    <link rel="stylesheet" href="{{ static 'main.css' }}">
+{% endblock %}
+
 {% block content %}
 <div class="container">
 
     <h2>{{page_title}} </h2>
 
-    <p style="margin-bottom: 1.5em; color: black;">{{instru1}}</p>
+    <p>{{instru1}}</p>
 
-    <p style="margin-bottom: -1em; color: black;">{{instruRoom}} </p>
+    <p>{{instruRoom}} </p>
 
-    <div class="instructions" style="margin: 20px 0; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
-        <p style="margin-bottom: 0.5em; color: black;">
+    <div class="instructions" style="margin: 10px 0; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
         {{instru_main}}
-        </p>
     </div>
 
+    <div class="instructions" style="margin: 10px 0; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+        {{no_wrong_answers}}
+    </div>
 
 
     <canvas id="dragCanvas" width="560" height="500" style="border: 0px solid #333; background: #fafafa; display: block; margin: 20px 0; cursor: grab; touch-action: none;"></canvas>
@@ -46,23 +51,6 @@
         <div style="margin-left: auto;">Seite {{nslide}}/19</div>
     {% endif %}
 </div>
-
-<style>
-    .container {
-        max-width: 800px;
-        margin: 0 auto;
-        font-family: Arial, sans-serif;
-    }
-    
-    #dragCanvas:active {
-        cursor: grabbing;
-    }
-
-    #toggleHelpingLines:hover {
-        background: #5a6268 !important;
-    }
-    
-</style>
 
 
 <script>

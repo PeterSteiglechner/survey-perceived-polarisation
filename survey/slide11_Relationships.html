@@ -2,26 +2,31 @@
     <link rel="stylesheet" href="{{ static 'main.css' }}">
 {% endblock %}
 
-{% block content %}
+{{ block content }}
 
 <h2>{{page_title}}</h2>
 
-{{instruction_text}}
+<br>
+
+<p style="font-size: 20px;"> {{qu_closeness}}</p>
+
 
 <form method="post">
     <table class="survey-table-clean">
-        <thead>
-            <tr>
-                <th style="width: 100%;">{{table_head}} </th>
-            </tr>
-        </thead>
         <tbody>
             {% for item in field_question_pairs %}
             <tr>
-                <td>
-                    <div class="statement-cell">{{ item.question_text }}</div>
+                <!-- Question text in the first column -->
+                <td class="question-cell" width="30%">
+                    {{ item.question_text }}
+                </td>
+
+                <td class="options-cell">
                     <div class="option-cards" data-field="{{ item.field_name }}">
                         {% for value, label in item.choices.items %}
+                         {% if value == "No answer" %}
+                            <div class="option-separator"></div> 
+                        {% endif %}
                         <label class="option-card" data-value="{{ value }}">
                             <input type="radio" name="{{ item.field_name }}" value="{{ value }}">
                             {{ label }}
@@ -34,17 +39,18 @@
             {% endfor %}
         </tbody>
     </table>
+</form>
+
 
 <div style="display: flex; justify-content: space-between; align-items: center;">
     {% if lan_en %}
         {{ next_button }}
-        <div style="margin-left: auto;">Page 2/19</div>
+        <div style="margin-left: auto;">Page {{nslide}}/19</div>
     {% else %}
         <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
-        <div style="margin-left: auto;">Seite 2/19</div>
+        <div style="margin-left: auto;">Seite {{nslide}}/19</div>
     {% endif %}
 </div>
-</form>
 
 <script>
 document.querySelectorAll('.option-cards').forEach(group => {
@@ -61,4 +67,5 @@ document.querySelectorAll('.option-cards').forEach(group => {
 </script>
 
 
-{% endblock %}
+
+{{endblock}}

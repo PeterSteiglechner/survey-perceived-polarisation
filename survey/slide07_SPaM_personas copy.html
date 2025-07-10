@@ -1,0 +1,327 @@
+{% block content %}
+<div class="container">
+    <h2>{{page_title}} </h2>
+    <h4>{{heading}}</h4>
+
+        <div class="instructions" style="margin: 20px 0; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+        <p style="margin-bottom: 0.5em; color: grey;">
+            {{instru_main}}
+        </p>
+    </div>
+
+    <p style="margin-bottom: 0.5em;">
+        {{instru_p1}}
+    </p>
+
+    <p style="margin-bottom: 0.5em;">
+        {{instru_p2}}
+        
+    </p>
+    
+     <div>
+        <img src="{% static img_source %}" alt="Political opinion profile" style="width: 480px; border: 1px solid #ddd; border-radius: 4px; margin: 8px 0;">
+     </div>
+    
+    <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-left: 4px solid #007bff; border-radius: 4px;">
+            {{instru_click}}     
+    </div> 
+
+
+    <canvas id="dragCanvas" width="560" height="500" style="border: 0px solid #333; background: #fafafa; display: block; margin: 20px 0; cursor: grab;"></canvas>  
+
+    <div id="popup" style="
+        display: none;
+        position: absolute;
+        width: 320px;
+        padding: 8px;
+        background: white;
+        border: 2px solid #333;
+        border-radius: 6px;
+        box-shadow: 4px 4px 12px rgba(0,0,0,0.3);
+        z-index: 1000;
+        font-size: 13px;
+        line-height: 1.3;
+    "></div>
+
+    <input type="hidden" name="positions" id="positions">
+
+    </div>
+            <div class="instructions" style="margin: 20px 0; padding: 15px; background:rgb(255, 235, 235); border-left: 4px solid rgb(255, 0, 0); border-radius: 4px;">
+        <p style="margin: 0; color:rgb(0, 0, 0);">
+            {{all_dots_instr}}
+        </p>
+    </div>
+
+    </div>
+        <div class="instructions" style="margin: 20px 0; padding: 15px; background:rgb(255, 235, 235); border-left: 4px solid rgb(255, 0, 0); border-radius: 4px;">
+    <p style="margin: 0; color:rgb(0, 0, 0);">
+        {{reminder}}
+    </p>
+    </div>
+    
+
+    {% if lan_en %}
+        {{ next_button }}
+    {% else %}
+        <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
+    {% endif %}
+</div>
+
+<style>
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        font-family: Arial, sans-serif;
+    }
+    
+    #dragCanvas:active {
+        cursor: grabbing;
+    }
+    
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const canvas = document.getElementById("dragCanvas");
+        const ctx = canvas.getContext("2d");
+        const points = [
+            {% for dot in dots %}
+                {
+                name_disp: "{{ dot.name_disp }}", 
+                varname: "{{ dot.varname }}", 
+                x: {{ dot.x }}, 
+                y: {{ dot.y }}, 
+                dottype: "{{ dot.dottype }}" ,
+                descr:"{{ dot.descr }}",
+                radius: 12
+                },    
+            {% endfor %}
+        ];
+        const popup = document.getElementById("popup");
+
+        let draggingPoint = null;
+        let hoveredPoint = null;
+        let selectedPoint = null;
+        
+        console.log("Loaded points:", points);
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the boundary square with enhanced styling
+            ctx.strokeStyle = "#333";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(0, 0, canvas.height, canvas.height);
+            
+       
+            // Draw all points
+            points.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                
+                // Set fill color based on type
+                ctx.fillStyle = p.dottype === "self" ? "grey" :
+                        p.varname === "Green Party" ? "#46962b" :
+                            p.varname === "AfD" ?  "#009ee0" :
+                                p.varname === "Left Party" ?  "#FF0000" :
+                                    p.varname === "FDP" ?  "#ffed00" :
+                                        p.dottype === "contact" ? "#00ff80":
+                                            p.dottype === "P" ? "pink":
+                                                "white";  
+                ctx.fill();
+                
+                // Add border with hover effect
+                ctx.strokeStyle = p === hoveredPoint ? "#fff" : "#333";
+                ctx.lineWidth = p === hoveredPoint ? 3 : 2;
+                ctx.stroke();
+
+                // Draw label with better positioning
+                ctx.fillStyle = "#333";
+                ctx.font = "12px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "bottom";
+                ctx.fillText(p.name_disp, p.x, p.y - 18);
+            });
+        }
+
+        function getMousePos(evt) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: evt.clientX - rect.left,
+                y: evt.clientY - rect.top
+            };
+        }
+
+        function findPoint(mousePos) {
+            return points.find(p => Math.hypot(p.x - mousePos.x, p.y - mousePos.y) < p.radius);
+        }
+
+         canvas.addEventListener("touchstart", function (evt) {
+            const touch = evt.touches[0];
+            const touchPos = getTouchPos(touch);
+            const touchedPoint = findPoint(touchPos);
+
+            if (touchedPoint) {
+                draggingPoint = touchedPoint;
+                selectedPoint = touchedPoint;
+                evt.preventDefault(); // Only prevent if actually touching a point
+            } else {
+                selectedPoint = null;
+            }
+        }, { passive: false });
+
+        canvas.addEventListener("touchmove", function (evt) {
+            if (!draggingPoint) return;
+
+            const touch = evt.touches[0];
+            const touchPos = getTouchPos(touch);
+
+            draggingPoint.x = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, touchPos.x));
+            draggingPoint.y = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, touchPos.y));
+            drawCanvas();
+
+            evt.preventDefault(); // Only prevent if dragging
+        }, { passive: false });
+
+        canvas.addEventListener("touchend", function () {
+            draggingPoint = null;
+        }, { passive: false });
+
+        function showPopup(point, mouseX, mouseY) {
+            const canvasRect = canvas.getBoundingClientRect();
+            const canvasOffsetTop = canvas.offsetTop;
+            const canvasOffsetLeft = canvas.offsetLeft;
+
+            // Position popup to the right of canvas, starting at x=510px from canvas left
+            popup.style.left = `${canvasOffsetLeft + 505}px`;
+            popup.style.top = `${canvasOffsetTop}px`;
+            
+            // Function to get color styling based on answer value
+            function getAnswerStyling(answer) {
+                const trimmedAnswer = answer.toLowerCase().trim();
+                let backgroundColor = '';
+                let texcolor = "black";
+                if ((trimmedAnswer === 'strongly disagree') | (trimmedAnswer === 'stimme überhaupt nicht zu')){
+                    backgroundColor = 'rgba(230,97,1, 1)'; // Light red
+                    texcolor = "rgb(255, 255, 255)";
+                } else if ((trimmedAnswer === 'disagree') | (trimmedAnswer === 'stimme eher nicht zu')) {
+                    backgroundColor = 'rgba(253,184,99, 0.5)'; // Very light red
+                } else if ((trimmedAnswer === 'neutral') | (trimmedAnswer === 'teils/teils')) {
+                    backgroundColor =  'rgba(165,165,165, 0.15)'; // Light yellow
+                } else if ((trimmedAnswer === 'agree') | (trimmedAnswer === 'stimme eher zu')){
+                    backgroundColor = 'rgba(178,171,210, 0.5)'; // Light green
+                } else if ((trimmedAnswer === 'strongly agree') | (trimmedAnswer === 'stimme voll und ganz zu')) {
+                    backgroundColor = 'rgba(94,60,153, 1)'; // Medium green
+                    texcolor = "rgb(255, 255, 255)";
+                }                
+                return backgroundColor ? `background-color: ${backgroundColor}; color: ${texcolor}; padding: 4px 0px; border-radius: 0px;` : '';
+            }
+            
+            // Create table from description
+            let tableContent = '';
+            if (point.descr && point.descr.includes(';')) {
+                const lines = point.descr.split(';').map(line => line.trim()).filter(line => line);
+                tableContent = lines.map(line => {
+                    const colonIndex = line.indexOf(':');
+                    if (colonIndex !== -1) {
+                        const question = line.substring(0, colonIndex);
+                        const answer = line.substring(colonIndex + 1).trim();
+                        const answerStyling = getAnswerStyling(answer);
+                        
+                        return `<tr><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; width: 55%; word-wrap: break-word; line-height: 1.3;">${question}</td></td><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; font-weight: bold; width: 39%; word-wrap: break-word;line-height:1.8"><span style="${answerStyling}">${answer}</span></td></tr>`;
+                    }
+                    return `<tr><td colspan="2" style="padding: 10px 0px; border-bottom: 1px solid #eee;">${line}</td></tr>`;
+                }).join('');
+            } else {
+                tableContent = `<tr><td style="padding: 0px 0;">${point.descr || 'No description available'}</td></tr>`;
+            }
+            popup.innerHTML = `
+                <strong style="font-size: 12px;">${point.name_disp}</strong><br><br>
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                    ${tableContent} 
+                </table>
+            `;
+            popup.style.display = "block";
+        }
+
+
+        canvas.addEventListener("mousedown", function (evt) {
+            const mousePos = getMousePos(evt);
+            const clickedPoint = findPoint(mousePos);
+
+            if (clickedPoint) {
+                draggingPoint = clickedPoint;
+                selectedPoint = clickedPoint;
+                showPopup(clickedPoint, mousePos.x, mousePos.y);
+            } else {
+                selectedPoint = null;
+                popup.style.display = "none";
+            }
+        });
+
+        canvas.addEventListener("mousemove", function (evt) {
+            const mousePos = getMousePos(evt);
+            const newHoveredPoint = findPoint(mousePos);
+            
+            if (newHoveredPoint !== hoveredPoint) {
+                hoveredPoint = newHoveredPoint;
+                drawCanvas();
+            }
+            
+            if (draggingPoint) {
+                draggingPoint.x = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, mousePos.x));
+                draggingPoint.y = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, mousePos.y));
+                drawCanvas();
+
+                if (selectedPoint === draggingPoint) {
+                    showPopup(draggingPoint, draggingPoint.x, draggingPoint.y);
+                }
+            }
+        });
+
+        canvas.addEventListener("mouseup", function () {
+            draggingPoint = null;
+        });
+
+        canvas.addEventListener("mouseleave", function () {
+            draggingPoint = null;
+            hoveredPoint = null;
+            drawCanvas();
+        });
+          
+        document.addEventListener("click", function (e) {
+            if (!canvas.contains(e.target) && !popup.contains(e.target)) {
+                popup.style.display = "none";
+                selectedPoint = null;
+            }
+        });
+
+        // Initial draw
+        drawCanvas();
+        
+        // Validation function for boundary checking
+        function allPointsInsideBox() {
+            return points.every(p => p.x >= 0 && p.x <= canvas.height && p.y >= 0 && p.y <= canvas.height);
+        }
+        
+        // Handle form submission
+        const form = document.querySelector("form");
+        const nextButton = document.querySelector("button[type=submit], .otree-btn-next");
+        
+        if (nextButton) {
+            nextButton.addEventListener("click", function (e) {
+                e.preventDefault();
+                if (!allPointsInsideBox()) {
+                    {% if lan_en %}
+                    alert("Please place all dots inside the positioning square before continuing.");
+                    {% else %}
+                    alert("Platzieren Sie bitte alle Punkte innerhalb des Rechtecks.");
+                    {% endif %}                    return;
+                }
+                document.getElementById("positions").value = JSON.stringify(points);
+                form.submit();
+            });
+        }
+    });
+</script>
+{% endblock %}
