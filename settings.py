@@ -17,8 +17,8 @@ SESSION_CONFIGS = [
 
 ROOMS = [
     dict(
-        name='20250630_Pretest',
-        display_name='20250630_Pretest',
+        name='20250710_Pretest',
+        display_name='20250710_Pretest',
     )
 ]
 

@@ -7,7 +7,7 @@
 <h2>{{page_title}}</h2>
 
 
-<p style="margin-bottom: 1.5em; color: black;">
+<p>
     {{instruction_text1}}
     <p style="margin-bottom: -1em; color: black;">{{instruction_text2}}</p>
 
@@ -17,46 +17,76 @@
         </p>
     </div>
     
-<p style="margin-bottom: 1.5em; color: black;"> {{ disclaimer }}</p>
+<p> {{ disclaimer }}</p>
 
-{{detailed_instructions_1}}
-<div style="display: flex; justify-content: center; align-items: flex-start; gap: 20px; margin-top: 20px;">
-  
-  <div style="flex: 1; max-width: 400px;">
-    {{detailed_instructions_2}}
-  </div>
-  
-  <canvas id="dragCanvas" width="360" height="300" 
-    style="border: 0px solid #333; background: rgb(250, 250, 250); display: block; cursor: grab; touch-action: none;">
-  </canvas>
-  
-</div>
-{% comment %} 
-    {{detailed_instructions}}
-
-    <canvas id="dragCanvas" width="360" height="300" style="border: 0px solid #333; background:rgb(250, 250, 250); display: block; margin: 20px auto; cursor: grab; touch-action: none;"></canvas> {% endcomment %}
-
-    <input type="hidden" id="positionsTest" name="positionsTest">
+{% if show_error_msg %}
+    <div id="hidden-content" style="display: block; margin-top: 20px;">   
+{% else %}
+    <button id="continue-btn" type="button" class="btn btn-primary">
+        {% if lan_en %}
+            Continue to practice round
+        {% else %}
+            Weiter zur Übungsrunde
+        {% endif %}
+    </button>
+    <div id="hidden-content" style="display: none; margin-top: 20px;">
+{% endif %}
 
 
+
+        
+    {{detailed_instructions_1}}
+    <div style="display: flex; justify-content: center; align-items: flex-start; gap: 20px; margin-top: 20px;">
+    
+    <div style="flex: 1; max-width: 400px;">
+        {{detailed_instructions_2}}
     </div>
-            <div class="instructions" style="margin: 20px 0; padding: 15px; background:rgb(255, 235, 235); border-left: 4px solid rgb(255, 0, 0); border-radius: 4px;">
+    
+    <canvas id="dragCanvas" width="360" height="300" 
+        style="border: 0px solid #333; background: rgb(250, 250, 250); display: block; cursor: grab; touch-action: none;">
+    </canvas>
+    
+    </div>
+    {% comment %} 
+        {{detailed_instructions}}
+
+        <canvas id="dragCanvas" width="360" height="300" style="border: 0px solid #333; background:rgb(250, 250, 250); display: block; margin: 20px auto; cursor: grab; touch-action: none;"></canvas> {% endcomment %}
+
+        <input type="hidden" id="positionsTest" name="positionsTest">
+
+        {% if show_error_msg %}
+      <div class="instructions" style="margin: 20px 0; padding: 15px; background:rgb(255, 235, 235); border-left: 4px solid rgb(255, 0, 0); border-radius: 4px;">
         <p style="margin: 0; color:rgb(0, 0, 0);">
-            {{all_dots_instr}}
+            {{latest_error_msg}}
         </p>
+        </div>
+        {% endif %}
+        
+        <div class="instructions" style="margin: 20px 0; padding: 15px; background:rgb(255, 235, 235); border-left: 4px solid rgb(255, 0, 0); border-radius: 4px;">
+            <p style="margin: 0; color:rgb(0, 0, 0);">
+                {{all_dots_instr}}
+            </p>
+        </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        {% if lan_en %}
+            {{ next_button }}
+            <div style="margin-left: auto;">Page {{nslide}}/{{maxslides}}</div>
+        {% else %}
+            <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
+            <div style="margin-left: auto;">Seite {{nslide}}/{{maxslides}}</div>
+        {% endif %}
     </div>
 
-<div style="display: flex; justify-content: space-between; align-items: center;">
-    {% if lan_en %}
-        {{ next_button }}
-        <div style="margin-left: auto;">Page {{nslide}}/{{maxslides}}</div>
-    {% else %}
-        <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
-        <div style="margin-left: auto;">Seite {{nslide}}/{{maxslides}}</div>
-    {% endif %}
+</div>
 </div>
 
-</div>
+<script>
+    document.getElementById('continue-btn').addEventListener('click', function () {
+        this.style.display = 'none';
+        document.getElementById('hidden-content').style.display = 'block';
+    });
+</script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
