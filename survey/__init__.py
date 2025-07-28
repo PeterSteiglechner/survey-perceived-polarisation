@@ -510,22 +510,22 @@ class slide05a_MapTest(Page):
     'page_title': "Political Mapping – Practice round" if lan=="en" else "Politisches Mapping – Übungsrunde",
     'lan':lan,
     'instruction_text1': 
-    "In the following part, we will ask you to place people on a political map based on how distant or similar you perceive their political views to be. To prepare for this main task, we will begin with a short <strong>practice round</strong>." if lan=="en" else "Im folgenden Teil werden wir Sie bitten, Personen auf einer politischen Landkarte einzuordnen, je nachdem, wie ähnlich oder unterschiedlich Sie deren politische Ansichten wahrnehmen. Zur Vorbereitung auf die eigentliche Aufgabe beginnen wir mit einer kurzen <strong>Übungsrunde</strong>.", 
+    "In the following part, we will ask you to place people on a political map based on how similar or different you perceive their political views to be. To prepare for this main task, we will begin with a short <strong>practice round</strong>." if lan=="en" else "Im folgenden Teil werden wir Sie bitten, Personen auf einer politischen Landkarte einzuordnen, je nachdem, wie ähnlich oder unterschiedlich Sie deren politische Ansichten wahrnehmen. Zur Vorbereitung auf die eigentliche Aufgabe beginnen wir mit einer kurzen <strong>Übungsrunde</strong>.", 
     'instruction_text2': "Imagine you, a friend, a co-worker, and your relative are in a room (the rectangle below)." if lan=="en" else "Stellen Sie sich vor, Sie sind zusammen mit einem Freund, einer Arbeitskollegin und ein Verwandter in einem Raum (das Rechteck unten).",
     'instruction_text3': 
-        "<p>Arrange the people in the room based on how <em>you</em> see their political views:</p><ul><li><strong>Place individuals closer together if you perceive them as politically similar.</strong></li><li><strong>Place individuals farther apart if you perceive them as politically distant.</strong></li></ul>" if lan=="en" else "<p>Ordnen Sie die Personen im Raum so an, wie <em>Sie</em> deren politische Ansichten wahrnehmen:</p><ul> <li><strong>Platzieren Sie Personen näher beieinander, wenn Sie diese als politisch ähnlich wahrnehmen.</strong></li><li><strong>Platzieren Sie Personen weiter auseinander, wenn Sie diese als politisch unterschiedlich wahrnehmen.</strong></li></ul>",
+        "<p>Arrange the people in the room based on how <em>you</em> see their political views:</p><ul><li><strong>Place individuals closer together if you perceive them as politically similar.</strong></li><li><strong>Place individuals farther apart if you perceive them as politically different.</strong></li></ul>" if lan=="en" else "<p>Ordnen Sie die Personen im Raum so an, wie <em>Sie</em> deren politische Ansichten wahrnehmen:</p><ul> <li><strong>Platzieren Sie Personen näher beieinander, wenn Sie diese als politisch ähnlich wahrnehmen.</strong></li><li><strong>Platzieren Sie Personen weiter auseinander, wenn Sie diese als politisch unterschiedlich wahrnehmen.</strong></li></ul>",
     'disclaimer': "<p>This is a practice round – some arrangements match the instructions below, others do not. When you click <em>Next</em>, we will show you whether your arrangement meets all the instructions." if lan=="en" else "<p>Dies ist eine Übungsrunde – einige Anordnungen entsprechen den untenstehenden Anweisungen, andere nicht. Wenn Sie auf <em>Weiter</em> klicken, erfahren Sie, ob Ihre Anordnung alle Vorgaben erfüllt.</p>", # In the main task on the next slide, there will be NO right or wrong answers — only your personal perception will matter.</p> #  Im Hauptteil auf der nächsten Seite wird es dagegegen KEINE richtigen oder falschen Antworten geben – nur Ihre persönliche Wahrnehmung wird relevant sein.
     'detailed_instructions_1': "<h3>Practice Round Step-by-Step Instructions</h4><p>You will start with several points on the right side. Drag these one by one into the rectangle as described in the following instructions:</p>" if lan=="en" else
     "<h3>Übungsrunde Schritt-für-Schritt Anleitung</h4><p >Sie beginnen mit mehreren Punkten auf der rechten Seite. Ziehen Sie diese nacheinander in das Rechteck, wie in der folgenden Anleitung beschrieben:</p>", 
     'detailed_instructions_2': (
         "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 1:</strong> Self</summary><p>Place the point <strong>Self</strong> somewhere within the rectangle – it represents your own political views.</p></details>" + \
 "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 2:</strong> Friend</summary><p>Place the point <strong>Friend</strong> near you – they share similar views.</p></details>" + \
-"<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 3:</strong> Co-worker</summary><p>Place <strong>Co-worker</strong> farther away, as they often have different opinions – but closer to <strong>Self</strong> than to <strong>Friend</strong>, because you perceive an even greater political distance between Co-worker and Friend.</p></details>" + \
+"<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 3:</strong> Co-worker</summary><p>Place <strong>Co-worker</strong> farther away, as they often have different opinions – but closer to <strong>Self</strong> than to <strong>Friend</strong>, because you perceive an even greater political difference between Co-worker and Friend.</p></details>" + \
 "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 4:</strong> Relative</summary><p>Your <strong>Relative</strong> has very different political views – place them far from <strong>Me</strong>, but somewhat closer to <strong>Friend</strong> and <strong>Co-worker</strong>, as you feel they share some opinions with them.</p></details>"
     ) if lan =="en" else (
         "<details  open style='margin-bottom: 0em;'> <summary  style='white-space: nowrap;'><strong>Schritt 1:</strong> Ich</summary> <p>Platzieren Sie den Punkt <strong>Ich</strong> irgendwo im Rechteck – er steht für Ihre politischen Ansichten.</p></details>"+\
         "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Schritt 2:</strong> Freund</summary><p>Setzen Sie den Punkt <strong>Freund</strong> in Ihre Nähe – er teilt ähnliche Ansichten wie Sie.</p></details>"+\
-        "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Schritt 3:</strong> Kollegin</summary><p>Platzieren Sie <strong>Kollegin</strong> weiter entfernt, da sie oft anderer Meinung als Sie ist – aber näher bei <strong>Ich</strong> als bei <strong>Freund</strong>, weil Sie den politischen Abstand zwischen Kollegin und Freund als noch größer wahrnehmen.</p></p></details>"+\
+        "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Schritt 3:</strong> Kollegin</summary><p>Platzieren Sie <strong>Kollegin</strong> weiter entfernt, da sie oft anderer Meinung als Sie ist – aber näher bei <strong>Ich</strong> als bei <strong>Freund</strong>, weil Sie zwischen Kollegin und Freund einen noch größeren politischen Unterschied wahrnehmen.</p></p></details>"+\
         "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Schritt 4:</strong> Verwandter</summary><p>Der <strong>Verwandte</strong> denkt politisch ganz anders – setzen Sie ihn weit weg von <strong>Ich</strong>, aber etwas näher an <strong>Freund</strong> und <strong>Kollegin</strong>, da Sie finden, dass der Verwandte in manchen Punkten deren Ansichten teilt.</p></details>"
     ), 
     #"<details open style='margin-bottom: 0em;'><summary style='white-space: nowrap;'><strong>Step 1</strong></summary>Place the point <em>Self</em> somewhere inside the rectangle. This point represents your own political views.</details> <details open style='margin-bottom: 0em;'><summary style='white-space: nowrap;'><strong>Step 2</strong></summary>Place the point <em>Friend</em> near you. The friend has similar views to yours.</details> <details open style='margin-bottom: 0em;'><summary style='white-space: nowrap;'><strong>Step 3</strong></summary>Add your <em>Co-worker</em>. Since you often disagree with them, place the point <em>Co-worker</em> farther away from <em>Self</em>.</details> <details open style='margin-bottom: 0em;'><summary style='white-space: nowrap;'><strong>Step 4</strong></summary>You also believe that your co-worker's views are even more different from your friend's than from yours. Therefore, place the point so that <em>Co-worker</em> is farther from <em>Friend</em> than from <em>Self</em>.</details> <details open style='margin-bottom: 0em;'><summary style='white-space: nowrap;'><strong>Step 5</strong></summary>Add your <em>Relative</em>. You feel that this relative thinks quite differently politically than you do. So place the point <em>Relative</em> far away from the point <em>Self</em>.</details> <details open style='margin-bottom: 0em;'><summary style='white-space: nowrap;'><strong>Step 6</strong></summary>You feel that your relative is closer to your friend and co-worker on some issues than to yourself. So place <em>Relative</em> closer to <em>Co-worker</em> and <em>Friend</em>, but still far away from <em>Self</em>." if lan == "en" else "<details open style='margin-bottom: 0em;'><summary style='white-space: nowrap;'><strong>Schritt 1</strong></summary>Platzieren Sie den Punkt <em>Ich</em> irgendwo im Rechteck. Dieser Punkt steht für Ihre eigenen politischen Ansichten.</details><details open style='margin-bottom: 0em;'><summary style='white-space: nowrap;'><strong>Schritt 2</strong></summary> Platzieren Sie den Punkt <em>Freund</em> in Ihrer Nähe. Der Freund hat ähnliche Ansichten wie Sie.</details><details open style='margin-bottom: 0em;'><summary style='white-space: nowrap;'><strong>Schritt 3</strong></summary>Fügen Sie Ihre <em>Kollegin</em> hinzu. Da sie oft anderer Meinung sind als sie, platzieren Sie den Punkt <em>Kollegin</em> weiter entfernt von <em>Ich</em>.</details><details open style='margin-bottom: 0em;'><summary style='white-space: nowrap;'><strong>Schritt 4</strong></summary>Gleichzeitig glauben Sie, dass die Kollegin Ihrem Freund politisch noch fremder ist als Ihnen. Platzieren Sie daher die Punkte so, dass <em>Kollegin</em> weiter von <em>Freund</em> entfernt ist als von <em>Ich</em>.</details><details open style='margin-bottom: 0em;'><summary style='white-space: nowrap;'><strong>Schritt 5</strong></summary>Fügen Sie nun Ihren <em>Verwandten</em> hinzu. Der Verwandte denkt politisch ganz anders als Sie. Platzieren Sie also den Punkt <em>Verwandter</em> weit weg von <em>Ich</em>.</details><details open style='margin-bottom: 0em;'><summary style='white-space: nowrap;'><strong>Schritt 6</strong></summary>Sie finden, Ihr Verwandter ist in manchen Punkten näher an Ihrem Freund und Ihrer Kollegin dran als an Ihnen selbst. Platzieren Sie also den Punkt <em>Verwandter</em> näher bei den Punkten <em>Kollegin</em> und <em>Freund</em> aber trotzdem weit weg von <em>Ihnen</em>.</details>",
@@ -622,12 +622,12 @@ class slide06_SPaM(Page):
             "page_title": "Political Mapping – Part 1" if lan=="en" else "Politisches Mapping – Teil 1",
             "instru1": "We now continue to the main task in this survey." if lan=="en" else "Wir beginnen nun mit dem Hauptteil dieser Umfrage.",
             "instruRoom": "Imagine you, your six social contacts, a typical Green Party voter, FDP voter, AfD voter, and Left Party voter are in a room (the rectangle below)." if lan=="en" else "Stellen Sie sich vor, Sie sind zusammen mit Ihren sechs Kontakten und mit jeweils einem typischen Wähler oder einer typischen Wählerin der Grünen, der AfD, der FDP und der Linken in einem Raum (das Rechteck unten).",
-            'instru_main': "<p>Arrange the people in the room based on how <em>you</em> see their political views about questions regarding climate change, migration, inequality and diversity:</p><ul><li><strong>Place individuals closer together if you perceive them as politically similar.</strong></li><li><strong>Place individuals farther apart if you perceive them as politically distant.</strong></li></ul>" if lan=="en" else "<p>Ordnen Sie die Personen im Raum so an, wie <em>Sie</em> deren politische Ansichten zu Fragen über Klimawandel, Migration, Ungleichheit und Diversität wahrnehmen:</p><ul> <li><strong>Platzieren Sie Personen näher beieinander, wenn Sie diese als politisch ähnlich wahrnehmen.</strong></li><li><strong>Platzieren Sie Personen weiter auseinander, wenn Sie diese als politisch unterschiedlich wahrnehmen.</strong></li></ul>", 
+            'instru_main': "<p>Arrange the people in the room based on how <em>you</em> see their political views about questions regarding climate change, migration, inequality and diversity:</p><ul><li><strong>Place individuals closer together if you perceive them as politically similar.</strong></li><li><strong>Place individuals farther apart if you perceive them as politically different.</strong></li></ul>" if lan=="en" else "<p>Ordnen Sie die Personen im Raum so an, wie <em>Sie</em> deren politische Ansichten zu Fragen über Klimawandel, Migration, Ungleichheit und Vielfalt wahrnehmen:</p><ul> <li><strong>Platzieren Sie Personen näher beieinander, wenn Sie diese als politisch ähnlich wahrnehmen.</strong></li><li><strong>Platzieren Sie Personen weiter auseinander, wenn Sie diese als politisch unterschiedlich wahrnehmen.</strong></li></ul>", 
             'no_wrong_answers': f"<p>There are NO right or wrong answers — we are interested in your personal perception.</p>" if lan=="en" else "<p>Es gibt weder falsche noch richtige Antworten – wir sind an Ihrer persönliche Einschätzung interessiert.</p>", 
             'instru_click': "<summary style='white-space: nowrap;'><strong>Helping lines</strong></summary>If you want you can activate helping lines. When you click on one of the dots, circles will appear that might help you evaluate how well your arrangement reflects your sense of political similarity. You can scale the circles by moving the small arrows <strong><></strong>." if lan=="en" else "<summary style='white-space: nowrap;'><strong>Hilfslinien</strong></summary>Wenn Sie möchten, können Sie unten Hilfslinien aktivieren: Beim Klicken auf einen Punkt erscheinen Kreis, die Ihnen dabei helfen könnten einzuschätzen, wie gut Ihre Anordnung Ihre Wahrnehmung politischer Ähnlichkeit widerspiegelt. Die Kreise lassen sich über die kleinen Pfeile <strong><></strong> skalieren.", 
             'all_dots_instr': "All dots must be within the square boundary to proceed. You can re-position any dot at any time until you are satisfied with the arrangement." if lan=="en" else "Um fortzufahren müssen alle Punkte im Rechteck platziert werden. Sie können jeden Punkt verschieben bis Sie mit der Anordnung zufrieden sind.", 
-            "labelClose": "close" if lan=="en" else "ähnlich",
-            "labelFar": "distant" if lan=="en" else "unterschiedlich",
+            "labelClose": "similar" if lan=="en" else "ähnlich",
+            "labelFar": "different" if lan=="en" else "unterschiedlich",
             "helping_lines": "Show helping lines" if lan=="en" else "Hilfslinien anzeigen", 
             # "button_to_disable_helping_lines":
 }
@@ -702,15 +702,15 @@ class slide07_SPaM_personas(Page):
             "ps_placed": player.ps_placed+1,
             "page_title": "Political Mapping – Part 2" if lan=="en" else "Politisches Mapping – Teil 2", 
             "heading": f"Person {player.ps_placed+1} of { n_ps} " if lan=="en" else f"Person {player.ps_placed+1} von {n_ps}",
-            'instru_main': "<details><summary style='margin-bottom:0.5em;'><strong>Instructions (as before)</strong></summary><p>Arrange the people in the room based on how <em>you</em> see their political views on questions regarding climate change, migration, inequality and diversity:</p><ul><li><strong>Place individuals closer together if you perceive them as politically similar.</strong></li><li><strong>Place individuals farther apart if you perceive them as politically distant.</strong></li></ul></details>" if lan=="en" else "<details><summary style='margin-bottom:0.5em;'><strong>Anleitung (wie zuvor)</strong></summary><p>Ordnen Sie die Personen im Raum so an, wie <em>Sie</em> deren politische Ansichten zu Fragen über Klimawandel, Migration, Ungleichheit und Diversität wahrnehmen:</p><ul><li><strong>Platzieren Sie Personen näher beieinander, wenn Sie diese als politisch ähnlich wahrnehmen.</strong></li><li><strong>Platzieren Sie Personen weiter auseinander, wenn Sie diese als politisch unterschiedlich wahrnehmen.</strong></li></ul></details>",
+            'instru_main': "<details><summary style='margin-bottom:0.5em;'><strong>Instructions (as before)</strong></summary><p>Arrange the people in the room based on how <em>you</em> see their political views on questions regarding climate change, migration, inequality and diversity:</p><ul><li><strong>Place individuals closer together if you perceive them as politically similar.</strong></li><li><strong>Place individuals farther apart if you perceive them as politically different.</strong></li></ul></details>" if lan=="en" else "<details><summary style='margin-bottom:0.5em;'><strong>Anleitung (wie zuvor)</strong></summary><p>Ordnen Sie die Personen im Raum so an, wie <em>Sie</em> deren politische Ansichten zu Fragen über Klimawandel, Migration, Ungleichheit und Vielfalt wahrnehmen:</p><ul><li><strong>Platzieren Sie Personen näher beieinander, wenn Sie diese als politisch ähnlich wahrnehmen.</strong></li><li><strong>Platzieren Sie Personen weiter auseinander, wenn Sie diese als politisch unterschiedlich wahrnehmen.</strong></li></ul></details>",
             'no_wrong_answers': f"<p>There are NO right or wrong answers — we are interested in your personal perception.</p>" if lan=="en" else "<p>Es gibt weder falsche noch richtige Antworten – wir sind an Ihrer persönliche Einschätzung interessiert.</p>", 
             'instru_p1': f"<p>In the next part of this survey, you will be introduced to a hypothetical person along with a brief description of their political views.</p><p> Try to imagine this person as clearly as possible based on the information provided. How politically similar or different do you think this person is — compared to yourself, your social contacts, and the typical voters in the room?<p>" if lan=="en" else f"<p>Im nächsten Teil dieser Umfrage stellen wir Ihnen eine hypothetische Person vor und geben einen kurzen Überblick über deren politische Ansichten.</p><p>Versuchen Sie, sich diese Person so gut wie möglich auf Grundlage dieser Informationen vorzustellen. Wie politisch ähnlich oder unterscheidlich erscheint Ihnen diese Person – im Vergleich zu Ihnen selbst, Ihren sozialen Kontakten und den typischen Wähler oder Wählerinnen im Raum?</p>", #<p>Now consider the person <strong>{P}</strong>. Place the pink dot within the rectangle according to their political closeness or distance to the other individuals.<p>" if lan =="en" else "<p>Betrachten Sie die Person <strong>{P}</strong>. Platzieren Sie den pinken Punkt im Rechteck entsprechend der politischen Nähe oder Distanz zu den anderen Personen.</p>"
-            'instru_p2': f"Here are the responses of the person <strong>{P}</strong> to (some of) the questions from the previous slides :" if lan=="en" else f"Hier sind die Antworten von der Person <strong>{P}</strong> auf (ein paar) Fragen der vorherigen Seiten:",
+            'instru_p2': f"Here are the responses of the person <strong>{P}</strong> to the previous questions:" if lan=="en" else f"Hier sind die Antworten der Person <strong>{P}</strong> auf die vorherigen Fragen:",
             'instru_click': "<strong>Tip</strong>: If you click on a dot, a box with the individual's opinions will appear on the right side." if lan=="en" else "<strong>Tipp</strong>: Wenn Sie auf einen Punkt klicken, erscheint auf der rechten Seite eine Info-Box mit den Meinungen der Person.",
             'all_dots_instr': "All dots must be within the square boundary to proceed. You can re-position any dot, <strong>including the dots from the previous mapping exercise</strong>, at any time until you are satisfied with the arrangement." if lan=="en" else "Um fortzufahren müssen alle Punkte im Rechteck platziert werden. Sie können jeden Punkt, <strong>inklusive der Punkte aus der vorherigen Aufgabe</strong>, verschieben bis Sie mit der Anordnung zufrieden sind.", 
             'reminder': "Remember, there are no right or wrong answers. We are most interested in your own political perceptions!" if lan=="en" else "Denken Sie daran: Es gibt keine richtigen oder falschen Antworten. Wir sind vor allem an Ihrer eigenen politischen Wahrnehmung interessiert!",
-            "labelClose": "close" if lan=="en" else "ähnlich",
-            "labelFar": "distant" if lan=="en" else "unterschiedlich",
+            "labelClose": "similar" if lan=="en" else "ähnlich",
+            "labelFar": "different" if lan=="en" else "unterschiedlich",
             "helping_lines": "Show helping circles" if lan=="en" else "Hilfslinien anzeigen", 
         }
     
@@ -738,98 +738,7 @@ class slide07_SPaM_personas(Page):
 
 
 
-# class slide08a_PlausibilityCheck_Ps(Page):
-#     form_model = 'player'
-#     @staticmethod
-#     def is_displayed(player: Player):
-#         return player.consent
-    
-#     @staticmethod
-#     def get_form_fields(player: Player):
-#         i = player.check
-#         return [f'check{i}', f'check{i}_explain']
-    
-#     @staticmethod
-#     def before_next_page(player: Player, timeout_happened):
-#         valid_pairs = json.loads(getattr(player, "valid_p1p2self_triples"))
-#         pair = [getattr(player, f'check{player.check}_p1'),  getattr(player, f'check{player.check}_p2')]
-#         valid_pairs.remove(pair)
-#         player.valid_p1p2self_triples = json.dumps(valid_pairs)
-
-#         if player.check==0:
-#             player.t_after_first_check = int(time.time())
-#         if player.check==player.n_checks-1:
-#             player.t_after_last_check = int(time.time())
-#         player.check += 1
-            
-
-#     @staticmethod
-#     def vars_for_template(player: Player):
-#         lan = player.language
-#         questions = [C.QUS[i] for i in json.loads(player.question_sorting)]
-#         positions = json.loads(getattr(player, "positions"))
-#         pos = {p["varname"]: [p["x"], p["y"]] for p in positions}
-#         p_points = list(json.loads(player.ps).keys())
-#         focal_point = "self" 
-#         #focal_point_label= "yourself"
-#         distances = {p: distance(pos[focal_point], pos[p]) for p in p_points}
-#         valid_pairs = json.loads(player.valid_p1p2self_triples)
-#         p1,p2 = random.choice(valid_pairs)
-
-#         positions = {dot["varname"]: dot for dot in positions if dot["varname"] in ["self", p1, p2]}
-
-#         dist_p1 = distances[p1]
-#         dist_p2 = distances[p2]
-#         significant = ((dist_p1 >= 2 * dist_p2) or (dist_p2 >= 2 * dist_p1))
-#         larger = ((dist_p1 >= 1.33 * dist_p2) or (dist_p2 >= 1.33 * dist_p1))
-#         setattr(player, f'check{player.check}_p1', p1)
-#         setattr(player, f'check{player.check}_p2', p2)
-#         distantP = p1 if dist_p1 > dist_p2 else p2
-#         similarP = p2 if dist_p1 > dist_p2 else p1
-        
-#         dot_descrs= {}
-#         p_ops = json.loads(player.ps)
-#         for p in [p1, p2]:
-#             currP = f"{p}"
-#             currP_op = [p_ops[currP][q] for q in questions]
-#             currP_op = ["" if str(op)=="nan" else op for op in currP_op]
-#             dot_descrs[currP] = "; ".join([
-#                 f"{C.QUESTIONSHORTTEXT[lan][q]}: {op if lan=="en" else C.LIKERT5_transde[op]}"
-#                 for q, op in zip(questions, currP_op)])
-        
-#         dots = [{
-#             "varname": p["varname"],
-#             "name_disp": p["name_disp"],
-#             "x": p["x"]*300/500,
-#             "y": p["y"]*300/500,
-#             "dottype": p["dottype"],
-#             "descr": dot_descrs.get(p["varname"], "")}
-#             for pname, p in positions.items()]
-        
-#         return {
-#             "maxslides":3+len(C.LABELLED)+C.NCONTACTS+2+8,
-            # "nslide":3+len(C.LABELLED)+C.NCONTACTS+2+2,
-#             'lan_en':lan=="en",
-#             'p0_coords': pos[focal_point],
-#             'p1_coords': pos[p1],
-#             'p2_coords': pos[p2],
-#             'dots': dots,
-#             'p1': p1,
-#             'p2': p2,
-#             'ncheck': player.check,
-#             'nr_tot_checks': C.NR_P_CHECKS + player.n_checks,
-#             'current_check': f'check{player.check}',
-#             'current_check_explain': f'check{player.check}_explain',
-#             'page_title': f"Direct comparison of political views – {player.check} of {player.n_checks}" if lan=="en" else f"Direktvergleich politischer Meinungen – {player.check} von {player.n_checks}" , 
-#             'instru1': "Below we show a subset of the political map you created." if lan=="en" else "Im Folgenden finden Sie einen kleinen Ausschnitt der von Ihnen erstellten politischen Landkarte.", 
-#             'relation': f"Your arrangement indicates that you perceive a <strong>{'much greater' if significant else ('greater' if larger else 'similar')} political distance to {distantP} {'than' if significant or larger else 'as'} to {similarP}</strong>." if lan=="en" else f"Ihre Anordnung deutet darauf hin, dass Sie eine <strong>{'viel größere' if significant else ('größere' if larger else 'ähnlich große')} politische Distanz zu {distantP} empfinden {'als' if significant or larger else 'wie'} zu {similarP}</strong>.", 
-#             'question': "<p>Would you say this accurately reflects your perspective?</p>" if lan=="en" else "<p>Würden Sie sagen, dass diese Darstellung Ihrer Sichtweise entspricht?</p>", 
-#             'choices': dict(zip(C.OPTIONS_P_CHECKS, C.OPTIONS_P_CHECKS if lan=="en" else C.OPTIONS_P_CHECKS_DE)), 
-#             "explain_text": "<p>If you believe this is inaccurate, feel free to use the textbox below to explain why (optional):</p>" if lan == "en" else "<p>Falls Sie glauben, dass dies nicht Ihrer Wahrnehmung entspricht, benutzen Sie gerne das untenstehende Textfeld, um zu beschreiben, warum (optional):</p>"
-#             }
-
-
-class slide08b_PlausibilityCheck_Pairs(Page):
+class slide08_PlausibilityCheck_Pairs(Page):
     form_model = 'player'
     @staticmethod
     def is_displayed(player: Player):
@@ -915,17 +824,17 @@ class slide08b_PlausibilityCheck_Pairs(Page):
             'p1_dot': p1_dot,
             'p2_dot': p2_dot,
             'current_check': f'checkPair{player.n_check}',
-            'page_title': f"Direct comparison of political views – {player.n_check} of {player.n_checks}" if lan=="en" else f"Direktvergleich politischer Meinungen {player.n_check} von {player.n_checks}", 
+            'page_title': f"Pairwise comparison of political views – {player.n_check} of {player.n_checks}" if lan=="en" else f"Paarweiser Vergleich politischer Meinungen {player.n_check} von {player.n_checks}", 
             'instru1': f"<p>Now consider the following two individuals:</p><ol><li style='font-size:18px;'>{p1label}</li><li style='font-size:18px;'>{p2label}</li></ol>" if lan=="en" else f"<p>Denken Sie nun an die folgenden beiden Personen:</p><ol><li style='font-size:18px;'>{p1label}</li><li style='font-size:18px;'>{p2label}</li></ol>",
-            'question': "<p>In terms of their political views on migration, climate change, inequality, and diversity — how close overall would <em>you</em> say these two individuals are?</p>" if lan=="en" else "<p>Wie nahe sind sich diese beiden Personen insgesamt <em>Ihrer Meinung nach</em> in Bezug auf ihre politischen Ansichten zu Migration, Klimawandel, Ungleichheit und Vielfalt?</p>",
+            'question': "<p>In terms of their political views on migration, climate change, inequality, and diversity — how similar overall would <em>you</em> say these two individuals are?</p>" if lan=="en" else "<p>Wie ähnlich sind sich diese beiden Personen insgesamt <em>Ihrer Meinung nach</em> in Bezug auf ihre politischen Ansichten zu Migration, Klimawandel, Ungleichheit und Vielfalt?</p>",
             'Ithink': "Your estimate:" if lan =="en" else "Ihre Einschätzung:",
             "img1": p1_dot["dottype"]=="P",
             "img2": p2_dot["dottype"]=="P",
             "choices": list(range(0,11)), # dict(zip(C.CHOICES_SATISFACTION, C.CHOICES_SATISFACTION if lan=="en" else C.CHOICES_SATISFACTION_DE)),
             "satisfaction_min":0,
             "satisfaction_max":10,
-            "satisfaction_min_label":"Not at all close" if lan=="en" else "Überhaupt nicht nah",
-            "satisfaction_max_label":"Extremely close" if lan=="en" else "Extrem nah",
+            "satisfaction_min_label":"Not at all similar" if lan=="en" else "Überhaupt nicht ähnlich",
+            "satisfaction_max_label":"Extremely similar" if lan=="en" else "Extrem ähnlich",
         }
 
 
@@ -1017,7 +926,7 @@ class slide10_Satisfaction(Page):
             'page_title': "Overall satisfaction with your map" if lan=="en" else "Zufriedenheit mit Ihrer Anordnung",
             "instru1": "Below we show the political map you created." if lan=="en" else "Im Folgenden finden Sie die von Ihnen erstellte politische Karte.", 
 
-            'question': "<p>How satisfied are you with your arrangement? Does the arrangement overall reflect your perception of the political distances between the individuals?</p>" if lan=="en" else "<p>Wie zufrieden sind Sie mit Ihrer Anordnung? Entspricht die Anordnung insgesamt Ihrer Wahrnehmung der politischen Distanzen zwischen den Personen?</p>",
+            'question': "<p>How satisfied are you with your arrangement? Does the arrangement overall reflect your perception of the political similarities and differences between the individuals?</p>" if lan=="en" else "<p>Wie zufrieden sind Sie mit Ihrer Anordnung? Entspricht die Gesamtanordnung Ihrer Wahrnehmung der politischen Ähnlichkeiten und Unterschiede zwischen den einzelnen Personen?</p>",
             'explain_text': "If you would like, you can add further comments or explanations here (optional):" if lan == "en" else "Falls Sie möchten, können Sie hier weitere Anmerkungen oder Erklärungen hinzufügen (optional):", 
             #"choices": dict(zip(C.CHOICES_SATISFACTION, C.CHOICES_SATISFACTION if lan=="en" else C.CHOICES_SATISFACTION_DE)),
             "choices": list(range(0,11)), # dict(zip(C.CHOICES_SATISFACTION, C.CHOICES_SATISFACTION if lan=="en" else C.CHOICES_SATISFACTION_DE)),
@@ -1077,7 +986,7 @@ class slide12_Demographics(Page):
             'qu_age': "How old are you?"if lan=="en" else "Wie alt sind Sie?",
             'qu_interest': 'How interested would you say you are in politics – are you...' if lan=="en" else "Wie sehr sind Sie persönlich an Politik interessiert? Sind Sie ...?", 
             'choices_interest': dict(zip(C.CHOICES_INTEREST, C.CHOICES_INTEREST if lan=="en" else ["Überhaupt nicht interessiert", "Kaum interessiert", "Ziemlich interessiert", "Sehr interesiert"])),
-            'qu_identity': 'Do you feel closer to one of the political parties in Germany than the others? If so, which one?' if lan=="en" else "Gibt es eine bestimmte politische Partei in Deutschland, der Sie sich mehr verbunden fühlen als allen anderen Parteien? Welcher?", 
+            'qu_identity': 'Do you feel closer to one of the political parties in Germany than the others? If so, which one?' if lan=="en" else "Gibt es eine bestimmte politische Partei in Deutschland, der Sie sich politisch näher fühlen als allen anderen Parteien? Welcher?", 
             'choices_identity': dict(zip(C.CHOICES_IDENTITY, C.CHOICES_IDENTITY if lan=="en" else ["CDU/CSU", "AfD", "SPD", "Bündnis 90/Die Grünen", "Die Linke", "BSW", "FDP", "Andere Partei", "Keiner Partei", "Keine Antwort"])),
             "qu_party_comment": "Would you like to add anything to the question above? (optional):" if lan=="en" else "Möchten Sie etwas dazu ergänzen zu dieser Frage? (optional)",
             'qu_polarization': "What do you think: How politically divided are the people in your country these days?" if lan=="en" else "Was denken Sie: Wie politisch gespalten sind die Menschen in Ihrem Land heutzutage?",
@@ -1118,7 +1027,7 @@ page_sequence = [slide01_Introduction,    slide02_Opinions,
     [slide05a_MapTest, slide05b_MapTestResult] * C.N_MAX_PRACTICE_RUNS +\
     [slide06_SPaM] +\
     [slide07_SPaM_personas] * C.NPS_MAX +\
-    [slide08b_PlausibilityCheck_Pairs] * C.NR_OTHER_CHECKS_MAX +\
+    [slide08_PlausibilityCheck_Pairs] * C.NR_OTHER_CHECKS_MAX +\
     [slide09_Importance, slide10_Satisfaction, slide11_Relationships, slide12_Demographics, 
      slideSuccess, slideFail]
 
