@@ -8,7 +8,6 @@
 <div>
 
 {% comment %} 
-
 <div class="card-section">
     <div class="card">
       <div class="form-group">
@@ -31,12 +30,11 @@
 
       <div class="card-section">
   <div class="card">
-    <p style="margin-bottom: 1.5em;">{{ instru1 }}</p>
-
+    <p>{{ instru1 }}</p>
 
     <label class="form-label">{{ question }}</label>
 
-    <p>{{ Ithink }}</p>
+    {% comment %} <p>{{ Ithink }}</p> {% endcomment %}
 
     <input 
       type="range" 
@@ -45,16 +43,15 @@
       min="{{ satisfaction_min }}" 
       max="{{ satisfaction_max }}" 
       step="1"
-      value="{{ 5 }}"
-      oninput="document.getElementById('sliderValue').textContent = this.value +' / 10'"
+      oninput="handleSliderInput(this.value)"
       required
     >
     <div style="display: flex; justify-content: space-between; margin-top: 5px;">
   <span>{{ satisfaction_min_label }}</span>
   <span>{{ satisfaction_max_label }}</span>
 </div>
-    <div  style="text-align: center; margin-top: 15px;">
-      {% if lan_en %} Selected value: {% else %} Ausgewählter Wert: {%endif%}<span id="sliderValue">{{ 5 }} / 10</span>
+    <div style="text-align: center; margin-top: 15px;">
+      {% if lan_en %} Selected value: {% else %} Ausgewählter Wert: {%endif%}<span id="sliderValue" style="color: #999;">{% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den Schieberegler{% endif %}</span>
     </div>
 
     {{ formfield_errors current_check  }}
@@ -78,28 +75,55 @@
 
 <br>
 
-
-
-
-  <div style="display: flex; justify-content: space-between; align-items: center;">
+<div style="display: flex; justify-content: space-between; align-items: center;">
     {% if lan_en %}
     {{ next_button }}
     <div style="margin-left: auto;">Page {{nslide}}/{{maxslides}}</div>
     {% else %}
-    <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
+    <button type="submit" class="otree-btn-next btn btn-primary" id="nextButton" disabled style="opacity: 0.5;">Weiter</button>
     <div style="margin-left: auto;">Seite {{nslide}}/{{maxslides}}</div>
     {% endif %}
-  </div>
+</div>
 </div>
 
- <script>
-  const slider = document.getElementById('satisfactionSlider');
-  slider.addEventListener('input', function () {
-    const value = (this.value - this.min) / (this.max - this.min) * 100;
-    this.style.background = `linear-gradient(to right, #007bff 0%, #007bff ${value}%, #e0e0e0 ${value}%, #e0e0e0 100%)`;
-  });
-</script> 
+<script>
+let sliderTouched = false;
 
+function handleSliderInput(value) {
+  sliderTouched = true;
+  
+  // Update the displayed value
+  document.getElementById('sliderValue').textContent = value + ' / 10';
+  document.getElementById('sliderValue').style.color = 'black';
+  
+  // Enable the next button
+  const nextButton = document.getElementById('nextButton');
+  if (nextButton) {
+    nextButton.disabled = false;
+    nextButton.style.opacity = '1';
+  }
+  
+  // Update slider styling
+  const slider = document.getElementById('satisfactionSlider');
+  const percentage = (value - slider.min) / (slider.max - slider.min) * 100;
+  slider.style.background = `linear-gradient(to right, #007bff 0%, #007bff ${percentage}%, #e0e0e0 ${percentage}%, #e0e0e0 100%)`;
+}
+
+// Form validation before submission
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('form');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      if (!sliderTouched) {
+        e.preventDefault();
+        const lang = {% if lan_en %}true{% else %}false{% endif %};
+        alert(lang ? 'Please move the slider to select a value.' : 'Bitte bewegen Sie den Schieberegler, um einen Wert auszuwählen.');
+        return false;
+      }
+    });
+  }
+});
+</script>
 
 <script>
 function getAnswerStyling(answer) {
@@ -143,7 +167,6 @@ function renderPopup(popupId, point) {
     const popup = document.getElementById(popupId);
     if (!popup || !point) return;
 
-
     popup.innerHTML = `
         <strong style="font-size: 16px;">${point.name_disp}</strong><br>
         <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
@@ -151,6 +174,7 @@ function renderPopup(popupId, point) {
         </table>
     `;
 }
+
 function initializePopups() {
   {% if img1 %}
   renderPopup('popup1', {

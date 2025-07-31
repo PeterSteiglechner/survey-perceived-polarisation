@@ -5,18 +5,25 @@
 
 {{ block title }}
 {% if lan_en %}
-    Thank you for filling in our survey.
+    Thank you for participating in our survey.
 {% else %}
-    Vielen Dank, dass Sie unsere Umfrage ausgefüllt haben.
+    Vielen Dank, dass Sie an unserer Umfrage teilgenommen haben.
 {% endif %}
 {{ endblock }}
+
 
 {{ block content }}
 
 {% if lan_en %}
-<p >Please feel very welcome to contact us via <a href= "mailto:collectivemindslab@csh.ac.at
+<p>We will approve and issue payments manually shortly.
+Please allow up to two days for your submission to be reviewed and approved.</p>
+
+<p >Feel very welcome to contact us via <a href= "mailto:collectivemindslab@csh.ac.at
 ">collectivemindslab@csh.ac.at</a>, if you have any questions, feedback, or want to know more about the study and the results.</p>
 {% else %}
+<p>Wir werden die Zahlungen in Kürze manuell ausführen.
+Bitte haben Sie bis zu 2 Tagen Geduld, bis Ihre Teilnahme überprüft und genehmigt wurde.</p>
+
 <p >Kontaktieren Sie uns sehr gerne über <a href= "mailto:collectivemindslab@csh.ac.at
 ">collectivemindslab@csh.ac.at</a>, wenn Sie Fragen haben, Feedback geben wollen oder mehr über die Studie und die Resultate wissen wollen.</p>
     {% endif %}

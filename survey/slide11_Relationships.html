@@ -8,7 +8,7 @@
 
 <br>
 
-<p style="font-size: 20px;"> {{qu_closeness}}</p>
+<p> {{qu_closeness}}</p>
 
 
 <form method="post">
@@ -17,24 +17,24 @@
             {% for item in field_question_pairs %}
             <tr>
                 <!-- Question text in the first column -->
-                <td class="question-cell" width="30%">
+                <td class="question-cell" width="21%">
                     {{ item.question_text }}
                 </td>
 
                 <td class="options-cell">
                     <div class="option-cards" data-field="{{ item.field_name }}">
-                        {% for value, label in item.choices.items %}
-                         {% if value == "No answer" %}
-                            <div class="option-separator"></div> 
-                        {% endif %}
-                        <label class="option-card" data-value="{{ value }}">
-                            <input type="radio" name="{{ item.field_name }}" value="{{ value }}">
-                            {{ label }}
-                        </label>
-                        {% endfor %}
+                    {% for value, label in item.choices.items %}
+                    {% if value == "No answer" %}
+                    <div class="option-separator"></div>
+                    {% endif %}
+                    <label class="option-card {% if value == 'No answer' %}no-answer{% endif %}" data-value="{{ value }}">
+                    <input type="radio" name="{{ item.field_name }}" value="{{ value }}">
+                    {{ label }}
+                    </label>
+                    {% endfor %}
                     </div>
                     {{ formfield_errors item.field_name }}
-                </td>
+            </td>
             </tr>
             {% endfor %}
         </tbody>

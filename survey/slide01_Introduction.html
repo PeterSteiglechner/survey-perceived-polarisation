@@ -4,8 +4,10 @@
 
 {% block content %}
 
-<h2>Welcome to our survey on the perception of political opinions!<br>Willkommen zu unserer Umfrage zu Wahrnehmung von politischen Meinungen!
-</h2>
+<h2>Perceptions of Political Opinions / Wahrnehmung politischer Meinungen</h2>
+<p>Welcome to our survey! / Willkommen zu unserer Umfrage!
+</p>
+<br>
 
 
 <!-- Language Selection -->
@@ -37,8 +39,8 @@
 
             <p><strong data-i18n="purposeTitle"></strong></p>
             <p data-i18n="purposeBody"></p>
-            <p data-i18n="rightWrong"></p>
-            <p data-i18n="benefitsBody1"></p>
+            <p data-i18n="purposeBody2"></p>
+            <p data-i18n="purposeBody3"></p>
             
             <p><strong data-i18n="eligibility"></strong></p>
             <p data-i18n="eligibilityBody"></p>
@@ -46,24 +48,46 @@
 
             <p><strong data-i18n="procedureTitle"></strong></p>
             <p data-i18n="procedureBody"></p>
-
-            <p data-i18n="duration"></p>
+            <ul>
+                <li>
+                    <p data-i18n="procedureBody1"></p>
+                </li>
+                <li>
+                    <p data-i18n="procedureBody2"></p>
+                </li>
+                <li>
+                    <p data-i18n="procedureBody3"></p>
+                </li>
+                <li>
+                    <p data-i18n="procedureBody4"></p>
+                </li>
+                <li>
+                    <p data-i18n="procedureBody5"></p>
+                </li>
+                <li>
+                    <p data-i18n="procedureBody6"></p>
+                </li>
+            </ul>
+    
 
             <p><strong data-i18n="paymentTitle"></strong></p>
-            <p data-i18n="paymentBody"></p>
+            <p data-i18n="paymentBody"></p><p><strong data-i18n="paymentMoney"></strong></p>
 
             <p><strong data-i18n="withdrawal"></strong></p>
             <p data-i18n="withdrawalInfo"></p>
-            <p data-i18n="contactInfo"></p><p style="margin-top:-1em"><a href='mailto:collectivemindslab@csh.ac.at'>collectivemindslab@csh.ac.at</a></p>
+            <p style="margin-top:-1em">📧 <a href='mailto:collectivemindslab@csh.ac.at'>collectivemindslab@csh.ac.at</a></p>
+            <p data-i18n="studyCoordinators"></p>
 
             <p><strong data-i18n="dataUsageTitle"></strong></p>
-            <p data-i18n="dataUsage1"></p>
-            <p data-i18n="dataUsage2"></p>
-            <p data-i18n="dataUsage3"></p>
-            <p data-i18n="dataUsage4"></p>
+            <ul>
+                <li><p data-i18n="dataUsage1"></p></li>
+                <li><p data-i18n="dataUsage2"></p></li>
+                <li><p data-i18n="dataUsage3"></p></li>
+                <li><p data-i18n="dataUsage4"></p></li>
+            </ul>
 
             <p><strong data-i18n="questionsTitle"></strong></p>
-            <p data-i18n="questionsBody"></p><p style="margin-top:-1em"><a href='mailto:collectivemindslab@csh.ac.at'>collectivemindslab@csh.ac.at</a></p>
+            <p data-i18n="questionsBody"></p><p style="margin-top:-1em">📧 <a href='mailto:collectivemindslab@csh.ac.at'>collectivemindslab@csh.ac.at</a></p>
 
             <p data-i18n="ethicsReview"></p>
 {% comment %} 
@@ -104,71 +128,85 @@ const translations = {
     en: {
         welcomeTitle: "Welcome to our survey on the perception of political opinions!",
         selectLanguage: "Please select your preferred language:",
-        consentTitle: "Consent",
+        consentTitle: "Participant Consent Form",
         dearParticipant: "Dear participant,",
-        consentText: "Thank you for participating in our survey. Please read the following and indicate your consent.",
-        purposeTitle: "What is the purpose of this study?",
-        purposeBody: "The purpose of this study is to explore how people perceive and interpret political differences or similarities based on how they view other people's political opinions. ",
+        consentText: "Thank you for considering participation in our study. Please read the following information carefully before giving your consent.",
+        purposeTitle: "Purpose of the Study",
+        purposeBody: "This study explores how people perceive and interpret political differences and similarities.",
+        purposeBody2:"There are no right or wrong answers. We are interested in your personal perceptions and judgments.",
+        purposeBody3: "Our goal is to understand whether people perceive opinions and political polarisation in similar ways, or whether perceptions vary systematically across individuals.",
         benefitsBody1: "The findings from this project will provide information on whether people perceive opinions and polarisation in society similarly or whether there are systematic differences in perception.",
         eligibility: "Eligibility:", 
-        eligibilityBody: "You are eligible to take part in this study because you are living in Germany and are at least 18 years old.",
-        procedureTitle: "What is the procedure of the study?",
-        procedureBody: "Firstly, we will ask you a few questions about your political views. Then we ask you to name 6 people you know well. We ask you to assess what political attitudes these people have. We also ask you to estimate how typical voters of the Greens, the AfD, the Left or the FDP would answer. In the main section, you position these opinions on a political map. Finally, there are a few short, more specific questions about your perception of political distance and a few questions about yourself.",
-        rightWrong: "There are no right or wrong answers. We are interested in your personal perceptions.",
-        duration: "The study will last for about 30 minutes.",
-        paymentTitle: "Payment:",
-        paymentBody: "You will be compensated for the duration of the study according to standard hourly rates: 6 USD for 30 minutes.",
-        withdrawal: "Can I withdraw?",
-        withdrawalInfo: "Your participation in this research study is voluntary. You may refuse to participate or stop at any time without penalty.",
-        contactInfo: "If you complete the study but want your data removed, please contact the study coordinators Mirta Galesic and Peter Steiglechner within 30 days at",
-        dataUsageTitle: "How will the data collected in this study be used?",
-        dataUsage1: "All metadata collected in this study that could identify you—such as your Prolific ID—will be kept strictly confidential and only disclosed with your explicit permission.",
-        dataUsage2: "Identifying information is stored separately from your survey responses and will not be included in any published or shared data.",
-        dataUsage3: "Your anonymized data may be shared in an Open Data Repository for non-commercial, scientific use.",
-        dataUsage4: "Your personal data will never be used for purposes that are incompatible with the goals of this study.",
-        questionsTitle: "Possibility to discuss further questions",
-        questionsBody: "If you have any further questions about the study, please contact the study coordinators Mirta Galesic and Peter Steiglechner at",
-        ethicsReview: "This study has been reviewed by the UNM IRB 2501179238A001.",
+        eligibilityBody: "You are eligible to take part in this study if you are at least 18 years old and currently reside in Germany.",
+        procedureTitle: "Study Procedure",
+        procedureBody: "The study will take approximately 30 minutes and consists of the following steps:", 
+        procedureBody1: "Answer a few questions about your own political views.", 
+        procedureBody2: "Name six people you know well and estimate their political views.", 
+        procedureBody3: "Estimate the political views of typical voters of the Greens, the AfD, the Left, and the FDP.", 
+        procedureBody4: "Place the individuals on a political map. ", 
+        procedureBody5: "Indicate how politically similar or different you think each pair of individuals is.",
+        procedureBody6: "Complete a few brief questions about your perceptions of political polarisation and some background questions about yourself.",
+        paymentTitle: "Compensation:",
+        paymentBody: "You will be compensated for the duration of the study through Prolific according to standard hourly rates:",
+        paymentMoney: "5 GBP for 30 minutes.",
+        withdrawal: "Voluntary Participation and Withdrawal",
+        withdrawalInfo: "Your participation in this research study is voluntary. You may refuse to participate or stop at any time without penalty. If you complete the study but later wish to have your data removed, please contact us within 30 days at:",
+        studyCoordinators: "(Study coordinators: Mirta Galesic and Peter Steiglechner)",
+        dataUsageTitle: "Data Privacy and Usage",
+        dataUsage1: "Any identifying information (e.g., your Prolific ID) will be kept strictly confidential and never shared without your explicit permission.",
+        dataUsage2: "Identifying data is stored separately from your survey responses.",
+        dataUsage3: "Your anonymised data may be shared in an open-access scientific repository for non-commercial research purposes.",
+        dataUsage4: "Your data will never be used in ways incompatible with the aims of this study.",
+        questionsTitle: "Questions or Concerns?",
+        questionsBody: "If you have any questions, feel free to contact the study coordinators at:",
+        ethicsReview: "This study has been reviewed by the University of New Mexico Institutional Review Board (IRB) IRB-ID 2501179238A001.",
         consentDecl: "I have read the information provided above. By clicking 'I give consent' I indicate my voluntary agreement to participate in this research study.",
         consentYes: "I give consent.",
         consentNo: "I do not give consent.",
         nextBtn: "Next",
-        pageText: "Page 1/21"
+        pageText: "Page 1/23"
     },
     de: {
-        welcomeTitle: "Willkommen zu unserer Umfrage zu Wahrnehmung von politischen Meinungen!",
-        selectLanguage: "Bitte wählen Sie Ihre bevorzugte Sprache:",
-        consentTitle: "Einverständnis",
-        dearParticipant: "Liebe Teilnehmerin, lieber Teilnehmer,",
-        consentText: "Vielen Dank für die Teilnahme an unserer Umfrage. Bitte lesen Sie das Folgende und geben Sie Ihr Einverständnis.",
-        purposeTitle: "Was ist das Ziel dieser Studie?",
-        purposeBody: "Das Ziel dieser Studie ist es, zu erforschen, wie Menschen politische Unterschiede oder Gemeinsamkeiten wahrnehmen, basierend auf den politischen Meinungen von anderen. Sie nehmen teil, weil Sie in Deutschland leben und mindestens 18 Jahre alt sind.",
-        rightWrong: "Es gibt keine richtigen oder falschen Antworten. Wir sind ausschließlich an Ihren eigenen Wahrnehmungen interessiert.",
-        benefitsBody1: "Die Ergebnisse dieser Studie werden zeigen, ob Menschen politische Meinungen und Polarisierung ähnlich wahrnehmen oder ob es systematische Unterschiede in der Wahrnehmung gibt.",
-        eligibility: "Teilnahmebedingungen:",
-        eligibilityBody: "Sie sind zur Teilnahme an dieser Studie berechtigt, da Sie in Deutschland leben und mindestens 18 Jahre alt sind.",
-        procedureTitle: "Wie läuft die Studie ab?",
-        procedureBody: "Zuerst stellen wir Ihnen ein paar Fragen zu Ihren politischen Einstellungen. Dann bitten wir Sie, 6 Personen zu nennen, die Sie gut kennen. Wir bitten Sie einzuschätzen, welche politischen Einstellungen diese Personen haben. Außerdem bitten wir Sie einzuschätzen, wie typische Wähler oder Wählerinnen der Grünen, der AfD, der Linken oder der FDP antworten würden. Im Hauptteil ordnen Sie diese Meinungen auf einer politischen Karte ein. Zum Schluss folgen ein paar kurze konkretere Fragen zu Ihrer Wahrnehmung von politischer Distanz und ein paar Fragen über Sie selbst.",
-        duration: "Die Studie dauert etwa 30 Minuten.",
-        paymentTitle: "Vergütung:",
-        paymentBody: "Sie erhalten eine Aufwandsentschädigung entsprechend der Studiendauer: 6 USD für ca. 30 Minuten Teilnahme.",
-        withdrawal: "Kann ich die Studie abbrechen?",
-        withdrawalInfo: "Die Teilnahme ist freiwillig. Sie können jederzeit ohne Angabe von Gründen abbrechen.",
-        contactInfo: "Wenn Sie Ihre Daten nach Abschluss löschen lassen möchten, kontaktieren Sie die Koordinator:innen der Studie Mirta Galesic und Peter Steiglechner innerhalb von 30 Tagen unter",
-        dataUsageTitle: "Wie werden die gesammelten Daten verwendet?",
-        dataUsage1: "Personenbezogene Metadaten wie Ihre Prolific ID werden streng vertraulich behandelt und nur mit Ihrer Zustimmung weitergegeben.",
-        dataUsage2: "Identifizierende Informationen werden getrennt gespeichert und nicht veröffentlicht.",
-        dataUsage3: "Anonymisierte Daten können in Open-Data-Repositorien zu wissenschaftlichen Zwecken geteilt werden.",
-        dataUsage4: "Ihre Daten werden niemals zweckentfremdet.",
-        questionsTitle: "Möglichkeit zur Rückfrage",
-        questionsBody: "Bei Fragen wenden Sie sich bitte an die Koordinator:innen der Studie Mirta Galesic und Peter Steiglechner unter",
-        ethicsReview: "Diese Studie wurde von dem Ethikkomitee der University of New Mexico (UNM IRB 2501179238A001) geprüft.",
-        consentDecl: "Ich habe die oben stehenden Informationen gelesen. Durch einen Klick auf 'Ich gebe mein Einverständnis' erkläre ich mich freiwillig bereit, an dieser Studie teilzunehmen.",
-        consentYes: "Ich gebe mein Einverständnis.",
-        consentNo: "Ich gebe mein Einverständnis nicht.",
-        nextBtn: "Weiter",
-        pageText: "Seite 1/21"
-    }
+  "welcomeTitle": "Willkommen zu unserer Umfrage über die Wahrnehmung politischer Meinungen!",
+  "selectLanguage": "Bitte wählen Sie Ihre bevorzugte Sprache:",
+  "consentTitle": "Einverständniserklärung der Teilnehmenden",
+  "dearParticipant": "Liebe Teilnehmerin, lieber Teilnehmer,",
+  "consentText": "Vielen Dank für Ihr Interesse an unserer Studie. Bitte lesen Sie die folgenden Informationen sorgfältig durch, bevor Sie Ihre Einwilligung geben.",
+  "purposeTitle": "Zweck der Studie",
+  "purposeBody": "Diese Studie untersucht, wie Menschen politische Unterschiede und Gemeinsamkeiten wahrnehmen und interpretieren.",
+  "purposeBody2": "Es gibt keine richtigen oder falschen Antworten – wir interessieren uns für Ihre persönliche Wahrnehmung und Einschätzung.",
+  "purposeBody3": "Unser Ziel ist es zu verstehen, ob Menschen politische Meinungen und Polarisierung ähnlich wahrnehmen oder ob es systematische Unterschiede in der Wahrnehmung gibt.",
+  "benefitsBody1": "Die Ergebnisse dieses Projekts sollen aufzeigen, ob Menschen politische Meinungen und gesellschaftliche Polarisierung ähnlich oder unterschiedlich wahrnehmen.",
+  "eligibility": "Teilnahmeberechtigung:",
+  "eligibilityBody": "Sie können an dieser Studie teilnehmen, wenn Sie mindestens 18 Jahre alt sind und derzeit in Deutschland leben.",
+  "procedureTitle": "Ablauf der Studie",
+  "procedureBody": "Die Teilnahme dauert etwa 30 Minuten und beinhaltet folgende Schritte:",
+"procedureBody1": "Sie beantworten zunächst einige Fragen zu Ihren eigenen politischen Einstellungen.",
+"procedureBody2": "Dann nennen Sie sechs Personen, die Sie gut kennen, und schätzen deren politische Ansichten ein.",
+"procedureBody3": "Anschließend schätzen Sie ein, wie typische Wähler oder Wählerinnen der Grünen, AfD, Linken und FDP politisch eingestellt sind.",
+"procedureBody4": "Sie verorten alle genannten Personen auf einer politischen Karte ein.",
+"procedureBody5": "Sie geben an, wie politisch ähnlich oder unterschiedlich Sie die verschiedenen Personen zueinander einschätzen.",
+  "procedureBody6": "Zum Schluss beantworten Sie einige kurze Fragen zu Ihrer Wahrnehmung von Polarisierung sowie zu Ihrer Person.",
+  "paymentTitle": "Vergütung:",
+  "paymentBody": "Sie erhalten für Ihre Teilnahme eine Vergütung über Prolific gemäß den üblichen Stundensätzen:",
+  "paymentMoney": "5 GBP für 30 Minuten.",
+  "withdrawal": "Freiwillige Teilnahme und Rücktritt",
+  "withdrawalInfo": "Die Teilnahme an dieser Studie ist freiwillig. Sie können die Teilnahme jederzeit ohne Angabe von Gründen und ohne Nachteile abbrechen. Wenn Sie die Studie abgeschlossen haben, Ihre Daten aber später löschen lassen möchten, kontaktieren Sie uns bitte innerhalb von 30 Tagen unter:",
+  "studyCoordinators": "(Studienleitung: Mirta Galesic und Peter Steiglechner)",
+  "dataUsageTitle": "Datenschutz und Verwendung der Daten",
+  "dataUsage1": "Alle identifizierenden Informationen (z.B. Ihre Prolific-ID) werden streng vertraulich behandelt und nur mit Ihrer ausdrücklichen Zustimmung weitergegeben.",
+  "dataUsage2": "Identifizierende Daten werden getrennt von Ihren Umfrageantworten gespeichert.",
+  "dataUsage3": "Ihre anonymisierten Daten können in einem frei zugänglichen wissenschaftlichen Repository für nicht-kommerzielle Forschungszwecke veröffentlicht werden.",
+  "dataUsage4": "Ihre Daten werden niemals für Zwecke verwendet, die nicht mit den Zielen dieser Studie vereinbar sind.",
+  "questionsTitle": "Fragen oder Bedenken?",
+  "questionsBody": "Wenn Sie Fragen haben, wenden Sie sich bitte an die Studienleitung unter:",
+  "ethicsReview": "Diese Studie wurde durch das Institutional Review Board (IRB) der University of New Mexico geprüft. IRB-ID: 2501179238A001.",
+  "consentDecl": "Ich habe die oben stehenden Informationen gelesen. Mit einem Klick auf 'Ich gebe mein Einverständnis' erkläre ich meine freiwillige Einverständnis zur Teilnahme an dieser Studie.",
+  "consentYes": "Ich gebe mein Einverständnis.",
+  "consentNo": "Ich gebe mein Einverständnis nicht.",
+  "nextBtn": "Weiter",
+  "pageText": "Seite 1/23"
+}
 };
 
     // Initially hide oTree's next button

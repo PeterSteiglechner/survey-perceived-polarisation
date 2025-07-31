@@ -2,7 +2,6 @@
     <link rel="stylesheet" href="{{ static 'main.css' }}">
 {% endblock %}
 
-
 {{ block content }}
 
 <h2>{{ page_title }}</h2>
@@ -29,23 +28,6 @@
 
  <br>
 
- {% comment %} <div class="card-section">
-    <!-- Polarization Perception Card -->
-    <div class="card">
-        <label class="form-label">
-            {{question}}
-        </label>
-        <div class="option-cards" data-field="satisfaction">
-            {% for choice, label in choices.items %}
-            <label class="option-card">
-                <input type="radio" name="satisfaction" value="{{ choice }}">
-                {{ label }}
-            </label>
-            {% endfor %}
-        </div>
-        {{ formfield_errors "satisfaction" }}
-    </div> {% endcomment %}
-
     <div class="card-section">
   <div class="card">
     <label class="form-label">{{ question }}</label>
@@ -57,32 +39,44 @@
       min="{{ satisfaction_min }}" 
       max="{{ satisfaction_max }}" 
       step="1"
-      value="{{ 5 }}"
-      oninput="document.getElementById('sliderValue').textContent = this.value"
+      oninput="handleSliderInput(this.value)"
       required
     >
     <div style="display: flex; justify-content: space-between; margin-top: 5px;">
   <span>{{ satisfaction_min_label }}</span>
   <span>{{ satisfaction_max_label }}</span>
 </div>
-    <div  style="text-align: center; margin-top: 15px;">
-      {% if lan_en %} Selected value: {% else %} Ausgewählter Wert: {%endif%}<span id="sliderValue">{{ 5 }}</span>
+    <div style="text-align: center; margin-top: 15px;">
+      {% if lan_en %} Selected value: {% else %} Ausgewählter Wert: {%endif%}<span id="sliderValue" style="color: #999;">{% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den Schieberegler{% endif %}</span>
     </div>
 
     {{ formfield_errors "satisfaction" }}
   </div>
 </div>
 
- <script>
+<script>
+let sliderTouched = false;
+
+function handleSliderInput(value) {
+  sliderTouched = true;
+  
+  // Update the displayed value
+  document.getElementById('sliderValue').textContent = value;
+  document.getElementById('sliderValue').style.color = 'black';
+  
+  // Enable the next button
+  const nextButton = document.getElementById('nextButton');
+  if (nextButton) {
+    nextButton.disabled = false;
+    nextButton.style.opacity = '1';
+  }
+  
+  // Update slider styling
   const slider = document.getElementById('satisfactionSlider');
-  slider.addEventListener('input', function () {
-    const value = (this.value - this.min) / (this.max - this.min) * 100;
-    this.style.background = `linear-gradient(to right, #007bff 0%, #007bff ${value}%, #e0e0e0 ${value}%, #e0e0e0 100%)`;
-  });
-</script> 
-
-
-
+  const percentage = (value - slider.min) / (slider.max - slider.min) * 100;
+  slider.style.background = `linear-gradient(to right, #007bff 0%, #007bff ${percentage}%, #e0e0e0 ${percentage}%, #e0e0e0 100%)`;
+}
+</script>
 
   <br>
 
@@ -100,13 +94,29 @@
         {{ next_button }}
         <div style="margin-left: auto;">Page {{nslide}}/{{maxslides}}</div>
     {% else %}
-        <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
+        <button type="submit" class="otree-btn-next btn btn-primary" id="nextButton" disabled style="opacity: 0.5;">Weiter</button>
         <div style="margin-left: auto;">Seite {{nslide}}/{{maxslides}}</div>
     {% endif %}
 </div>
 
 </div>
 
+<script>
+// Form validation before submission
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('form');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      if (!sliderTouched) {
+        e.preventDefault();
+        const lang = {% if lan_en %}true{% else %}false{% endif %};
+        alert(lang ? 'Please move the slider to select a value.' : 'Bitte bewegen Sie den Schieberegler, um einen Wert auszuwählen.');
+        return false;
+      }
+    });
+  }
+});
+</script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {

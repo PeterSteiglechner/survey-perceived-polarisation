@@ -81,12 +81,19 @@ h2 {
     transition: all 0.1s ease;
     min-height: 50px;
     flex: 1;
-    min-width: 120px;
-    max-width: 300px;
+    /* min-width: 120px;
+    max-width: 300px; */
     justify-content: center;
     align-items: center;
     display: flex;
     font-size: 15px;
+    width: calc(20% - 5.6px);
+    /* 20% minus gap compensation */
+    min-width: 0;
+    /* Allow shrinking */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
 }
 
 .option-card:hover {
@@ -104,19 +111,34 @@ h2 {
     background-color: #e6f0ff;
 }
 
-
 .option-separator {
-    height: 20px;
+    width: 100%;
+    /* Full width separator */
+    height: 2px;
+    /* Thinner line looks better */
     background-color: #ccc;
-    margin: 8px 8px;
+    margin: 8px 0;
+    /* Remove horizontal margins for equal spacing */
+    flex-basis: 100%;
+    /* Forces separator to take full width in flex container */
 }
 
 .option-card.no-answer {
     opacity: 0.7;
-    background-color: "rgb(150,150,150)";
+    flex: none;
+    /* Don't grow */
+    width: calc(20% - 5.6px);
+    /* Same as other cards */
+    flex: none;
+    /* Don't grow */
+    max-width: calc(20% - 5.6px);
+    background-color: rgb(150, 150, 150);
+    /* Removed quotes */
     font-style: italic;
+    color: white;
+    margin: 0 auto;
+    /* Add white text for better contrast */
 }
-
 
 
 

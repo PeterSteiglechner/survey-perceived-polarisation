@@ -106,8 +106,8 @@
                 dottype: "{{ dot.dottype }}" ,
                 descr:"{{ dot.descr }}",
                 radius: 12,
-                t_first_moved: null,
-                t_last_moved: null
+                t_last_moved: {{ dot.t_last_moved }},
+                t_first_moved: {{ dot.t_first_moved }}
                 },    
             {% endfor %}
         ];
@@ -160,7 +160,7 @@
      
         function recordMove(dot) {
             const now = Math.floor(Date.now() / 1000);
-            if (dot.t_first_moved === null) {
+            if (dot.t_first_moved === -1) {
                 dot.t_first_moved = now;
             }
             dot.t_last_moved = now;
@@ -343,6 +343,21 @@
             return Math.hypot(pos.x - scaleControlPos.x, pos.y - scaleControlPos.y) < 15; // Larger touch target
         }
 
+        canvas.addEventListener("dragstart", function(evt) {
+            evt.preventDefault();
+            return false;
+        });
+
+        canvas.addEventListener("drag", function(evt) {
+            evt.preventDefault();
+            return false;
+        });
+
+        canvas.addEventListener("dragend", function(evt) {
+            evt.preventDefault();
+            return false;
+        });
+
         function showPopup(point, mouseX, mouseY) {
             // Don't show popup for currentP dot since it's already displayed statically
             if (point.varname === "currentP") return;
@@ -415,6 +430,9 @@
             const touch = evt.touches[0];
             const touchPos = getTouchPos(touch);
 
+            if (draggingPoint || draggingScale) {
+                evt.preventDefault(); // Add this line
+            }
             if (draggingScale) {
                 // Scale based on horizontal touch movement
                 const deltaX = touchPos.x - lastTouchPos.x;
@@ -452,6 +470,7 @@
 
         // Mouse event handlers (for desktop)
         canvas.addEventListener("mousedown", function (evt) {
+            evt.preventDefault(); // Add this line
             const mousePos = getMousePos(evt);
             const clickedPoint = findPoint(mousePos);
             lastMousePos = mousePos;
@@ -496,6 +515,9 @@
                 drawCanvas();
             }
             
+            if (draggingPoint || draggingScale) {
+                evt.preventDefault(); // Add this line
+            }
             if (draggingScale && helpingLinesEnabled) {
                 // Scale based on horizontal mouse movement
                 const deltaX = mousePos.x - lastMousePos.x;

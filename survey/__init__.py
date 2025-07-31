@@ -154,7 +154,7 @@ class C(BaseConstants):
         "Completely accurate",
     ]
 
-    NR_OTHER_CHECKS_MAX = 15
+    NR_OTHER_CHECKS_MAX = 1 + 6 + 4 + 4 + 4
     OPTIONS_OTHER_CHECKS = list(range(0, 11))
     CHOICES_TOPICS = [qname for q, qname in QUESTIONNAMES["en"].items()] + [
         "Were there any other topics or relevant factors? Please write them in the text box below."
@@ -273,13 +273,34 @@ class Player(BasePlayer):
     )
 
     #################################
+    #####  TIME   #####
+    #################################
+    t_on_intro = models.IntegerField(blank=True)
+    t_on_opinion = models.IntegerField(blank=True)
+    t_on_contacts = models.IntegerField(blank=True)
+    t_on_personOpinion = models.LongStringField(blank=True, initial="{}")
+
+    t_on_practice_page = models.IntegerField(blank=True)
+    t_on_practiceResult_page = models.LongStringField(blank=True, initial="{}")
+
+    t_on_map_page = models.IntegerField(blank=True)
+    t_on_mapP_page = models.IntegerField(blank=True)
+
+    t_on_check_page = models.IntegerField(blank=True)
+    t_after_first_check = models.IntegerField(blank=True)
+    t_after_last_check = models.IntegerField(blank=True)
+
+    t_on_importance = models.IntegerField(blank=True)
+    t_on_satisfaction = models.IntegerField(blank=True)
+    t_on_relationships = models.IntegerField(blank=True)
+    t_on_demographics = models.IntegerField(blank=True)
+    t_on_success = models.IntegerField(blank=True)
+
+    #################################
     #####  MAP POSITIONS   #####
     #################################
 
     ps = models.LongStringField(blank=True)  # the personas
-
-    t_on_map_page = models.IntegerField(blank=True)
-    t_on_mapP_page = models.IntegerField(blank=True)
 
     # JSON data of positions
     positionsTest = models.LongStringField(blank=True)
@@ -289,10 +310,6 @@ class Player(BasePlayer):
     #################################
     #####  Similarity ratings   #####
     #################################
-
-    t_on_check_page = models.IntegerField(blank=True)
-    t_after_first_check = models.IntegerField(blank=True)
-    t_after_last_check = models.IntegerField(blank=True)
 
     valid_pairs = models.LongStringField(blank=True, initial="")
     n_check = models.IntegerField(initial=1)
@@ -307,7 +324,7 @@ class Player(BasePlayer):
 
     isTrainingPassed = models.BooleanField(initial=False)  #
     isTrainingCondFvC = models.BooleanField(initial=False)  #
-    isTrainingCondRelfvFC = models.BooleanField(initial=False)  #
+    isTrainingCondSelfvFC = models.BooleanField(initial=False)  #
     isTrainingCondRvFC = models.BooleanField(initial=False)  #
     isTrainingCondRvF = models.BooleanField(initial=False)  #
     attemptPractice = models.IntegerField(initial=0)
@@ -394,10 +411,15 @@ class slide01_Introduction(Page):
     form_fields = ["consent", "language"]
 
     @staticmethod
+    def vars_for_template(player: Player):
+        player.t_on_intro = int(time.time())
+
+    @staticmethod
     def before_next_page(player: Player, timeout_happened):
         player.question_sorting = json.dumps(
             C.QU_SORTS[np.random.choice(range(len(C.QU_SORTS)))]
         )
+        player.t_on_opinion = int(time.time())
 
 
 #################################
@@ -469,10 +491,10 @@ class slide02_Opinions(Page):
             )
             if ownOps[q] == "Neutral":
                 ownOps[q] = "Agree"
-                ps[f"P{n}"] = ownOps
+                ps[f"P{n}"] = dict(ownOps)
                 n += 1
                 ownOps[q] = "Disagree"
-                ps[f"P{n}"] = ownOps
+                ps[f"P{n}"] = dict(ownOps)
                 n += 1
             else:
                 if (ownOps[q] == "Disagree") or (ownOps[q] == "Strongly disagree"):
@@ -481,7 +503,7 @@ class slide02_Opinions(Page):
                     ownOps[q] = "Disagree"
                 else:
                     print("error")
-                ps[f"P{n}"] = ownOps
+                ps[f"P{n}"] = dict(ownOps)
                 n += 1
         player.ps = json.dumps(ps)
         player.valid_pairs = json.dumps(
@@ -497,6 +519,7 @@ class slide02_Opinions(Page):
         )
 
         player.n_checks = 1 + C.NCONTACTS + len(ps) + len(C.LABELLED)
+        player.t_on_contacts = int(time.time())
 
 
 #################################
@@ -565,6 +588,18 @@ class slide04_PersonOpinion(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
+        times_dict = json.loads(player.t_on_personOpinion)
+        print(times_dict)
+        times_dict[
+            player.which_contact_type
+            + (
+                str(player.current_contact)
+                if player.which_contact_type == "contact"
+                else str(player.evaluated_labelledPerson)
+            )
+        ] = int(time.time())
+        player.t_on_personOpinion = json.dumps(times_dict)
+
         lan = player.language
         if player.which_contact_type == "contact":
             idx = player.current_contact
@@ -673,6 +708,8 @@ class slide04_PersonOpinion(Page):
         if player.current_contact > C.NCONTACTS:
             player.which_contact_type = "labelledPerson"
 
+        player.t_on_practice_page = int(time.time())
+
     @staticmethod
     def is_displayed(player: Player):
         if not player.consent:
@@ -693,6 +730,12 @@ class slide05a_MapTest(Page):
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         player.positionsTest = player.positionsTest
+
+        t_on_results = json.loads(player.t_on_practiceResult_page)
+        assert type(t_on_results) == dict
+        t_on_results[player.attemptPractice] = int(time.time())
+        player.t_on_practiceResult_page = json.dumps(t_on_results)
+
         player.attemptPractice += 1
 
     @staticmethod
@@ -758,7 +801,7 @@ class slide05a_MapTest(Page):
             "instruction_text2": (
                 "Imagine you, a friend, a co-worker, and your relative are in a room (the rectangle below)."
                 if lan == "en"
-                else "Stellen Sie sich vor, Sie sind zusammen mit einem Freund, einer Arbeitskollegin und ein Verwandter in einem Raum (das Rechteck unten)."
+                else "Stellen Sie sich vor, Sie sind zusammen mit einem Freund, einer Arbeitskollegin und einem Verwandten in einem Raum (das Rechteck unten)."
             ),
             "instruction_text3": (
                 "<p>Arrange the people in the room based on how <em>you</em> see their political views:</p><ul><li><strong>Place individuals closer together if you perceive them as politically similar.</strong></li><li><strong>Place individuals farther apart if you perceive them as politically different.</strong></li></ul>"
@@ -777,17 +820,17 @@ class slide05a_MapTest(Page):
             ),
             "detailed_instructions_2": (
                 (
-                    "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 1:</strong> Self</summary><p>Place the point <strong>Self</strong> somewhere within the rectangle – it represents your own political views.</p></details>"
-                    + "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 2:</strong> Friend</summary><p>Place the point <strong>Friend</strong> near you – they share similar views.</p></details>"
-                    + "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 3:</strong> Co-worker</summary><p>Place <strong>Co-worker</strong> farther away, as they often have different opinions – but closer to <strong>Self</strong> than to <strong>Friend</strong>, because you perceive an even greater political difference between Co-worker and Friend.</p></details>"
-                    + "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 4:</strong> Relative</summary><p>Your <strong>Relative</strong> has very different political views – place them far from <strong>Me</strong>, but somewhat closer to <strong>Friend</strong> and <strong>Co-worker</strong>, as you feel they share some opinions with them.</p></details>"
+                    "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 1:</strong> 'Self'</summary><p>Place the point <strong>Self</strong> somewhere within the rectangle – it represents your own political views.</p></details>"
+                    + "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 2:</strong> 'Friend'</summary><p>Place the point <strong>Friend</strong> near you – they share similar views.</p></details>"
+                    + "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 3:</strong> 'Co-worker'</summary><p>Place <strong>Co-worker</strong> farther away, as they often have different opinions – but closer to <strong>Self</strong> than to <strong>Friend</strong>, because you perceive an even greater political difference between Co-worker and Friend.</p></details>"
+                    + "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 4:</strong> 'Relative'</summary><p>Your <strong>Relative</strong> has very different political views – place them far from <strong>Me</strong>, but somewhat closer to <strong>Friend</strong> and <strong>Co-worker</strong>, as you feel they share some opinions with them.</p></details>"
                 )
                 if lan == "en"
                 else (
-                    "<details  open style='margin-bottom: 0em;'> <summary  style='white-space: nowrap;'><strong>Schritt 1:</strong> Ich</summary> <p>Platzieren Sie den Punkt <strong>Ich</strong> irgendwo im Rechteck – er steht für Ihre politischen Ansichten.</p></details>"
-                    + "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Schritt 2:</strong> Freund</summary><p>Setzen Sie den Punkt <strong>Freund</strong> in Ihre Nähe – er teilt ähnliche Ansichten wie Sie.</p></details>"
-                    + "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Schritt 3:</strong> Kollegin</summary><p>Platzieren Sie <strong>Kollegin</strong> weiter entfernt, da sie oft anderer Meinung als Sie ist – aber näher bei <strong>Ich</strong> als bei <strong>Freund</strong>, weil Sie zwischen Kollegin und Freund einen noch größeren politischen Unterschied wahrnehmen.</p></p></details>"
-                    + "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Schritt 4:</strong> Verwandter</summary><p>Der <strong>Verwandte</strong> denkt politisch ganz anders – setzen Sie ihn weit weg von <strong>Ich</strong>, aber etwas näher an <strong>Freund</strong> und <strong>Kollegin</strong>, da Sie finden, dass der Verwandte in manchen Punkten deren Ansichten teilt.</p></details>"
+                    "<details  open style='margin-bottom: 0em;'> <summary  style='white-space: nowrap;'><strong>Schritt 1:</strong> 'Ich'</summary> <p>Platzieren Sie den Punkt <strong>Ich</strong> irgendwo im Rechteck – er steht für Ihre politischen Ansichten.</p></details>"
+                    + "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Schritt 2:</strong> 'Freund'</summary><p>Setzen Sie den Punkt <strong>Freund</strong> in Ihre Nähe – er teilt ähnliche Ansichten wie Sie.</p></details>"
+                    + "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Schritt 3:</strong> 'Kollegin'</summary><p>Platzieren Sie <strong>Kollegin</strong> weiter entfernt, da sie oft anderer Meinung als Sie ist – aber näher bei <strong>Ich</strong> als bei <strong>Freund</strong>, weil Sie zwischen Kollegin und Freund einen noch größeren politischen Unterschied wahrnehmen.</p></p></details>"
+                    + "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Schritt 4:</strong> 'Verwandter'</summary><p>Der <strong>Verwandte</strong> denkt politisch ganz anders – setzen Sie ihn weit weg von <strong>Ich</strong>, aber etwas näher an <strong>Freund</strong> und <strong>Kollegin</strong>, da Sie finden, dass der Verwandte in manchen Punkten deren Ansichten teilt.</p></details>"
                 )
             ),
             "all_dots_instr": (
@@ -996,6 +1039,8 @@ class slide06_SPaM(Page):
                 "x": 530,
                 "y": 32 + i * 43,
                 "descr": "",
+                "t_first_moved": -1,
+                "t_last_moved": -1,
             }
             for i, (dottype, varname, name) in enumerate(
                 zip(types, varnames, displ_names)
@@ -1121,6 +1166,8 @@ class slide07_SPaM_personas(Page):
                 "y": p["y"],
                 "dottype": p["dottype"],
                 "descr": dot_descrs.get(p["varname"], ""),
+                "t_first_moved": p["t_first_moved"],
+                "t_last_moved": p["t_last_moved"],
             }
             for p in pos
         ]
@@ -1132,6 +1179,8 @@ class slide07_SPaM_personas(Page):
                 "y": 350,
                 "dottype": "P",
                 "descr": P_text_short,
+                "t_first_moved": -1,
+                "t_last_moved": -1,
             }
         )
 
@@ -1220,7 +1269,7 @@ class slide08_PlausibilityCheck_Pairs(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return (player.consent) and (player.n_check <= player.n_checks)
+        return (player.consent) and (player.n_check <= (player.n_checks))
 
     @staticmethod
     def get_form_fields(player: Player):
@@ -1241,6 +1290,8 @@ class slide08_PlausibilityCheck_Pairs(Page):
         if player.n_check == 1:
             player.t_after_first_check = int(time.time())
         player.t_after_last_check = int(time.time())
+        player.t_on_importance = int(time.time())
+
         player.n_check += 1
 
     @staticmethod
@@ -1250,59 +1301,39 @@ class slide08_PlausibilityCheck_Pairs(Page):
         p1, p2 = random.choice(valid_pairs)
         setattr(player, f"checkPair{player.n_check}_dot1", p1)
         setattr(player, f"checkPair{player.n_check}_dot2", p2)
-
-        p1label = (
+        p1label, p2label = [
             (
-                ("your contact <strong>" if lan == "en" else "Ihr Kontakt <strong>")
-                + f"{getattr(player, p1)}</strong>"
-            )
-            if "contact" in p1
-            else (
                 (
-                    (
-                        "<strong>yourself</strong>"
-                        if lan == "en"
-                        else "<strong>Sie selbst</strong>"
-                    )
+                    ("Your contact <strong>" if lan == "en" else "Ihr Kontakt <strong>")
+                    + f"{getattr(player, p)}</strong>"
                 )
-                if p1 == "self"
+                if "contact" in p
                 else (
                     (
-                        f"a typical <strong>{p1} voter</strong> "
-                        if lan == "en"
-                        else f"eine typische Wählerin/Wähler der <strong>{C.LABELLED_de[p1]}</strong>"
+                        (
+                            "<strong>Yourself</strong>"
+                            if lan == "en"
+                            else "<strong>Sie selbst</strong>"
+                        )
                     )
-                    if p1 in C.LABELLED
-                    else f"<strong>{p1}</strong>"
-                )
-            )
-        )
-        p2label = (
-            (
-                ("your contact <strong>" if lan == "en" else "Ihr Kontakt <strong>")
-                + f"{getattr(player, p2)}</strong>"
-            )
-            if "contact" in p2
-            else (
-                (
-                    (
-                        "<strong>yourself</strong>"
-                        if lan == "en"
-                        else "<strong>Sie selbst</strong>"
+                    if p == "self"
+                    else (
+                        (
+                            f"A typical <strong>{p} voter</strong> "
+                            if lan == "en"
+                            else f"Eine typische Person, die die <strong>{C.LABELLED_de[p]}</strong> wählt"
+                        )
+                        if p in C.LABELLED
+                        else (
+                            f"The person <strong>{p}</strong> (see below)"
+                            if lan == "en"
+                            else f"Die Person <strong>{p}</strong> (siehe unten)"
+                        )
                     )
                 )
-                if p2 == "self"
-                else (
-                    (
-                        f"a typical <strong>{p2} voter</strong>"
-                        if lan == "en"
-                        else f"eine typische Wählerin/Wähler der <strong>{C.LABELLED_de[p2]}</strong>"
-                    )
-                    if p2 in C.LABELLED
-                    else f"<strong>{p2}</strong>"
-                )
             )
-        )
+            for p in (p1, p2)
+        ]
         if p1 in json.loads(player.ps).keys():
             p1_op = json.loads(player.ps)[p1]
             p1_dot = {
@@ -1357,11 +1388,11 @@ class slide08_PlausibilityCheck_Pairs(Page):
                 else f"<p>Denken Sie nun an die folgenden beiden Personen:</p><ol><li style='font-size:18px;'>{p1label}</li><li style='font-size:18px;'>{p2label}</li></ol>"
             ),
             "question": (
-                "<p>In terms of their political views on migration, climate change, inequality, and diversity — how similar overall would <em>you</em> say these two individuals are?</p>"
+                "<p>In <em>your</em> opinion, how similar are these two individuals overall in their political views on migration, climate change, inequality and diversity?</p>"
                 if lan == "en"
-                else "<p>Wie ähnlich sind sich diese beiden Personen insgesamt <em>Ihrer Meinung nach</em> in Bezug auf ihre politischen Ansichten zu Migration, Klimawandel, Ungleichheit und Vielfalt?</p>"
+                else "<p>Wie ähnlich sind diese beiden Personen <em>Ihrer Meinung nach</em> insgesamt in ihren politischen Ansichten zu Migration, Klimawandel, Ungleichheit und Vielfalt?</p>"
             ),
-            "Ithink": "Your estimate:" if lan == "en" else "Ihre Einschätzung:",
+            "Ithink": "",  # "Your estimate:" if lan == "en" else "Ihre Einschätzung:",
             "img1": p1_dot["dottype"] == "P",
             "img2": p2_dot["dottype"] == "P",
             "choices": list(range(0, 11)),
@@ -1438,6 +1469,10 @@ class slide09_Importance(Page):
                         else "Ungültige Eingabe."
                     )
         return None
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        player.t_on_satisfaction = int(time.time())
 
 
 #################################
@@ -1543,6 +1578,10 @@ class slide10_Satisfaction(Page):
             ),
         }
 
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        player.t_on_relationships = int(time.time())
+
 
 #################################
 #####  Social Relationships   #####
@@ -1582,9 +1621,9 @@ class slide11_Relationships(Page):
                 {
                     "field_name": field,
                     "question_text": (
-                        f"How close are you generally with <strong>{getattr(player, f'contact{n}')}</strong>?"
+                        f"Your relation with <strong>{getattr(player, f'contact{n}')}</strong>"
                         if lan == "en"
-                        else f"Wie nah würden Sie Ihre Bezieung zu <strong>{getattr(player, f'contact{n}')}</strong> generell beschreiben?"
+                        else f"Ihre Beziehung zu <strong>{getattr(player, f'contact{n}')}</strong>"
                     ),
                     "choices": choices,
                 }
@@ -1600,16 +1639,20 @@ class slide11_Relationships(Page):
             ),
             "field_question_pairs": field_question_pairs,
             "qu_closeness": (
-                "How close would you describe your relation in general with the three previously mentioned social contacts? This question is independent of whether you feel political similar or not; we aim to capture the emotional/social nature of your relationship with those contacts."
+                "How would you rate your general social closeness to the contacts mentioned – regardless of political views?"
                 if lan == "en"
-                else "Wie nah würden Sie Ihre Beziehungen generall zu den drei zuvor genannten sozialen Kontakten beschreiben? Diese Frage ist unabhängig davon ob Sie sich politisch ähnlich sind oder nicht; wir würden gerne Ihre emotionale/soziale Nähe zu diesen Personen erfassen."
+                else "Wie würden Sie Ihre allgemeine soziale Nähe zu den genannten Kontakten einschätzen – unabhängig von politischen Ansichten?"
             ),
             "disclaimer": (
-                "All your responses are linked to generic names <em>Contact 1</em>, <em>Contact 2</em>, etc. To protect privacy, we do <strong>not</strong> store the actual names or initials of your social contacts."
+                "All your responses are linked to generic names <em>Contact 1</em>, <em>Contact 2</em>, etc. To protect privacy, we do <strong>not store</strong> the actual names or initials of your social contacts."
                 if lan == "en"
-                else "Alle Ihre Antworten werden generischen Namen <em>Kontakt 1</em>, <em>Kontakt 2</em> usw. zugeordnet. Zum Schutz der Privatsphäre speichern wir <strong>nicht</strong> die tatsächlichen Namen Ihrer sozialen Kontakte."
+                else "Alle Ihre Antworten werden generischen Bezeichnungen wie <em>Kontakt 1</em>, <em>Kontakt 2</em> usw. zugeordnet. Zum Schutz der Privatsphäre werden die von Ihnen angegebenen Namen oder Initialen <strong>nicht gespeichert</strong>.."
             ),
         }
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        player.t_on_demographics = int(time.time())
 
 
 #################################
@@ -1714,6 +1757,10 @@ class slide12_Demographics(Page):
                 )
             ),
         }
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        player.t_on_success = int(time.time())
 
 
 #################################

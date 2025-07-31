@@ -6,19 +6,18 @@ SESSION_CONFIGS = [
     #     app_sequence=['public_goods'],
     #     num_demo_participants=3,
     # ),
-        dict(
-         name='SURVEY',
-         app_sequence=['survey'],
-         num_demo_participants=1,
-     ),
-     
+    dict(
+        name="SURVEY",
+        app_sequence=["survey"],
+        num_demo_participants=1,
+    ),
 ]
 
 
 ROOMS = [
     dict(
-        name='20250710_Pretest',
-        display_name='20250710_Pretest',
+        name="20250730_prolific_pilot",
+        display_name="20250730_prolific_pilot",
     )
 ]
 
@@ -36,16 +35,16 @@ SESSION_FIELDS = []
 
 # ISO-639 code
 # for example: de, fr, ja, ko, zh-hans
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = "en"
 
 # e.g. EUR, GBP, CNY, JPY
-REAL_WORLD_CURRENCY_CODE = 'USD'
+REAL_WORLD_CURRENCY_CODE = "GBP"
 USE_POINTS = True
 
-ADMIN_USERNAME = 'admin'
+ADMIN_USERNAME = "admin"
 # for security, best to set admin password in an environment variable
-ADMIN_PASSWORD = environ.get('OTREE_ADMIN_PASSWORD')
+ADMIN_PASSWORD = environ.get("OTREE_ADMIN_PASSWORD")
 
 DEMO_PAGE_INTRO_HTML = """ """
 
-SECRET_KEY = '5224270508850'
+SECRET_KEY = "5224270508850"

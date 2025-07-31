@@ -165,6 +165,22 @@
             return points.find(p => Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius);
         }
 
+        canvas.addEventListener("dragstart", function(evt) {
+            evt.preventDefault();
+            return false;
+        });
+
+        canvas.addEventListener("drag", function(evt) {
+            evt.preventDefault();
+            return false;
+        });
+
+        canvas.addEventListener("dragend", function(evt) {
+            evt.preventDefault();
+            return false;
+        });
+
+
         // Touch event handlers
         canvas.addEventListener("touchstart", function (evt) {
             const touch = evt.touches[0];
@@ -185,8 +201,13 @@
         canvas.addEventListener("touchmove", function (evt) {
             if (!draggingPoint) return;
 
+            if (draggingPoint) {
+                evt.preventDefault(); // Add this line
+            }
+
             const touch = evt.touches[0];
             const touchPos = getTouchPos(touch);
+
 
             draggingPoint.x = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, touchPos.x));
             draggingPoint.y = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, touchPos.y));
@@ -203,6 +224,7 @@
 
         // Mouse event handlers (for desktop)
         canvas.addEventListener("mousedown", function (evt) {
+            evt.preventDefault();
             const mousePos = getMousePos(evt);
             const clickedPoint = findPoint(mousePos);
 
@@ -220,6 +242,10 @@
             const mousePos = getMousePos(evt);
             const newHoveredPoint = findPoint(mousePos);
             
+            if (draggingPoint) {
+                evt.preventDefault(); 
+            }
+
             if (newHoveredPoint !== hoveredPoint) {
                 hoveredPoint = newHoveredPoint;
                 drawCanvas();
