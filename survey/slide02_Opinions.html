@@ -1,65 +1,170 @@
 {% block styles %}
-    <link rel="stylesheet" href="{{ static 'main.css' }}">
-{% endblock %}
+<link rel="stylesheet" href="{{ static 'main.css' }}" />
+{% endblock %} {% block content %}
 
-{% block content %}
+<h2>{{ page_title }}</h2>
 
-<h2>{{page_title}}</h2>
-
-{{instruction_text}}
+{{ instruction_text }}
 
 <form method="post">
-    <table class="survey-table-clean">
-        <thead>
-            <tr>
-                <th style="width: 100%;">{{table_head}} </th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in field_question_pairs %}
-            <tr>
-                <td>
-                    <div class="statement-cell">{{ item.question_text }}</div>
-                    <div class="option-cards" data-field="{{ item.field_name }}">
-                        {% for value, label in item.choices.items %}
-                        <label class="option-card" data-value="{{ value }}">
-                            <input type="radio" name="{{ item.field_name }}" value="{{ value }}">
-                            {{ label }}
-                        </label>
-                        {% endfor %}
-                    </div>
-                    {{ formfield_errors item.field_name }}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
+  <table class="survey-table-clean">
+    <thead>
+      <tr>
+        <th style="width: 100%">{{ table_head }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in field_question_pairs %}
+      <tr>
+        <td>
+          <label class="form-label"><b>{{ item.question_text }}</b></label>
+          <input
+            type="range"
+            class="likert-slider"
+            name="{{ item.field_name }}"
+            id="slider_{{ forloop.counter }}"
+            min="-100"
+            max="100"
+            step="1"
+            style="color: #aaaaaa; background: #ccc"
+            oninput="handleSliderInput{{ forloop.counter }}(this.value)"
+            required
+          />
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              margin-top: 5px;
+            "
+          >
+            <span style="font-size: 10pt; color: #777"
+              >{{ item.first_label }}</span
+            >
+            <span style="font-size: 10pt; color: #777"
+              >{{ item.neutral_label }}</span
+            >
+            <span style="font-size: 10pt; color: #777"
+              >{{ item.last_label }}</span
+            >
+          </div>
+          <div style="text-align: center; margin: 0">
+            <span id="sliderValue{{ forloop.counter }}">
+              <table
+                style="width: 100%; border-collapse: collapse; font-size: 8pt"
+              >
+                <tr>
+                  <td style="font-size: 12pt; text-align: center; width: 20%">
+                    {% if lan_en %}Please move the slider{% else %}Bitte bewegen
+                    Sie den Schieberegler{% endif %}{% comment %} {% if lan_en
+                    %}Selected:{% else %}Ausgewählt:{% endif %} {% endcomment %}
+                  </td>
+                  <td style="font-size: 12pt; text-align: center"></td>
+                  <td style="font-size: 12pt; text-align: right"></td>
+                </tr>
+              </table>
+            </span>
+          </div>
+          {{ formfield_errors item.field_name }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </form>
 
-<div style="display: flex; justify-content: space-between; align-items: center;">
-    {% if lan_en %}
-        {{ next_button }}
-        <div style="margin-left: auto;">Page {{nslide}}/{{maxslides}}</div>
-    {% else %}
-        <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
-        <div style="margin-left: auto;">Seite {{nslide}}/{{maxslides}}</div>
-    {% endif %}
+<div style="display: flex; justify-content: space-between; align-items: center">
+  {% if lan_en %} {{ next_button }}
+  <div style="margin-left: auto">Page {{ nslide }}/{{ maxslides }}</div>
+  {% else %}
+  <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
+  <div style="margin-left: auto">Seite {{ nslide }}/{{ maxslides }}</div>
+  {% endif %}
 </div>
 
 <script>
-document.querySelectorAll('.option-cards').forEach(group => {
-    const name = group.dataset.field;
-    group.querySelectorAll('input[type="radio"]').forEach(radio => {
-        radio.addEventListener('change', () => {
-            group.querySelectorAll('.option-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            radio.closest('.option-card').classList.add('selected');
-        });
-    });
-});
-</script>
+  let slidersTouched = {};
+  const totalSliders = {{ field_question_pairs|length }};
 
+  {% for item in field_question_pairs %}
+  function handleSliderInput{{ forloop.counter }}(value) {
+      slidersTouched[{{ forloop.counter }}] = true;
+
+      function getLikertLabel(val) {
+          const numVal = parseInt(val);
+          {% if lan_en %}
+          if (numVal <= -71) return "Strongly Disagree";
+          else if (numVal <= -41) return "Disagree";
+          else if (numVal <= -11) return "Somewhat Disagree";
+          else if (numVal <= 11) return "Neutral";
+          else if (numVal <= 41) return "Somewhat Agree";
+          else if (numVal <= 71) return "Agree";
+          else return "Strongly Agree";
+          {% else %}
+          if (numVal <= -71) return "Stimme überhaupt nicht zu";
+          else if (numVal <= -41) return "Stimme nicht zu";
+          else if (numVal <= -11) return "Stimme eher nicht zu";
+          else if (numVal <= 11) return "Neutral";
+          else if (numVal <= 41) return "Stimme eher zu";
+          else if (numVal <= 71) return "Stimme zu";
+          else return "Stimme voll und ganz zu";
+          {% endif %}
+      }
+
+      const label = getLikertLabel(value);
+
+      {% if lan_en %}
+      document.getElementById('sliderValue{{ forloop.counter }}').innerHTML =
+        `<table style="width:100%; border-collapse:collapse;">
+          <tr>
+            <td style="font-size:12pt; text-align:center; width:20%;">Selected:</td>
+            <td style="font-size:12pt; text-align:center;"><b>${label}</b></td>
+            <td style="font-size:12pt; text-align:right;">~ ${Math.round(value/10)} (scale -10 to 10)</td>
+          </tr>
+        </table>`;
+      {% else %}
+      document.getElementById('sliderValue{{ forloop.counter }}').innerHTML =
+        `<table style="width:100%; border-collapse:collapse;">
+          <tr>
+            <td style="font-size:12pt; text-align:center; width:20%;">Ausgewählt:</td>
+            <td style="font-size:12pt; text-align:center; "><b>${label}</b></td>
+            <td style="font-size:12pt; text-align:right;">~ ${Math.round(value/10)} (Skala: -10 bis 10)</td>
+          </tr>
+        </table>`;
+      {% endif %}
+
+      document.getElementById('sliderValue{{ forloop.counter }}').style.color = 'black';
+
+      const slider = document.getElementById('slider_{{ forloop.counter }}');
+      const pct = (value - slider.min) / (slider.max - slider.min) * 100;
+      slider.style.background = `linear-gradient(to right, #424242ff 0%, #424242ff ${pct}%, #e0e0e0 ${pct}%, #e0e0e0 100%)`;
+
+      if (Object.keys(slidersTouched).length === totalSliders) {
+          const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
+          if (nextButton) {
+              nextButton.disabled = false;
+              nextButton.style.opacity = '1';
+          }
+      }
+  }
+  {% endfor %}
+
+  document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form');
+      if (form) {
+          form.addEventListener('submit', function(e) {
+              if (Object.keys(slidersTouched).length < totalSliders) {
+                  e.preventDefault();
+                  alert({% if lan_en %}'Please move all sliders to select values.'{% else %}'Bitte bewegen Sie alle Schieberegler, um Werte auszuwählen.'{% endif %});
+                  return false;
+              }
+          });
+      }
+      const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
+      if (nextButton) {
+          nextButton.disabled = true;
+          nextButton.style.opacity = '0.5';
+      }
+  });
+</script>
 
 {% endblock %}
