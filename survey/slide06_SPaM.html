@@ -1,446 +1,257 @@
 {% block styles %}
-    <link rel="stylesheet" href="{{ static 'main.css' }}">
-{% endblock %}
+<link rel="stylesheet" href="{{ static 'main.css' }}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
 
-{% block content %}
 <div class="container">
+  <h2>{{page_title}}</h2>
 
-    <h2>{{page_title}} </h2>
+  <p>{{instru1}}</p>
 
-    <p>{{instru1}}</p>
+  <p>{{instruRoom}}</p>
 
-    <p>{{instruRoom}} </p>
+  <div
+    class="instructions"
+    style="
+      margin: 10px 0;
+      padding: 10px;
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      border-radius: 4px;
+    "
+  >
+    {{instru_main}}
+  </div>
 
-    <div class="instructions" style="margin: 10px 0; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
-        {{instru_main}}
-    </div>
+  <div
+    class="instructions"
+    style="
+      margin: 10px 0;
+      padding: 10px;
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      border-radius: 4px;
+    "
+  >
+    {{no_wrong_answers}}
+  </div>
 
-    <div class="instructions" style="margin: 10px 0; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
-        {{no_wrong_answers}}
-    </div>
+  <canvas
+    id="dragCanvas"
+    width="620"
+    height="500"
+    style="
+      border: 0px solid #333;
+      background: #fafafa;
+      display: block;
+      margin: 20px 0;
+      cursor: grab;
+      touch-action: none;
+    "
+  ></canvas>
 
-
-    <canvas id="dragCanvas" width="560" height="500" style="border: 0px solid #333; background: #fafafa; display: block; margin: 20px 0; cursor: grab; touch-action: none;"></canvas>
-
-    <input type="hidden" name="positions" id="positions">
-    <input type="hidden" name="positions_preP" id="positions_preP">
-
-    <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-left: 4px solid #007bff; border-radius: 4px;">
-        <details>{{instru_click}} <br>
-
-        <button type="button" id="toggleHelpingLines" class="btn btn-secondary" style="padding: 2px 4px; background: rgba(220,220,220,1); color: black; border: grey; border-radius: 4px; cursor: pointer;">
-            {{helping_lines}}
-        </button>
-        </details>
-    </div> 
-
-
-    </div>
-            <div class="instructions" style="margin: 20px 0; padding: 15px; background:rgb(255, 235, 235); border-left: 4px solid rgb(255, 0, 0); border-radius: 4px;">
-        <p style="margin: 0; color:rgb(0, 0, 0);">
-            {{all_dots_instr}}
-        </p>
-    </div>
-
-<div style="display: flex; justify-content: space-between; align-items: center;">
-    {% if lan_en %}
-        {{ next_button }}
-        <div style="margin-left: auto;">Page {{nslide}}/{{maxslides}}</div>
-    {% else %}
-        <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
-        <div style="margin-left: auto;">Seite {{nslide}}/{{maxslides}}</div>
-    {% endif %}
+  <input type="hidden" name="positions" id="positions" />
+</div>
+<div
+  class="instructions"
+  style="
+    margin: 20px 0;
+    padding: 15px;
+    background: rgb(255, 235, 235);
+    border-left: 4px solid rgb(255, 0, 0);
+    border-radius: 4px;
+  "
+>
+  <p style="margin: 0; color: rgb(0, 0, 0)">{{all_dots_instr}}</p>
 </div>
 
+<div style="display: flex; justify-content: space-between; align-items: center">
+  {% if lan_en %} {{ next_button }}
+  <div style="margin-left: auto">Page {{nslide}}/{{maxslides}}</div>
+  {% else %}
+  <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
+  <div style="margin-left: auto">Seite {{nslide}}/{{maxslides}}</div>
+  {% endif %}
+</div>
 
 <script>
+  // Run only after everything (DOM + CSS + fonts) is ready
+  window.addEventListener("load", function () {
+    const canvas = document.getElementById("dragCanvas");
+    const ctx = canvas.getContext("2d");
 
-    document.addEventListener("DOMContentLoaded", function () {
-        const canvas = document.getElementById("dragCanvas");
-        const ctx = canvas.getContext("2d");
-        const points = [
-            {% for dot in dots %}
-                {
-                name_disp: "{{ dot.name_disp }}", 
-                varname: "{{ dot.varname }}", 
-                x: {{ dot.x }}, 
-                y: {{ dot.y }}, 
-                dottype: "{{ dot.dottype }}" ,
-                descr:"{{ dot.descr }}",
-                radius: 12, 
-                t_last_moved: {{ dot.t_last_moved }},
-                t_first_moved: {{ dot.t_first_moved }}
-                },    
-            {% endfor %}
-        ];
+    const points = [
+      {% for dot in dots %}
+      {
+        name_disp: "{{ dot.name_disp }}",
+        varname: "{{ dot.varname }}",
+        x: {{ dot.x }},
+        y: {{ dot.y }},
+        dottype: "{{ dot.dottype }}",
+        descr: "{{ dot.descr }}",
+        radius: 12,
+        t_last_moved: {{ dot.t_last_moved }},
+        t_first_moved: {{ dot.t_first_moved }}
+      },
+      {% endfor %}
+    ];
 
-        let draggingPoint = null;
-        let hoveredPoint = null;
-        let selectedPoint = null;
-        let showCircles = false;
-        let circleCenter = { x: 0, y: 0 };
-        let circleScale = 1;
-        let draggingScale = false;
-        let scaleControlPos = { x: 0, y: 0 };
-        let lastMousePos = { x: 0, y: 0 };
-        let lastTouchPos = { x: 0, y: 0 };
+    let draggingPoint = null,
+        hoveredPoint = null,
+        lastMousePos = { x: 0, y: 0 },
+        lastTouchPos = { x: 0, y: 0 };
 
-        let helpingLinesEnabled = false;
-        
-        console.log("Loaded points:", points);
+    console.log("Loaded points:", points);
 
-        const toggleButton = document.getElementById("toggleHelpingLines");
-        
-        toggleButton.addEventListener("click", function() {
-            helpingLinesEnabled = !helpingLinesEnabled;
-            if (helpingLinesEnabled) {
-                    toggleButton.textContent = "{{helping_lines}}"; // Should be "Disable Helping Lines" or similar
-                    toggleButton.style.color = "white";
-                    toggleButton.style.background = "rgba(70,70,70,1)";
+    function recordMove(dot) {
+      const now = Math.floor(Date.now() / 1000);
+      if (dot.t_first_moved === -1) dot.t_first_moved = now;
+      dot.t_last_moved = now;
+    }
 
-                } else {
-                    toggleButton.textContent = "{{helping_lines}}"; // You can make this a template variable too
-                    toggleButton.style.background = "rgba(220,220,220,1)";
-                    toggleButton.style.color = "black";
+    function drawCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                    // Hide circles if helping lines are disabled
-                    showCircles = false;
-                    selectedPoint = null;
-                }
-        });
+      // Boundary square
+      ctx.strokeStyle = "#333";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(0, 0, canvas.height, canvas.height);
 
-        function recordMove(dot) {
-            const now = Math.floor(Date.now() / 1000);
-            if (dot.t_first_moved === -1) {
-                dot.t_first_moved = now;
-            }
-            dot.t_last_moved = now;
-        }
+      // Points
+      points.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = COLORS[p.varname] || COLORS[p.dottype] || "white";
+        ctx.fill();
 
-        function drawScaleControl() {
-            if (!showCircles || !helpingLinesEnabled) return;
+        ctx.strokeStyle = p === hoveredPoint ? "#fff" : "#333";
+        ctx.lineWidth = p === hoveredPoint ? 3 : 2;
+        ctx.stroke();
 
-            // Position the scale control on the smallest circle (100px radius)
-            const smallestRadius = 70 * circleScale;
-            scaleControlPos.x = circleCenter.x + smallestRadius;
-            scaleControlPos.y = circleCenter.y;
-            
-            // Draw double arrow (expand/contract symbol) 
-            ctx.strokeStyle = "#333";
-            ctx.lineWidth = 3;
-            ctx.lineCap = "round";
-            
-            // Left arrow (contract) 
-            ctx.beginPath();
-            ctx.moveTo(scaleControlPos.x - 7, scaleControlPos.y);
-            ctx.lineTo(scaleControlPos.x - 4, scaleControlPos.y - 4);
-            ctx.moveTo(scaleControlPos.x - 7, scaleControlPos.y);
-            ctx.lineTo(scaleControlPos.x - 4, scaleControlPos.y + 4);
-            
-            // Right arrow (expand) - smaller
-            ctx.moveTo(scaleControlPos.x + 7, scaleControlPos.y);
-            ctx.lineTo(scaleControlPos.x + 4, scaleControlPos.y - 4);
-            ctx.moveTo(scaleControlPos.x + 7, scaleControlPos.y);
-            ctx.lineTo(scaleControlPos.x + 4, scaleControlPos.y + 4);
-            
-            ctx.stroke();
-        }
+        ctx.fillStyle = "#333";
+        ctx.font = "12px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+        ctx.fillText(p.name_disp, p.x, p.y - 15);
+      });
+    }
 
-        function drawCircles() {
-            if (!showCircles) return;
-            
-            const radii = [70, 140, 210];
-            const labels = ["{{labelClose}}", "", "{{ labelFar }}"];
-            
-            // Draw circles
-            radii.forEach((radius, index) => {
-                ctx.beginPath();
-                ctx.arc(circleCenter.x, circleCenter.y, radius * circleScale, 0, Math.PI * 2);
-                ctx.strokeStyle = "#666";
-                ctx.lineWidth = 1;
-                ctx.setLineDash([5, 5]);
-                ctx.stroke();
-                ctx.setLineDash([]);
-            });
-            
-            // Draw labels
-            ctx.fillStyle = "#666";
-            ctx.font = "12px Arial";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            
-            radii.forEach((radius, index) => {
-                if (labels[index]) {
-                    const scaledRadius = radius * circleScale;
-                    ctx.fillText(labels[index], circleCenter.x, circleCenter.y - scaledRadius - 10);
-                }
-            });
-            
-            // Draw scale control
-            drawScaleControl();
-        }
+    const getMousePos = evt => {
+      const rect = canvas.getBoundingClientRect();
+      return { x: evt.clientX - rect.left, y: evt.clientY - rect.top };
+    };
 
-        function drawCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const getTouchPos = touch => {
+      const rect = canvas.getBoundingClientRect();
+      return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+    };
 
-            // Draw the boundary square with enhanced styling
-            ctx.strokeStyle = "#333";
-            ctx.lineWidth = 1;
-            ctx.strokeRect(0, 0, canvas.height, canvas.height);
-            
-            // Draw circles first (behind dots)
-            drawCircles();
-       
-            // Draw all points
-            points.forEach(p => {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                
-                // Set fill color based on type
-                ctx.fillStyle = p.dottype === "self" ? "grey" :
-                        p.varname === "Green Party" ? "#46962b" :
-                            p.varname === "AfD" ?  "#009ee0" :
-                                p.varname === "Left Party" ?  "#FF0000" :
-                                    p.varname === "FDP" ?  "#ffed00" :
-                                        p.dottype === "contact" ? "#00ff80":
-                                            p.dottype === "P" ? "pink":
-                                                "white";        
-                ctx.fill();
-                
-                // Add border with hover effect
-                ctx.strokeStyle = p === hoveredPoint ? "#fff" : "#333";
-                ctx.lineWidth = p === hoveredPoint ? 3 : 2;
-                ctx.stroke();
+    const findPoint = pos =>
+      points.find(p => Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius);
 
-                // Draw label with better positioning
-                ctx.fillStyle = "#333";
-                ctx.font = "12px Arial";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "bottom";
-                ctx.fillText(p.name_disp, p.x, p.y - 18);
-            });
-        }
+    // Prevent native drag
+    ["dragstart", "drag", "dragend"].forEach(ev =>
+      canvas.addEventListener(ev, e => e.preventDefault())
+    );
 
-        function getMousePos(evt) {
-            const rect = canvas.getBoundingClientRect();
-            return {
-                x: evt.clientX - rect.left,
-                y: evt.clientY - rect.top
-            };
-        }
+    // Touch handlers
+    canvas.addEventListener("touchstart", evt => {
+      const touchPos = getTouchPos(evt.touches[0]);
+      lastTouchPos = touchPos;
+      draggingPoint = findPoint(touchPos) || null;
+      drawCanvas();
+      evt.preventDefault();
+    }, { passive: false });
 
-        function getTouchPos(touch) {
-            const rect = canvas.getBoundingClientRect();
-            return {
-                x: touch.clientX - rect.left,
-                y: touch.clientY - rect.top
-            };
-        }
+    canvas.addEventListener("touchmove", evt => {
+      if (!draggingPoint) return;
+      const touchPos = getTouchPos(evt.touches[0]);
+      draggingPoint.x = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, touchPos.x));
+      draggingPoint.y = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, touchPos.y));
+      drawCanvas();
+      lastTouchPos = touchPos;
+      evt.preventDefault();
+    }, { passive: false });
 
-        function findPoint(pos) {
-            return points.find(p => Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius);
-        }
-        
-        function isOnScaleControl(pos) {
-            if (!showCircles || !helpingLinesEnabled) return false;
-            return Math.hypot(pos.x - scaleControlPos.x, pos.y - scaleControlPos.y) < 15; // Larger touch target
-        }
+    canvas.addEventListener("touchend", () => {
+      if (draggingPoint) recordMove(draggingPoint);
+      draggingPoint = null;
+      hoveredPoint = null;
+      drawCanvas();
+    }, { passive: false });
 
-        canvas.addEventListener("dragstart", function(evt) {
-            evt.preventDefault();
-            return false;
-        });
-
-        canvas.addEventListener("drag", function(evt) {
-            evt.preventDefault();
-            return false;
-        });
-
-        canvas.addEventListener("dragend", function(evt) {
-            evt.preventDefault();
-            return false;
-        });
-
-        // Touch event handlers
-        canvas.addEventListener("touchstart", function (evt) {
-            const touch = evt.touches[0];
-            const touchPos = getTouchPos(touch);
-            const touchedPoint = findPoint(touchPos);
-            lastTouchPos = touchPos;
-
-            if (isOnScaleControl(touchPos)) {
-                draggingScale = true;
-            } else if (touchedPoint && helpingLinesEnabled) {
-                draggingPoint = touchedPoint;
-                selectedPoint = touchedPoint;
-                showCircles = true;
-                circleCenter = { x: touchedPoint.x, y: touchedPoint.y };
-                drawCanvas();
-            } else if (touchedPoint) {
-                // Allow dragging even when helping lines are disabled
-                draggingPoint = touchedPoint;
-            } else {
-                selectedPoint = null;
-                showCircles = false;
-                drawCanvas();
-            }
-            evt.preventDefault();
-        }, { passive: false });
-
-        canvas.addEventListener("touchmove", function (evt) {
-            const touch = evt.touches[0];
-            const touchPos = getTouchPos(touch);
-
-            if (draggingPoint || draggingScale) {
-                evt.preventDefault(); // Add this line
-            }
-            if (draggingScale) {
-                // Scale based on horizontal touch movement
-                const deltaX = touchPos.x - lastTouchPos.x;
-                const scaleFactor = 1 + (deltaX * 0.01);
-                circleScale = Math.max(0.1, Math.min(3, circleScale * scaleFactor));
-                drawCanvas();
-            } else if (draggingPoint) {
-                draggingPoint.x = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, touchPos.x));
-                draggingPoint.y = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, touchPos.y));
-                
-                if (showCircles && selectedPoint === draggingPoint) {
-                    circleCenter = { x: draggingPoint.x, y: draggingPoint.y };
-                }
-                
-                drawCanvas();
-            }
-            
-            lastTouchPos = touchPos;
-            evt.preventDefault();
-        }, { passive: false });
-
-        canvas.addEventListener("touchend", function () {
-            if (draggingPoint) {
-                recordMove(draggingPoint);
-            }
-            draggingPoint = null;
-            draggingScale = false;
-            hoveredPoint = null;
-            drawCanvas();
-        }, { passive: false });
-
-
-        // Mouse event handlers (for desktop)
-        canvas.addEventListener("mousedown", function (evt) {
-            evt.preventDefault(); 
-            const mousePos = getMousePos(evt);
-            const clickedPoint = findPoint(mousePos);
-            lastMousePos = mousePos;
-
-            if (isOnScaleControl(mousePos)) {
-                draggingScale = true;
-                canvas.style.cursor = "ew-resize";
-            } else if (clickedPoint && helpingLinesEnabled) {
-                draggingPoint = clickedPoint;
-                selectedPoint = clickedPoint;
-                showCircles = true;
-                circleCenter = { x: clickedPoint.x, y: clickedPoint.y };
-                drawCanvas();
-            } else if (clickedPoint) {
-                // MODIFIED: Still allow dragging even when helping lines are disabled
-                draggingPoint = clickedPoint;
-            } else {
-                selectedPoint = null;
-                showCircles = false;
-                drawCanvas();
-            }
-        });
-
-        canvas.addEventListener("mousemove", function (evt) {
-            const mousePos = getMousePos(evt);
-            const newHoveredPoint = findPoint(mousePos);
-            
-            // Update cursor based on what we're hovering over
-            if (isOnScaleControl(mousePos)) {
-                canvas.style.cursor = "ew-resize";
-            } else if (newHoveredPoint) {
-                canvas.style.cursor = "grab";
-            } else {
-                canvas.style.cursor = "default";
-            }
-            
-            if (newHoveredPoint !== hoveredPoint) {
-                hoveredPoint = newHoveredPoint;
-                drawCanvas();
-            }
-            
-            if (draggingPoint || draggingScale) {
-                evt.preventDefault(); // Add this line
-            }
-            if (draggingScale) {
-                // Scale based on horizontal mouse movement
-                const deltaX = mousePos.x - lastMousePos.x;
-                const scaleFactor = 1 + (deltaX * 0.01);
-                circleScale = Math.max(0.1, Math.min(3, circleScale * scaleFactor));
-                drawCanvas();
-            } else if (draggingPoint) {
-                draggingPoint.x = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, mousePos.x));
-                draggingPoint.y = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, mousePos.y));
-                
-                if (showCircles && selectedPoint === draggingPoint) {
-                    circleCenter = { x: draggingPoint.x, y: draggingPoint.y };
-                }
-                
-                drawCanvas();
-            }
-            
-            lastMousePos = mousePos;
-        });
-
-        canvas.addEventListener("mouseup", function () {
-            if (draggingPoint) {
-                recordMove(draggingPoint);
-            }
-            draggingPoint = null;
-            draggingScale = false;
-            canvas.style.cursor = "default";
-        });
-
-
-        canvas.addEventListener("mouseleave", function () {
-            draggingPoint = null;
-            draggingScale = false;
-            hoveredPoint = null;
-            canvas.style.cursor = "default";
-            drawCanvas();
-        });
-
-        // Removed wheel event - using drag control instead
-
-        // Initial draw
-        drawCanvas();
-        
-        // Validation function for boundary checking
-        function allPointsInsideBox() {
-            return points.every(p => p.x >= 0 && p.x <= canvas.height && p.y >= 0 && p.y <= canvas.height);
-        }
-        
-        // Handle form submission
-        const form = document.querySelector("form");
-        const nextButton = document.querySelector("button[type=submit], .otree-btn-next");
-        
-        if (nextButton) {
-            nextButton.addEventListener("click", function (e) {
-                e.preventDefault();
-                if (!allPointsInsideBox()) {
-                    {% if lan_en %}
-                    alert("Please place all dots inside the positioning square before continuing.");
-                    {% else %}
-                    alert("Platzieren Sie bitte alle Punkte innerhalb des Rechtecks.");
-                    {% endif %}
-                    return;
-                }
-                document.getElementById("positions").value = JSON.stringify(points);
-                document.getElementById("positions_preP").value = JSON.stringify(points);
-                form.submit();
-            });
-        }
+    // Mouse handlers
+    canvas.addEventListener("mousedown", evt => {
+      const mousePos = getMousePos(evt);
+      lastMousePos = mousePos;
+      draggingPoint = findPoint(mousePos) || null;
+      drawCanvas();
     });
+
+    canvas.addEventListener("mousemove", evt => {
+      const mousePos = getMousePos(evt);
+      const newHoveredPoint = findPoint(mousePos);
+
+      canvas.style.cursor = newHoveredPoint ? "grab" : "default";
+
+      if (newHoveredPoint !== hoveredPoint) {
+        hoveredPoint = newHoveredPoint;
+        drawCanvas();
+      }
+
+      if (draggingPoint) {
+        draggingPoint.x = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, mousePos.x));
+        draggingPoint.y = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, mousePos.y));
+        drawCanvas();
+      }
+
+      lastMousePos = mousePos;
+    });
+
+    canvas.addEventListener("mouseup", () => {
+      if (draggingPoint) recordMove(draggingPoint);
+      draggingPoint = null;
+      canvas.style.cursor = "default";
+    });
+
+    canvas.addEventListener("mouseleave", () => {
+      draggingPoint = null;
+      hoveredPoint = null;
+      canvas.style.cursor = "default";
+      drawCanvas();
+    });
+
+    // Initial draw
+    drawCanvas();
+
+    // Validation
+    function allPointsInsideBox() {
+      return points.every(p =>
+        p.x >= 0 && p.x <= canvas.height &&
+        p.y >= 0 && p.y <= canvas.height
+      );
+    }
+
+    // Form handling
+    const form = document.querySelector("form");
+    const nextButton = document.querySelector("button[type=submit], .otree-btn-next");
+
+    if (nextButton) {
+      nextButton.addEventListener("click", e => {
+        e.preventDefault();
+        if (!allPointsInsideBox()) {
+          {% if lan_en %}
+          alert("Please place all dots inside the positioning square before continuing.");
+          {% else %}
+          alert("Platzieren Sie bitte alle Punkte innerhalb des Rechtecks.");
+          {% endif %}
+          return;
+        }
+        document.getElementById("positions").value = JSON.stringify(points);
+        form.submit();
+      });
+    }
+  });
 </script>
+
 {% endblock %}

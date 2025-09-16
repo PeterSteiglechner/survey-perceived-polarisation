@@ -1,24 +1,25 @@
 {% block styles %}
-<link rel="stylesheet" href="{{ static 'main.css' }}">
-{% endblock %}
-
-{{ block title }}{{ page_title }}{{ endblock }}
-{{ block content }}
+<link rel="stylesheet" href="{{ static 'main.css' }}" />
+{% endblock %} {{ block title }}{{ page_title }}{{ endblock }} {{ block content
+}}
 
 <div>
-
-{% comment %} 
-<div class="card-section">
+  {% comment %}
+  <div class="card-section">
     <div class="card">
       <div class="form-group">
-        <p style="margin-bottom: 1.5em;">{{ instru1 }}</p>
+        <p style="margin-bottom: 1.5em">{{ instru1 }}</p>
         <label class="form-label">
-          <p style="margin-bottom: 0.5em;">{{ question }}</p>
+          <p style="margin-bottom: 0.5em">{{ question }}</p>
         </label>
         <div class="option-cards" data-field="{{ current_check }}">
           {% for choice, label in choices.items %}
           <label class="option-card">
-            <input type="radio" name="{{ current_check }}" value="{{ choice }}">
+            <input
+              type="radio"
+              name="{{ current_check }}"
+              value="{{ choice }}"
+            />
             {{ label }}
           </label>
           {% endfor %}
@@ -26,185 +27,208 @@
         {{ formfield_errors current_check }}
       </div>
     </div>
-  </div> {% endcomment %}
+  </div>
+  {% endcomment %}
 
-      <div class="card-section">
-  <div class="card">
-    <p>{{ instru1 }}</p>
+  <div class="card-section">
+    <div class="card">
+      <p>{{ instru1 }}</p>
 
-    <label class="form-label">{{ question }}</label>
+      <label class="form-label">{{ question }}</label>
 
-    {% comment %} <p>{{ Ithink }}</p> {% endcomment %}
+      {% comment %}
+      <p>{{ Ithink }}</p>
+      {% endcomment %}
 
-    <input 
-      type="range" 
-      name="{{ current_check }}" 
-      id="satisfactionSlider"
-      min="{{ satisfaction_min }}" 
-      max="{{ satisfaction_max }}" 
-      step="1"
-      oninput="handleSliderInput(this.value)"
-      required
-    >
-    <div style="display: flex; justify-content: space-between; margin-top: 5px;">
-  <span>{{ satisfaction_min_label }}</span>
-  <span>{{ satisfaction_max_label }}</span>
-</div>
-    <div style="text-align: center; margin-top: 15px;">
-      {% if lan_en %} Selected value: {% else %} Ausgewählter Wert: {%endif%}<span id="sliderValue" style="color: #999;">{% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den Schieberegler{% endif %}</span>
+      <input
+        type="range"
+        name="{{ current_check }}"
+        id="similaritySlider"
+        min="{{ similarity_min }}"
+        max="{{ similarity_max }}"
+        step="1"
+        oninput="handleSliderInput(this.value)"
+        required
+      />
+      <div
+        style="display: flex; justify-content: space-between; margin-top: 5px"
+      >
+        <span>{{ similarity_min_label }}</span>
+        <span>{{ similarity_max_label }}</span>
+      </div>
+      <div style="text-align: center; margin-top: 15px">
+        {% if lan_en %} Selected value: {% else %} Ausgewählter Wert:
+        {%endif%}<span id="sliderValue" style="color: #999"
+          >{% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den
+          Schieberegler{% endif %}</span
+        >
+      </div>
+
+      {{ formfield_errors current_check }}
     </div>
+  </div>
 
-    {{ formfield_errors current_check  }}
+  {% comment %}
+  <table style="width: 100%; border-collapse: separate; border-spacing: 1em 0">
+    <tr>
+      <td style="width: 50%; vertical-align: top">
+        {% if img1 %}
+        <div id="popup1" class="popup-box"></div>
+        {% endif %}
+      </td>
+      <td style="width: 50%; vertical-align: top">
+        {% if img2 %}
+        <div id="popup2" class="popup-box"></div>
+        {% endif %}
+      </td>
+    </tr>
+  </table>
+  {% endcomment %}
+
+  <br />
+
+  <div
+    style="display: flex; justify-content: space-between; align-items: center"
+  >
+    {% if lan_en %} {{ next_button }}
+    <div style="margin-left: auto">Page {{nslide}}/{{maxslides}}</div>
+    {% else %}
+    <button
+      type="submit"
+      class="otree-btn-next btn btn-primary"
+      id="nextButton"
+      disabled
+      style="opacity: 0.5"
+    >
+      Weiter
+    </button>
+    <div style="margin-left: auto">Seite {{nslide}}/{{maxslides}}</div>
+    {% endif %}
   </div>
 </div>
 
-<table style="width: 100%; border-collapse: separate; border-spacing: 1em 0;">
-  <tr>
-    <td style="width: 50%; vertical-align: top;">
-      {% if img1 %}
-        <div id="popup1" class="popup-box"></div>
-      {% endif %}
-    </td>
-    <td style="width: 50%; vertical-align: top;">
-      {% if img2 %}
-        <div id="popup2" class="popup-box"></div>
-      {% endif %}
-    </td>
-  </tr>
-</table>
+<script>
+  let sliderTouched = false;
 
-<br>
+  function handleSliderInput(value) {
+    sliderTouched = true;
 
-<div style="display: flex; justify-content: space-between; align-items: center;">
-    {% if lan_en %}
-    {{ next_button }}
-    <div style="margin-left: auto;">Page {{nslide}}/{{maxslides}}</div>
-    {% else %}
-    <button type="submit" class="otree-btn-next btn btn-primary" id="nextButton" disabled style="opacity: 0.5;">Weiter</button>
-    <div style="margin-left: auto;">Seite {{nslide}}/{{maxslides}}</div>
+    // Update the displayed value
+    document.getElementById('sliderValue').textContent = value + ' / 10';
+    document.getElementById('sliderValue').style.color = 'black';
+
+    // Enable the next button
+    const nextButton = document.getElementById('nextButton');
+    if (nextButton) {
+      nextButton.disabled = false;
+      nextButton.style.opacity = '1';
+    }
+
+    // Update slider styling
+    const slider = document.getElementById('similaritySlider');
+    const pct = (value - slider.min) / (slider.max - slider.min) * 100;
+    slider.style.background = `linear-gradient(to right, #424242ff 0%, #424242ff ${pct}%, #e0e0e0 ${pct}%, #e0e0e0 100%)`;
+  }
+
+  // Form validation before submission
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        if (!sliderTouched) {
+          e.preventDefault();
+          const lang = {% if lan_en %}true{% else %}false{% endif %};
+          alert(lang ? 'Please move the slider to select a value.' : 'Bitte bewegen Sie den Schieberegler, um einen Wert auszuwählen.');
+          return false;
+        }
+      });
+    }
+  });
+</script>
+{% comment %}
+<script>
+  function getAnswerStyling(answer) {
+    const trimmed = answer.toLowerCase().trim();
+    let bg = '', color = 'black';
+    if (['strongly disagree', 'stimme überhaupt nicht zu'].includes(trimmed)) {
+      bg = 'rgba(230,97,1,1)';
+      color = 'white';
+    } else if (['disagree', 'stimme eher nicht zu'].includes(trimmed)) {
+      bg = 'rgba(253,184,99,0.5)';
+    } else if (['neutral', 'teils/teils'].includes(trimmed)) {
+      bg = 'rgba(165,165,165,0.15)';
+    } else if (['agree', 'stimme eher zu'].includes(trimmed)) {
+      bg = 'rgba(178,171,210,0.5)';
+    } else if (['strongly agree', 'stimme voll und ganz zu'].includes(trimmed)) {
+      bg = 'rgba(94,60,153,1)';
+      color = 'white';
+    }
+    return bg ? `background-color: ${bg}; color: ${color}; padding: 4px 0; border-radius: 0;` : '';
+  }
+
+  function createTableContent(point) {
+    if (!point.descr) return `<tr><td>No description</td></tr>`;
+    if (!point.descr.includes(';')) {
+      return `<tr><td style="padding: 0;">${point.descr}</td></tr>`;
+    }
+    return point.descr.split(';').filter(Boolean).map(line => {
+      const [q, a] = line.split(':');
+      if (!a) return `<tr><td colspan="2">${line}</td></tr>`;
+      return `
+        <tr>
+          <td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; width: 55%;">${q.trim()}</td>
+          <td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; font-weight: bold; width: 39%;">
+            <span style="${getAnswerStyling(a.trim())}">${a.trim()}</span>
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  function renderPopup(popupId, point) {
+      const popup = document.getElementById(popupId);
+      if (!popup || !point) return;
+
+      popup.innerHTML = `
+          <strong style="font-size: 16px;">${point.name_disp}</strong><br>
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+              ${createTableContent(point)}
+          </table>
+      `;
+  }
+
+  function initializePopups() {
+    {% if img1 %}
+    renderPopup('popup1', {
+      name_disp: `{{ p1_dot.name_disp }}`,
+      descr: `{{ p1_dot.descr }}`
+    });
     {% endif %}
-</div>
-</div>
 
-<script>
-let sliderTouched = false;
-
-function handleSliderInput(value) {
-  sliderTouched = true;
-  
-  // Update the displayed value
-  document.getElementById('sliderValue').textContent = value + ' / 10';
-  document.getElementById('sliderValue').style.color = 'black';
-  
-  // Enable the next button
-  const nextButton = document.getElementById('nextButton');
-  if (nextButton) {
-    nextButton.disabled = false;
-    nextButton.style.opacity = '1';
-  }
-  
-  // Update slider styling
-  const slider = document.getElementById('satisfactionSlider');
-  const percentage = (value - slider.min) / (slider.max - slider.min) * 100;
-  slider.style.background = `linear-gradient(to right, #007bff 0%, #007bff ${percentage}%, #e0e0e0 ${percentage}%, #e0e0e0 100%)`;
-}
-
-// Form validation before submission
-document.addEventListener('DOMContentLoaded', function() {
-  const form = document.querySelector('form');
-  if (form) {
-    form.addEventListener('submit', function(e) {
-      if (!sliderTouched) {
-        e.preventDefault();
-        const lang = {% if lan_en %}true{% else %}false{% endif %};
-        alert(lang ? 'Please move the slider to select a value.' : 'Bitte bewegen Sie den Schieberegler, um einen Wert auszuwählen.');
-        return false;
-      }
+    {% if img2 %}
+    renderPopup('popup2', {
+      name_disp: `{{ p2_dot.name_disp }}`,
+      descr: `{{ p2_dot.descr }}`
     });
+    {% endif %}
   }
-});
+
+  initializePopups();
+  window.addEventListener('resize', initializePopups);
 </script>
+{% endcomment %}
 
 <script>
-function getAnswerStyling(answer) {
-  const trimmed = answer.toLowerCase().trim();
-  let bg = '', color = 'black';
-  if (['strongly disagree', 'stimme überhaupt nicht zu'].includes(trimmed)) {
-    bg = 'rgba(230,97,1,1)';
-    color = 'white';
-  } else if (['disagree', 'stimme eher nicht zu'].includes(trimmed)) {
-    bg = 'rgba(253,184,99,0.5)';
-  } else if (['neutral', 'teils/teils'].includes(trimmed)) {
-    bg = 'rgba(165,165,165,0.15)';
-  } else if (['agree', 'stimme eher zu'].includes(trimmed)) {
-    bg = 'rgba(178,171,210,0.5)';
-  } else if (['strongly agree', 'stimme voll und ganz zu'].includes(trimmed)) {
-    bg = 'rgba(94,60,153,1)';
-    color = 'white';
-  }
-  return bg ? `background-color: ${bg}; color: ${color}; padding: 4px 0; border-radius: 0;` : '';
-}
-
-function createTableContent(point) {
-  if (!point.descr) return `<tr><td>No description</td></tr>`;
-  if (!point.descr.includes(';')) {
-    return `<tr><td style="padding: 0;">${point.descr}</td></tr>`;
-  }
-  return point.descr.split(';').filter(Boolean).map(line => {
-    const [q, a] = line.split(':');
-    if (!a) return `<tr><td colspan="2">${line}</td></tr>`;
-    return `
-      <tr>
-        <td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; width: 55%;">${q.trim()}</td>
-        <td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; font-weight: bold; width: 39%;">
-          <span style="${getAnswerStyling(a.trim())}">${a.trim()}</span>
-        </td>
-      </tr>`;
-  }).join('');
-}
-
-function renderPopup(popupId, point) {
-    const popup = document.getElementById(popupId);
-    if (!popup || !point) return;
-
-    popup.innerHTML = `
-        <strong style="font-size: 16px;">${point.name_disp}</strong><br>
-        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-            ${createTableContent(point)}
-        </table>
-    `;
-}
-
-function initializePopups() {
-  {% if img1 %}
-  renderPopup('popup1', {
-    name_disp: `{{ p1_dot.name_disp }}`,
-    descr: `{{ p1_dot.descr }}`
-  });
-  {% endif %}
-
-  {% if img2 %}
-  renderPopup('popup2', {
-    name_disp: `{{ p2_dot.name_disp }}`,
-    descr: `{{ p2_dot.descr }}`
-  });
-  {% endif %}
-}
-
-initializePopups();
-window.addEventListener('resize', initializePopups);
-</script>
-
-<script>
-document.querySelectorAll('.option-cards').forEach(group => {
-  const name = group.dataset.field;
-  group.querySelectorAll('input[type="radio"]').forEach(radio => {
-    radio.addEventListener('change', () => {
-      group.querySelectorAll('.option-card').forEach(card => card.classList.remove('selected'));
-      radio.closest('.option-card').classList.add('selected');
+  document.querySelectorAll(".option-cards").forEach((group) => {
+    const name = group.dataset.field;
+    group.querySelectorAll('input[type="radio"]').forEach((radio) => {
+      radio.addEventListener("change", () => {
+        group
+          .querySelectorAll(".option-card")
+          .forEach((card) => card.classList.remove("selected"));
+        radio.closest(".option-card").classList.add("selected");
+      });
     });
   });
-});
 </script>
 
 {{ endblock }}

@@ -1,0 +1,33 @@
+{% block styles %}
+<link rel="stylesheet" href="{{ static 'main.css' }}" />
+{% endblock %} {% block content %}
+<style>
+  .checkmark {
+    color: #16a34a;
+    font-weight: bold;
+    margin-right: 0.75rem;
+    font-size: 1.2rem;
+  }
+  .upcoming {
+    color: #2563eb; /* blue to indicate “coming soon” */
+    font-weight: bold;
+  }
+</style>
+
+<h2>{{page_title}}</h2>
+
+{% comment %}
+<p>{{overview}}</p>
+{% endcomment %} {{items}}
+
+<p>{{instruction_text1}}</p>
+
+<p>{{instruction_text2}}</p>
+
+<div style="display: flex; justify-content: space-between; align-items: center">
+  {% if lan_en %} {{ next_button }} {% else %}
+  <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
+  {% endif %}
+</div>
+
+{%endblock%}

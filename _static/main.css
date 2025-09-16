@@ -1,3 +1,27 @@
+:root {
+    --col-greens: #7cbb15;
+    --col-afd: #009de0;
+    --col-fdp: #ffcc00;
+    --col-linke: #bd3075;
+    --col-cducsu: #121212;
+    --col-spd: #d71f1f;
+    --col-bsw: #691940;
+    --col-self: #808080;
+    --col-P: #00e6b8; 
+    --col-contact: #ff6600; 
+}
+
+.pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 700;
+    border: 1px solid #d9d9d9;
+    background: "pink";
+    color: #111;
+    line-height: 1.2;
+  }
+
 .container {
     max-width: 800px;
     margin: 0 auto;

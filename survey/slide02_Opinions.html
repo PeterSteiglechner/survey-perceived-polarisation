@@ -1,4 +1,4 @@
-{% block styles %}
+{% load static %} {% block styles %}
 <link rel="stylesheet" href="{{ static 'main.css' }}" />
 {% endblock %} {% block content %}
 
@@ -50,16 +50,24 @@
           <div style="text-align: center; margin: 0">
             <span id="sliderValue{{ forloop.counter }}">
               <table
-                style="width: 100%; border-collapse: collapse; font-size: 8pt"
+                style="
+                  width: 100%;
+                  border-collapse: collapse;
+                  font-size: 8pt;
+                  margin-bottom: 29pt;
+                "
               >
                 <tr>
+                  {% comment %}
                   <td style="font-size: 12pt; text-align: center; width: 20%">
-                    {% if lan_en %}Please move the slider{% else %}Bitte bewegen
-                    Sie den Schieberegler{% endif %}{% comment %} {% if lan_en
-                    %}Selected:{% else %}Ausgewählt:{% endif %} {% endcomment %}
+                    {% endcomment %} {% if lan_en %}Please move the slider{%
+                    else %}Bitte bewegen Sie den Schieberegler{% endif %}{%
+                    comment %} {% if lan_en %}Selected:{% else %}Ausgewählt:{%
+                    endif %} {% endcomment %} {% comment %}
                   </td>
                   <td style="font-size: 12pt; text-align: center"></td>
                   <td style="font-size: 12pt; text-align: right"></td>
+                  {% endcomment %}
                 </tr>
               </table>
             </span>
@@ -135,8 +143,24 @@
       document.getElementById('sliderValue{{ forloop.counter }}').style.color = 'black';
 
       const slider = document.getElementById('slider_{{ forloop.counter }}');
+      const val = parseFloat(value);
+      const min = parseFloat(slider.min), max = parseFloat(slider.max);
+      const mid = (min + max) / 2;
+      const sliderColor = "#424242ff";
+
+      // compute fill percentages from center
+      const l = val < mid ? Math.max(0, 50 + ((val - mid) / (mid - min)) * 50) : 50;
+      const r = val < mid ? 50 : Math.min(100, 50 + ((val - mid) / (max - mid)) * 50);
+
+      slider.style.background = `linear-gradient(to right,
+        #e0e0e0 0%, #e0e0e0 ${l}%,
+        ${sliderColor} ${l}%, ${sliderColor} ${r}%,
+        #e0e0e0 ${r}%, #e0e0e0 100%)`;
+
+
+      {% comment %} const slider = document.getElementById('slider_{{ forloop.counter }}');
       const pct = (value - slider.min) / (slider.max - slider.min) * 100;
-      slider.style.background = `linear-gradient(to right, #424242ff 0%, #424242ff ${pct}%, #e0e0e0 ${pct}%, #e0e0e0 100%)`;
+      slider.style.background = `linear-gradient(to right, #424242ff 0%, #424242ff ${pct}%, #e0e0e0 ${pct}%, #e0e0e0 100%)`; {% endcomment %}
 
       if (Object.keys(slidersTouched).length === totalSliders) {
           const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');

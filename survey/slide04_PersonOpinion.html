@@ -21,7 +21,7 @@
     <table class="survey-table-clean">
         <thead background: {{color}} color:"white">
             <tr>
-                <th style="width: 100%;{% if name == 'FDP' or person_type == 'contact' %}color:  #424949 ;rgb(255, 255, 255){% endif %}">{{table_head}}</th>
+                <th style="width: 100%;{% if name == 'FDP' %}color:  #424949 ;rgb(255, 255, 255){% endif %}">{{table_head}}</th>
             </tr>
         </thead>
         <tbody>
@@ -49,33 +49,26 @@
               margin-top: 5px;
             "
           >
-            <span style="font-size: 10pt; color: #777"
+            <span style="font-size: 10pt; color: #777; margin-top: -3pt"
               >{{ item.first_label }}</span
             >
-            <span style="font-size: 10pt; color: #777"
+            <span style="font-size: 10pt; color: #777; margin-top: -3pt"
               >{{ item.neutral_label }}</span
             >
-            <span style="font-size: 10pt; color: #777"
+            <span style="font-size: 10pt; color: #777; margin-top: -3pt"
               >{{ item.last_label }}</span
             >
           </div>
-          <div style="text-align: center; margin: 0">
+          <div style="text-align: center; margin-top: 0pt; margin-bottom: 0pt">
             <span id="sliderValue{{ forloop.counter }}">
-              <table
-                style="width: 100%; border-collapse: collapse; font-size: 8pt;"
-              >
-                <tr>
                   {% comment %} <td style="font-size: 12pt; text-align: center; width: 30%"> {% endcomment %}
                     {% comment %} {{would_respond}} {% endcomment %}
-                    {% if lan_en %}Please move the slider{% else %}Bitte bewegen
+                    <p style="margin-top: 23pt; margin-bottom: 24pt">{% if lan_en %}Please move the slider{% else %}Bitte bewegen
                     Sie den Schieberegler{% endif %}
+                    </p>
                   {% comment %} </td>
                   <td style="font-size: 12pt; text-align: center">
-
                   </td> {% endcomment %}
-                  <td style="font-size: 12pt; text-align: right"></td>
-                </tr>
-              </table>
             </span>
           </div>
           {{ formfield_errors item.field_name }}
@@ -103,9 +96,9 @@
   const totalSliders = {{ field_question_pairs|length }};
 
   {% for item in field_question_pairs %}
+
   function handleSliderInput{{ forloop.counter }}(value) {
       slidersTouched[{{ forloop.counter }}] = true;
-
       function getLikertLabel(val) {
           const numVal = parseInt(val);
           {% if lan_en %}
@@ -150,10 +143,22 @@
       {% endif %}
 
       document.getElementById('sliderValue{{ forloop.counter }}').style.color = 'black';
-
+     
       const slider = document.getElementById('slider_{{ forloop.counter }}');
-      const pct = (value - slider.min) / (slider.max - slider.min) * 100;
-      slider.style.background = `linear-gradient(to right, {{color}} 0%, {{color}} ${pct}%, #e0e0e0 ${pct}%, #e0e0e0 100%)`;
+      const val = parseFloat(value);
+      const min = parseFloat(slider.min), max = parseFloat(slider.max);
+      const mid = (min + max) / 2;
+      const sliderColor = "{{color}}";
+
+      // compute fill percentages from center
+      const l = val < mid ? Math.max(0, 50 + ((val - mid) / (mid - min)) * 50) : 50;
+      const r = val < mid ? 50 : Math.min(100, 50 + ((val - mid) / (max - mid)) * 50);
+
+      slider.style.background = `linear-gradient(to right,
+        #e0e0e0 0%, #e0e0e0 ${l}%, 
+        ${sliderColor} ${l}%, ${sliderColor} ${r}%, 
+        #e0e0e0 ${r}%, #e0e0e0 100%)`;
+
 
       if (Object.keys(slidersTouched).length === totalSliders) {
           const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
