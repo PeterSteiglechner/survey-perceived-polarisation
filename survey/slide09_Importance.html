@@ -3,104 +3,148 @@
 {% endblock %}
 
 
-{{ block title }}
-{{page_title}}
-{{ endblock }}
-
 {{ block content }}
+<h2>{{ page_title }}</h2>
+
+<form method="post">
+  <table class="survey-table-clean" style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th colspan="2" style="text-align: left; padding: 8px;">
+          {{ question }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in field_question_pairs %}
+      <tr>
+        <!-- Question text cell (30%) -->
+        <td style="width: 55%; vertical-align: top; padding: 8px;">
+          <label class="form-label">{{ item.question_text }}</label>
+        </td>
+
+        <!-- Slider cell (70%) -->
+        <td style="width: 45%; padding: 8px;">
+          <input
+            type="range"
+            class="likert-slider"
+            name="{{ item.field_name }}"
+            id="slider_{{ forloop.counter }}"
+            min="0"
+            max="100"
+            step="1"
+            oninput="handleSliderInput{{ forloop.counter }}(this.value)"
+            required
+            style="width: 100%;"
+          />
+
+          <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+            <span style="font-size: 10pt; color: #777">{{ item.first_label }}</span>
+            <span style="font-size: 10pt; color: #777">{{ item.last_label }}</span>
+          </div>
+
+          <div style="text-align: center; margin-top: 5px;">
+            {% if lan_en %}
+              <span id="sliderValue{{ forloop.counter }}" style="color:#999;"><p style='font-size: 10pt;'>Please move the slider</p></span>
+            {% else %}
+              <span id="sliderValue{{ forloop.counter }}" style="color:#999;"><p style='font-size: 10pt;'>Bitte bewegen Sie den Schieberegler</p></span>
+            {% endif %}
+          </div>
+
+          {{ formfield_errors item.field_name }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</form>
 
 
-<div class="card-section">
-    <!-- Importance Card -->
-    <div class="card">
-        <div class="form-group">
-            <label for="id_topic_importance">{{question}}</label>
-            
-            <!-- Hidden field for actual form submission -->
-            <input type="hidden" name="topic_importance" id="topic_importance_hidden" value="">
-            
-            <div class="checkbox-container">
-                {% for choice, label in topic_choices.items %}
-                <div class="checkbox-card" data-value="{{ choice }}">
-                    <input type="checkbox" 
-                           id="checkbox_{{ forloop.counter }}" 
-                           data-choice="{{ choice }}">
-                    <label class="checkbox-label" for="checkbox_{{ forloop.counter }}">
-                        {{ label }}
-                    </label>
-                </div>
-                {% endfor %}
-            </div>
-            {{ formfield_errors "topic_importance" }}
-        </div>
-    </div>
-     
-    <!-- Comment Card -->
-    <div class="card">
-    {{explain_text}} 
-    {{ formfield "importance_comments" }}
-    {{ formfield_errors "importance_comments" }}
 
-    </div>
-
+<!-- Comment Card -->
+<div class="card">
+  {{explain_text}} 
+  {{ formfield "importance_comments" }}
+  {{ formfield_errors "importance_comments" }}
 </div>
 
+<br>
 
 <div style="display: flex; justify-content: space-between; align-items: center;">
     {% if lan_en %}
         {{ next_button }}
         <div style="margin-left: auto;">Page {{nslide}}/{{maxslides}}</div>
     {% else %}
-        <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
+        <button type="submit" class="otree-btn-next btn btn-primary big-button">Weiter</button>
         <div style="margin-left: auto;">Seite {{nslide}}/{{maxslides}}</div>
     {% endif %}
 </div>
 
 
+
 <script>
-// Handle checkbox selection and form submission
-document.addEventListener('DOMContentLoaded', function() {
-    const checkboxCards = document.querySelectorAll('.checkbox-card');
-    const hiddenField = document.getElementById('topic_importance_hidden');
-    
-    checkboxCards.forEach(card => {
-        const checkbox = card.querySelector('input[type="checkbox"]');
-        
-        // Handle card click
-        card.addEventListener('click', function(e) {
-            if (e.target !== checkbox) {
-                checkbox.checked = !checkbox.checked;
-            }
-            updateCardState(card, checkbox.checked);
-            updateHiddenField();
-        });
-        
-        // Handle checkbox change
-        checkbox.addEventListener('change', function() {
-            updateCardState(card, this.checked);
-            updateHiddenField();
-        });
-    });
-    
-    function updateCardState(card, isChecked) {
-        if (isChecked) {
-            card.classList.add('selected');
-        } else {
-            card.classList.remove('selected');
-        }
-    }
-    
-    function updateHiddenField() {
-        const selectedValues = [];
-        checkboxCards.forEach(card => {
-            const checkbox = card.querySelector('input[type="checkbox"]');
-            if (checkbox.checked) {
-                selectedValues.push(card.dataset.value);
-            }
-        });
-        hiddenField.value = selectedValues.join(',');
-    }
-});
+  let slidersTouched = {};
+  const totalSliders = {{ field_question_pairs|length }};
+
+  {% for item in field_question_pairs %}
+  function handleSliderInput{{ forloop.counter }}(value) {
+      slidersTouched[{{ forloop.counter }}] = true;
+
+
+      {% if lan_en %}
+      document.getElementById('sliderValue{{ forloop.counter }}').innerHTML =
+        `<p style="font-size:10pt;">Selected: ${value}</p>`;
+
+      {% else %}
+      document.getElementById('sliderValue{{ forloop.counter }}').innerHTML =
+        `<p style="font-size:10pt;">Ausgewählt: ${value}</p>`;
+      {% endif %}
+
+      document.getElementById('sliderValue{{ forloop.counter }}').style.color = 'black';
+
+      const slider = document.getElementById('slider_{{ forloop.counter }}');
+      const val = parseFloat(value);
+      const min = parseFloat(slider.min), max = parseFloat(slider.max);
+      const mid = (min + max) / 2;
+      const sliderColor = "#424242ff";
+
+      // compute fill percentages from center
+      const l = 0;
+      const r = Math.min(100, val);
+
+      slider.style.background = `linear-gradient(to right,
+        #e0e0e0 0%, #e0e0e0 ${l}%,
+        ${sliderColor} ${l}%, ${sliderColor} ${r}%,
+        #e0e0e0 ${r}%, #e0e0e0 100%)`;
+
+
+      if (Object.keys(slidersTouched).length === totalSliders) {
+          const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
+          if (nextButton) {
+              nextButton.disabled = false;
+              nextButton.style.opacity = '1';
+          }
+      }
+  }
+  {% endfor %}
+
+  document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form');
+      if (form) {
+          form.addEventListener('submit', function(e) {
+              if (Object.keys(slidersTouched).length < totalSliders) {
+                  e.preventDefault();
+                  alert({% if lan_en %}'Please move all sliders to select values.'{% else %}'Bitte bewegen Sie alle Schieberegler, um Werte auszuwählen.'{% endif %});
+                  return false;
+              }
+          });
+      }
+      const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
+      if (nextButton) {
+          nextButton.disabled = true;
+          nextButton.style.opacity = '0.5';
+      }
+  });
 </script>
 
-{{ endblock }}
+{% endblock %}

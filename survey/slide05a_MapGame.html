@@ -15,9 +15,7 @@
         </p>
     </div>
 
-    <div class="instructions" style="margin: 10px 0; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
-        {{no_wrong_answers}}
-    </div>   
+   
         
     {{detailed_instructions_1}}
     <div style="display: flex; justify-content: center; align-items: flex-start; gap: 20px; margin-top: 20px;">
@@ -30,18 +28,24 @@
     
         <input type="hidden" id="positionsGame" name="positionsGame">
 
+
+         <div class="instructions" style="margin: 10px 0; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+        {{no_wrong_answers}}
+    </div>   
+    
         <div class="instructions" style="margin: 20px 0; padding: 15px; background:rgb(255, 235, 235); border-left: 4px solid rgb(255, 0, 0); border-radius: 4px;">
             <p style="margin: 0; color:rgb(0, 0, 0);">
                 {{all_dots_instr}}
             </p>
         </div>
 
+
     <div style="display: flex; justify-content: space-between; align-items: center;">
         {% if lan_en %}
             {{ next_button }}
             <div style="margin-left: auto;">Page {{nslide}}/{{maxslides}}</div>
         {% else %}
-            <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
+            <button type="submit" class="otree-btn-next btn btn-primary big-button">Weiter</button>
             <div style="margin-left: auto;">Seite {{nslide}}/{{maxslides}}</div>
         {% endif %}
     </div>

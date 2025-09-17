@@ -3,6 +3,7 @@
 {% endblock %}
 
 {{ block content }}
+<script src="{% static 'colors.js' %}"></script>
 
 <h2>{{ page_title }}</h2>
 
@@ -33,12 +34,14 @@
     <label class="form-label">{{ question }}</label>
 
     <input 
-      type="range" 
+      type="range"
+      class="likert-slider" 
       name="satisfaction" 
       id="satisfactionSlider"
       min="{{ satisfaction_min }}" 
       max="{{ satisfaction_max }}" 
       step="1"
+      style="color: #aaaaaa; background: #ccc"
       oninput="handleSliderInput(this.value)"
       required
     >
@@ -155,14 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                 
                 // Set fill color based on type
-                ctx.fillStyle = p.dottype === "self" ? "grey" :
-                        p.varname === "Green Party" ? "#46962b" :
-                            p.varname === "AfD" ?  "#009ee0" :
-                                p.varname === "Left Party" ?  "#FF0000" :
-                                    p.varname === "FDP" ?  "#ffed00" :
-                                        p.dottype === "contact" ? "#00ff80":
-                                            p.dottype === "P" ? "pink":
-                                                "white";  
+                ctx.fillStyle =  COLORS[p.varname] || COLORS[p.dottype] || "white";
                 ctx.fill();
                 
                 // Add border with hover effect

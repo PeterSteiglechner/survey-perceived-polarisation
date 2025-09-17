@@ -47,29 +47,11 @@
               >{{ item.last_label }}</span
             >
           </div>
-          <div style="text-align: center; margin: 0">
+          <div style="text-align: center; margin-top: 0pt; margin-bottom: 0pt">
             <span id="sliderValue{{ forloop.counter }}">
-              <table
-                style="
-                  width: 100%;
-                  border-collapse: collapse;
-                  font-size: 8pt;
-                  margin-bottom: 29pt;
-                "
-              >
-                <tr>
-                  {% comment %}
-                  <td style="font-size: 12pt; text-align: center; width: 20%">
-                    {% endcomment %} {% if lan_en %}Please move the slider{%
-                    else %}Bitte bewegen Sie den Schieberegler{% endif %}{%
-                    comment %} {% if lan_en %}Selected:{% else %}Ausgewählt:{%
-                    endif %} {% endcomment %} {% comment %}
-                  </td>
-                  <td style="font-size: 12pt; text-align: center"></td>
-                  <td style="font-size: 12pt; text-align: right"></td>
-                  {% endcomment %}
-                </tr>
-              </table>
+                <p style="margin-top: 16pt; margin-bottom: 16pt">{% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den Schieberegler{% endif %}
+                    </p>
+
             </span>
           </div>
           {{ formfield_errors item.field_name }}
@@ -84,7 +66,7 @@
   {% if lan_en %} {{ next_button }}
   <div style="margin-left: auto">Page {{ nslide }}/{{ maxslides }}</div>
   {% else %}
-  <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
+  <button type="submit" class="otree-btn-next btn btn-primary big-button">Weiter</button>
   <div style="margin-left: auto">Seite {{ nslide }}/{{ maxslides }}</div>
   {% endif %}
 </div>
@@ -126,7 +108,7 @@
           <tr>
             <td style="font-size:12pt; text-align:center; width:20%;">Selected:</td>
             <td style="font-size:12pt; text-align:center;"><b>${label}</b></td>
-            <td style="font-size:12pt; text-align:right;">~ ${Math.round(value/10)} (scale -10 to 10)</td>
+            <td style="font-size:12pt; text-align:right;">around ${Math.round(value/10)} (on the scale from -10 to 10)</td>
           </tr>
         </table>`;
       {% else %}
@@ -135,7 +117,7 @@
           <tr>
             <td style="font-size:12pt; text-align:center; width:20%;">Ausgewählt:</td>
             <td style="font-size:12pt; text-align:center; "><b>${label}</b></td>
-            <td style="font-size:12pt; text-align:right;">~ ${Math.round(value/10)} (Skala: -10 bis 10)</td>
+            <td style="font-size:12pt; text-align:right;">ca. ${Math.round(value/10)} (auf der Skala von -10 bis 10)</td>
           </tr>
         </table>`;
       {% endif %}

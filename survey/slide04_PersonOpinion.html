@@ -63,7 +63,7 @@
             <span id="sliderValue{{ forloop.counter }}">
                   {% comment %} <td style="font-size: 12pt; text-align: center; width: 30%"> {% endcomment %}
                     {% comment %} {{would_respond}} {% endcomment %}
-                    <p style="margin-top: 23pt; margin-bottom: 24pt">{% if lan_en %}Please move the slider{% else %}Bitte bewegen
+                    <p style="margin-top: 25pt; margin-bottom: 25pt">{% if lan_en %}Please move the slider{% else %}Bitte bewegen
                     Sie den Schieberegler{% endif %}
                     </p>
                   {% comment %} </td>
@@ -83,7 +83,7 @@
         {{ next_button }}
         <div style="margin-left: auto;">Page {{nslide}}/{{maxslides}}</div>
     {% else %}
-        <button type="submit" class="otree-btn-next btn btn-primary">Weiter</button>
+        <button type="submit" class="otree-btn-next btn btn-primary big-button">Weiter</button>
         <div style="margin-left: auto;">Seite {{nslide}}/{{maxslides}}</div>
     {% endif %}
 </div>
@@ -128,7 +128,7 @@
           <tr>
             <td style="font-size:12pt; text-align:center; width:30%;">{{would_respond}}</td>
             <td style="font-size:12pt; text-align:center;"><b>${label}</b></td>
-            <td style="font-size:12pt; text-align:right;">~ ${Math.round(value/10)} (on scale -10 to 10)</td>
+            <td style="font-size:12pt; text-align:right;">around ${Math.round(value/10)} (on scale -10 to 10)</td>
           </tr>
         </table>`;
       {% else %}
@@ -137,7 +137,7 @@
           <tr>
             <td style="font-size:12pt; text-align:center; width:30%;">{{would_respond}}</td>
             <td style="font-size:12pt; text-align:center; "><b>${label}</b></td>
-            <td style="font-size:12pt; text-align:right;">~ ${Math.round(value/10)} (Skala: -10 bis 10)</td>
+            <td style="font-size:12pt; text-align:right;">ca. ${Math.round(value/10)} (auf der Skala von -10 bis 10)</td>
           </tr>
         </table>`;
       {% endif %}

@@ -156,7 +156,7 @@ h2 {
     flex: none;
     /* Don't grow */
     max-width: calc(20% - 5.6px);
-    background-color: rgb(150, 150, 150);
+    background-color: rgb(180, 180, 180);
     /* Removed quotes */
     font-style: italic;
     color: white;
@@ -239,14 +239,14 @@ h2 {
     padding: 15px 20px;
     text-align: left;
     font-weight: 600;
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .survey-table-clean td {
     padding: 20px;
     border-bottom: 1px solid #e9ecef;
     vertical-align: top;
-    font-size: 18px;
+    font-size: 15px;
 }
 
 .survey-table-clean tr:hover {
@@ -254,7 +254,7 @@ h2 {
 }
 
 .survey-table-clean .statement-cell {
-    font-size: 18px;
+    font-size: 15px;
     line-height: 1.5;
     color: #2c3e50;
     font-weight: 500;
@@ -400,7 +400,7 @@ h2 {
 }
 
 .checkbox-card .checkbox-label {
-    font-size: 14px;
+    font-size: 15px;
     color: #495057;
     cursor: pointer;
     margin: 0;
@@ -441,7 +441,7 @@ input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
     width: 80%;
-    height: 6px;
+    height: 12px;
     border-radius: 3px;
     background: #e0e0e0;
     cursor: pointer;
@@ -472,7 +472,7 @@ input[type="range"] {
 .slider-labels {
     display: flex;
     justify-content: space-between;
-    font-size: 10pt;
+    font-size: 12pt;
     color: #777;
     margin-top: 5px;
 }
@@ -491,4 +491,11 @@ input[type="range"] {
     justify-content: space-between;
     align-items: center;
     margin-top: 15px;
+}
+
+/* Make button much bigger */
+.big-button {
+    font-size: 20px;      /* bigger text */
+    padding: 10px 10px;   /* more space inside */
+    border-radius: 10px;  /* rounded corners */
 }

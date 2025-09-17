@@ -42,11 +42,13 @@
 
       <input
         type="range"
+        class="likert-slider"
         name="{{ current_check }}"
         id="similaritySlider"
         min="{{ similarity_min }}"
         max="{{ similarity_max }}"
         step="1"
+        style="color: #aaaaaa; background: #ccc"
         oninput="handleSliderInput(this.value)"
         required
       />
@@ -95,7 +97,7 @@
     {% else %}
     <button
       type="submit"
-      class="otree-btn-next btn btn-primary"
+      class="otree-btn-next btn btn-primary big-button"
       id="nextButton"
       disabled
       style="opacity: 0.5"
