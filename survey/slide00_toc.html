@@ -9,24 +9,29 @@
     font-size: 1.2rem;
   }
   .upcoming {
-    color: #2563eb; /* blue to indicate “coming soon” */
+    background-color: #fffeb2ff; /* blue to indicate “coming soon” */
     font-weight: bold;
+  }
+  li {
+    margin: 14px 0;
   }
 </style>
 
 <h2>{{page_title}}</h2>
 
+<p style="margin-bottom: 20pt">{{instruction_text1}}</p>
+
 {% comment %}
 <p>{{overview}}</p>
 {% endcomment %} {{items}}
 
-<p>{{instruction_text1}}</p>
-
-<p>{{instruction_text2}}</p>
+<p style="margin-top: 20pt">{{instruction_text2}}</p>
 
 <div style="display: flex; justify-content: space-between; align-items: center">
   {% if lan_en %} {{ next_button }} {% else %}
-  <button type="submit" class="otree-btn-next btn btn-primary big-button">Weiter</button>
+  <button type="submit" class="otree-btn-next btn btn-primary big-button">
+    Weiter
+  </button>
   {% endif %}
 </div>
 

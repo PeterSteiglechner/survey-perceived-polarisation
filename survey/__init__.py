@@ -142,7 +142,7 @@ class C(BaseConstants):
         ),
     }
 
-    NCONTACTS = 3  # 6
+    NCONTACTS = 10  # 6
     FRIENDCOLOR = "#ff6600"
     LABELLED = ["Green Party", "AfD", "FDP", "Left Party", "CDU/CSU", "SPD", "BSW"]
     LABELLED_de = dict(
@@ -165,7 +165,21 @@ class C(BaseConstants):
     LABELLED = list(np.random.choice(LABELLED, replace=False, size=len(LABELLED)))
 
     NLABELLED = len(LABELLED)
-    MAXSLIDES = 5 + NLABELLED + NCONTACTS + 2 + 8
+    MAXSLIDES = 14
+    # 1 consent
+    # op
+    # id + toc
+    # contacts
+    # 5 person Op
+    # labelled Op + toc
+    # MapGame
+    # MapTest
+    # Map + toc
+    # 10 Pairiwse
+    # Importance
+    # Satis
+    # rela
+    # demo
 
     # NPS_MAX = 8
 
@@ -190,7 +204,7 @@ class C(BaseConstants):
     #     "Completely accurate",
     # ]
 
-    NR_PAIRWISE_CHECKS = 1 + 6 + 7 + 4 + 4
+    NR_PAIRWISE_CHECKS = 1 + 10 + 7
     # OPTIONS_OTHER_CHECKS = list(range(0, 11))
     # CHOICES_TOPICS = [qname for q, qname in QUESTIONNAMES["en"].items()] + [
     #     "Were there any other topics or relevant factors? Please write them in the text box below."
@@ -215,6 +229,19 @@ class C(BaseConstants):
         "Refuse to say/No answer",
     ]
 
+    CHOICES_IDENTITY_DE = [
+        "CDU/CSU",
+        "AfD",
+        "SPD",
+        "Bündnis 90/Die Grünen",
+        "Die Linke",
+        "BSW",
+        "FDP",
+        "Andere Partei",
+        "Keiner Partei",
+        "Keine Antwort",
+    ]
+
     CHOICES_POLARISED = [
         "Not at all divided",
         "Somewhat divided",
@@ -230,18 +257,18 @@ class C(BaseConstants):
         "No answer",
     ]
 
-    CHOICES_SATISFACTION_DE = [
-        "Trifft überhaupt nicht zu",
-        "Trifft eher nicht zu",
-        "Trifft eher zu",
-        "Trifft voll und ganz zu",
-    ]
-    CHOICES_SATISFACTION = [
-        "Not accurate at all",
-        "Mostly not accurate",
-        "Mostly accurate",
-        "Completely accurate",
-    ]
+    # CHOICES_SATISFACTION_DE = [
+    #     "Trifft überhaupt nicht zu",
+    #     "Trifft eher nicht zu",
+    #     "Trifft eher zu",
+    #     "Trifft voll und ganz zu",
+    # ]
+    # CHOICES_SATISFACTION = [
+    #     "Not accurate at all",
+    #     "Mostly not accurate",
+    #     "Mostly accurate",
+    #     "Completely accurate",
+    # ]
 
 
 class Subsession(BaseSubsession):
@@ -254,7 +281,7 @@ class Group(BaseGroup):
 
 def make_field(label, language="en"):
     return models.StringField(
-        choices=[[i, i] for i in np.arange(-100, 101)],
+        choices=range(-100, 101),
         label=label,
         widget=widgets.RadioSelect,
     )
@@ -293,7 +320,7 @@ class Player(BasePlayer):
     )
 
     lrscale = models.IntegerField(
-        choices=[[i, i] for i in np.arange(0, 10.1, 1)],
+        choices=range(0, 11),
         label="lrscale",
         widget=widgets.RadioSelect,
     )
@@ -315,7 +342,7 @@ class Player(BasePlayer):
     #     label="",
     #     blank=True,
     # )
-    
+
     importance_comments = models.LongStringField(
         blank=True, label="", initial="", null=True
     )
@@ -367,6 +394,7 @@ class Player(BasePlayer):
     n_checks = models.IntegerField(initial=0)
 
     satisfaction = models.IntegerField()
+    accurateMapping = models.IntegerField()
     satisfaction_text = models.LongStringField(label="", blank=True)
 
     #################################
@@ -435,7 +463,7 @@ for n in range(1, C.NR_PAIRWISE_CHECKS + 1):
         Player,
         f"checkPair{n}",
         models.StringField(
-            choices=range(100),
+            choices=range(11),
             label="",
             widget=widgets.RadioSelect,
             blank=False,
@@ -488,38 +516,46 @@ class slide00_toc(Page):
     form_fields = []
 
     @staticmethod
+    def is_displayed(player):
+        return player.consent
+
+    @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
         n_checks = {0: 1, 1: 3, 2: 4}[player.visited_toc]
         checks = ["<span saclass='checkmark'>✅</span>  "] * n_checks + [
             "<span saclass='checkmark upcoming'>🔜</span>  "
         ] * 6
-        if lan == 'en':
-            items = f"<ul><li>{checks[0]}Your own political opinions and identity</li><li>{checks[1]}How you think your social contacts view these political issues</li><li>{checks[2]}How you think typical voters view these political issues</li><li>{checks[3]}Placing these individuals on a political map<br><em>(with two short practice examples first)</em></li><li>{checks[4]}Evaluating the political similarity of a few pairs of individuals</li><li>{checks[5]}A few final questions about survey and about yourself</li></ul>"
+        hl = {0: [0, 1, 1, 0, 0, 0], 1: [0, 0, 0, 1, 0, 0], 2: [0, 0, 0, 0, 1, 1]}[
+            player.visited_toc
+        ]
+        hls = ["" if not hl_li else " class='upcoming'" for hl_li in hl]
+        if lan == "en":
+            items = f"<ul><li{hls[0]}>{checks[0]}Your own political opinions and identity</li><li{hls[1]}>{checks[1]}How you think your social contacts view these political issues</li><li{hls[2]}>{checks[2]}How you think typical voters view these political issues</li><li{hls[3]}>{checks[3]}Placing these individuals on a political map<br><em>(with two short practice examples first)</em></li><li{hls[4]}>{checks[4]}Evaluating the political similarity of a few pairs of individuals</li><li{hls[5]}>{checks[5]}A few final questions about the survey, your social contacts, and yourself</li></ul>"
             if player.visited_toc == 0:
-                i1 = "➡️ In the following slides, we continue with your evaluations of the political views of your social contacts and typical voters."
+                i1 = "Thank you very much for your responses so far!"  # i1 = "➡️ In the following slides, we continue with your evaluations of the political views of your social contacts and typical voters."
                 i2 = ""
             if player.visited_toc == 1:
-                i1 = "➡️ In the following part, we will ask you to place people on a political map based on how similar or different you perceive their political views to be."
-                i2 = "To prepare for this main task, we will begin with <strong>two short practice rounds</strong>."
+                i1 = "Thank you very much for your evaluations of the political views of other individuals!"  # ➡️ In the following part, we will ask you to place people on a political map based on how similar or different you perceive their political views to be."
+                i2 = "➡️ To prepare for the main task to place people on your own personal political map, we will begin with <strong>two short practice rounds</strong>."
             if player.visited_toc == 2:
                 i1 = "Thank you very much for creating your own personal political map!"
-                i2 = "➡️ In the following, we ask you to again evaluate the political similarity of a few (randomly selected) pairs of individuals."
+                i2 = "➡️ To help us better understand, we first ask you to again evaluate the political similarity of a few (randomly selected) pairs of individuals. Then, we will close this survey with a few short questions."
         else:
-            items = f"<ul><li>{checks[0]}Ihre eigenen politischen Einstellungen und Identität</li>   <li>{checks[1]}Ihre Einschätzungen über die politischen Ansichten von Personen, die Sie gut kennen</li> <li>{checks[2]}Ihre Einschätzungen über die politischen Ansichten typischer Wählerinnen und Wähler</li>  <li>{checks[3]}Die genannten Personen auf einer politischen Karte verorten<br><em>(inklusive zwei kurzer Übungsbeispiele)</em></li> <li>{checks[4]}Einschätzungen über die politische Ähnlichkeit einzelner Personen zueinander</li>  <li>{checks[5]}Abschlussfragen zur Umfrage und zu Ihrer Person</li></ul>"
+            items = f"<ul><li{hls[0]}>{checks[0]}Ihre eigenen politischen Einstellungen und Identität</li>   <li{hls[1]}>{checks[1]}Ihre Einschätzungen über die politischen Ansichten von Personen, die Sie gut kennen</li> <li{hls[2]}>{checks[2]}Ihre Einschätzungen über die politischen Ansichten typischer Wählerinnen und Wähler</li>  <li{hls[3]}>{checks[3]}Die genannten Personen auf einer politischen Karte verorten<br>(inklusive zwei kurzer Übungsaufgaben)</li> <li{hls[4]}>{checks[4]}Einschätzungen über die politische Ähnlichkeit einzelner Personen zueinander</li>  <li{hls[5]}>{checks[5]}Abschlussfragen zur Umfrage, zu Ihren sozialen Kontakten und zu Ihrer Person</li></ul>"
             if player.visited_toc == 0:
-                i1 = "➡️ In den folgenden Seiten geht es um Ihre Einschätzungen zu den politischen Ansichten von Ihren sozialen Kontakten und von typischen Wählern oder Wählerinnen."
+                i1 = "Vielen Dank für Ihre Antworten bisher!"  # ➡️ In den folgenden Seiten geht es um Ihre Einschätzungen zu den politischen Ansichten von Ihren sozialen Kontakten und von typischen Wählern oder Wählerinnen."
                 i2 = ""
             if player.visited_toc == 1:
-                i1 = "➡️ Im folgenden Teil werden wir Sie bitten, Personen auf einer politischen Karte zu platzieren, je nachdem, wie ähnlich oder unterschiedlich Sie deren politische Ansichten wahrnehmen."
-                i2 = "Zur Vorbereitung auf die eigentliche Aufgabe beginnen wir mit <strong>zwei kurzen Übungsrunden</strong>."
+                i1 = "Vielen Dank für Ihre Einschätzungen über die politischen Ansichten anderer Personen!"  # ➡️ Im folgenden Teil werden wir Sie bitten, Personen auf einer politischen Karte zu platzieren, je nachdem, wie ähnlich oder unterschiedlich Sie deren politische Ansichten wahrnehmen."
+                i2 = "➡️ Zur Vorbereitung auf die eigentliche Aufgabe, Personen auf der eigenen politischen Karte zu verorten, beginnen wir mit <strong>zwei kurzen Übungsaufgaben</strong>."
             if player.visited_toc == 2:
                 i1 = "Vielen Dank für das Erstellen Ihrer persönlichen politischen Karte!"
-                i2 = "➡️ Im Folgenden bitten wir Sie nochmals die politische Ähnlichkeit einiger (zufällig ausgewählte) Personenpaare zu bewerten."
+                i2 = "➡️ Für ein besseres Verständnis, bitten wir Sie zunächst nochmals die politische Ähnlichkeit einiger (zufällig ausgewählte) Personenpaare zu bewerten. Danach beenden wir die Umfrage mit ein paar kurzen Fragen."
         return {
             "lan_en": lan == "en",
             "maxslides": C.MAXSLIDES,
-            "page_title": "Progress" if lan == 'en' else "Fortschritt",
+            "page_title": "Your Progress" if lan == "en" else "Ihr Fortschritt",
             "items": items,
             # "overview": (
             #     "<p>What you will do in this survey:</p>"
@@ -534,11 +570,11 @@ class slide00_toc(Page):
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         player.visited_toc += 1
-        if player.visited_toc==1:
+        if player.visited_toc == 1:
             player.t_on_contacts = int(time.time())
-        if player.visited_toc==2:
+        if player.visited_toc == 2:
             player.t_on_practiceGame_page = int(time.time())
-        if player.visited_toc==3:
+        if player.visited_toc == 3:
             player.t_on_check_page = int(time.time())
 
 
@@ -562,7 +598,7 @@ class slide02_Opinions(Page):
         questions = [C.QUESTIONTEXT[player.language][q] for q in questions]
         field_question_pairs = []
         for field, question in zip(fields, questions):
-            if lan == 'en':
+            if lan == "en":
                 labels = C.LIKERT7_string_noNA
             else:
                 labels = C.LIKERT7_string_noNA_de
@@ -574,9 +610,7 @@ class slide02_Opinions(Page):
                     "first_label": labels[0],  # Strongly Disagree
                     "neutral_label": labels[3],  # Neutral
                     "last_label": labels[6],  # Strongly Agree
-                    "choices": dict(
-                        zip(np.arange(-100, 101), np.arange(-100, 101))
-                    ), 
+                    # "choices": dict(zip(np.arange(-100, 101), np.arange(-100, 101))),
                 }
             )
         return {
@@ -664,51 +698,36 @@ class slide02a_Identity(Page):
         lan = player.language
         question = (
             "In politics people sometimes talk of 'left' and 'right'. Where would you place yourself on this scale, where 0 means the left and 10 means the right?"
-            if lan == 'en'
+            if lan == "en"
             else "In der Politik spricht man manchmal von 'links' und 'rechts'. Wo auf der Skala von 0 bis 10 würden Sie sich selbst einstufen,  wenn 0 für links steht und 10 für rechts?"
         )
         return {
             "maxslides": C.MAXSLIDES,
-            "nslide": 3 + len(C.LABELLED) + C.NCONTACTS + 2 + 2 + 5,
+            "nslide": 3,
             "lan_en": lan == "en",
             "page_title": (
-                "Your Political Identity" if lan == 'en' else "Politische Identität"
+                "Your Political Identity" if lan == "en" else "Politische Identität"
             ),
             "qu_identity": (
                 "Do you feel closer to one of the political parties in Germany than the others? If so, which one?"
-                if lan == 'en'
+                if lan == "en"
                 else "Gibt es eine bestimmte politische Partei in Deutschland, der Sie sich politisch näher fühlen als allen anderen Parteien? Welcher?"
             ),
             "choices_identity": dict(
                 zip(
                     C.CHOICES_IDENTITY,
-                    (
-                        C.CHOICES_IDENTITY
-                        if lan == 'en'
-                        else [
-                            "CDU/CSU",
-                            "AfD",
-                            "SPD",
-                            "Bündnis 90/Die Grünen",
-                            "Die Linke",
-                            "BSW",
-                            "FDP",
-                            "Andere Partei",
-                            "Keiner Partei",
-                            "Keine Antwort",
-                        ]
-                    ),
+                    (C.CHOICES_IDENTITY if lan == "en" else C.CHOICES_IDENTITY_DE),
                 )
             ),
             "qu_party_comment": (
                 "Would you like to add anything to the question above? (optional):"
-                if lan == 'en'
+                if lan == "en"
                 else "Möchten Sie etwas zu dieser Frage ergänzen? (optional)"
             ),
             "lr_question": question,
-            "lr_first_label": "left" if lan == 'en' else "links",
-            "lr_last_label": "right" if lan == 'en' else "rechts",
-            "lr_choices": dict(zip(np.arange(0, 10.1, 1), np.arange(0, 10.1, 1))),
+            "lr_first_label": "left" if lan == "en" else "links",
+            "lr_last_label": "right" if lan == "en" else "rechts",
+            # "lr_choices": dict(zip(np.arange(0, 10.1, 1), np.arange(0, 10.1, 1))),
         }
 
     @staticmethod
@@ -735,25 +754,25 @@ class slide03_Contacts(Page):
             contact_fields.append(
                 {
                     "name": f"contact{n}",
-                    "label": f"Contact {n}:" if lan == 'en' else f"Kontakt {n}:",
+                    "label": f"Contact {n}:" if lan == "en" else f"Kontakt {n}:",
                 }
             )
         return {
             "lan_en": lan == "en",
             "maxslides": C.MAXSLIDES,
-            "nslide": 3,
+            "nslide": 4,
             "ncontacts": C.NCONTACTS,
             "contact_fields": contact_fields,
-            "page_title": "Social Contacts" if lan == 'en' else "Soziale Kontakte",
+            "page_title": "Social Contacts" if lan == "en" else "Soziale Kontakte",
             "instruction_text": (
                 f"<p>Think about <strong>{C.NCONTACTS} social contacts</strong> that you know well. This can include friends, family members, Co-workers, ....</p><p>Please write down their names or initials so that you are later able to recognise them (we will not use/store that information).</p>"
-                if lan == 'en'
+                if lan == "en"
                 else f"<p>Denken Sie nun an <strong>{C.NCONTACTS} soziale Kontakte</strong>, die Sie gut kennen. Das können Freunde, Freundinnen, Familienmitglieder, Kollegen, etc. sein.</p><p>Bitte notieren Sie die Namen oder Initialen dieser Kontakte in den Feldern unten, so dass Sie diese später wiedererkennen (wir werden diese Informationen nicht speichern oder verwenden).</p>"
             ),
             "instruction2": (
-                "<p>In the next slides, we will ask you what you think these people would respond to the political questions from the previous slide.</p>"
-                if lan == 'en'
-                else "<p>In den folgenden Seiten, fragen wir Sie was diese Personen Ihrer Meinung nach auf die politischen Fragen antworten würden.</p>"
+                "➡️ In the next slides, we will ask you what you think these people would respond to the political questions from the previous slide."
+                if lan == "en"
+                else "➡️ In den folgenden Seiten, fragen wir Sie was diese Personen Ihrer Meinung nach auf die politischen Fragen antworten würden."
             ),
         }
 
@@ -772,9 +791,11 @@ class slide03_Contacts(Page):
                 if player.language == "en"
                 else "Jeder Kontakt muss einen eindeutigen Namen haben. Bitte korrigieren Sie Duplikate. Sie können Spitznamen, Initialien oder alles benutzen, was Sie später wiedererkennen."
             )
+
     # @staticmethod
     # def before_next_page(player: Player, timeout_happened):
     #     player.t_on_personOpinion = int(time.time())
+
 
 #################################
 #####  Person Opinions   #####
@@ -800,27 +821,37 @@ class slide04_PersonOpinion(Page):
         if player.which_contact_type == "contact":
             idx = player.current_contact
             name = getattr(player, f"contact{idx}")
+            print(name)
             prefix = f"contact{idx}_"
-            displName = f"{name}"
-            displName1 = f"Ihren Kontakt <strong>{name}</strong>"
-            displName3 = f"<strong>{name}</strong>"
-            displName4 = f"von <strong>{name}</strong>"
+            # displNameTex = f"{name}"
+            pillname = f"<span class='pill' style='background-color: {C.FRIENDCOLOR}; color: white;'>{name}</span>"
+            if lan == "en":
+                displNameTex = f"your contact {pillname}"
+                displNameTH = f"<strong>{name}</strong>"
+                displNameRow = f"of {pillname}"
+            else:
+                displNameTex = f"Ihren Kontakt {pillname}"
+                displNameTH = f"<strong>{name}</strong>"
+                displNameRow = f"von {pillname}"
+
             color = C.FRIENDCOLOR  # contact color
         else:  # mode == 'labelledPerson'
             idx = player.evaluated_labelledPerson
             name = C.LABELLED[idx]
             prefix = f"{name.replace(' ','')}_"
-            displName = (
-                f"a typical {name} voter"
-                if lan == 'en'
-                else f"{C.LABELLED_de[name]} Wähler/-in"
-            )
-            displName4 = "the person"
             color = C.LABELLEDCOLORS[name]
-            if lan == "de":
-                displName1 = f"eine typische Wählerin oder einen typischen Wähler {'des' if name=='BSW' else 'der'} <strong>{C.LABELLED_de[name]}</strong>"
-                displName3 = f"Wähler/Wählerin {'des' if name=='BSW' else 'der'} {C.LABELLED_de[name]}"
-                displName4 = f"der Person"
+            pillname = (
+                lambda x: f"<span class='pill' style='background-color: {color}; color: {'#424949' if x=='FDP' or color==C.LABELLEDCOLORS['FDP'] else 'white'};'><strong>{x}</strong></span>"
+            )
+            if lan == "en":
+                displNameTex = f"a {pillname(f'typical {name} voter')}"
+                displNameTH = f"<strong>{name}</strong>"
+                displNameRow = f"of {pillname('this person')}"
+            else:
+                displNameTex = f"eine typische Wählerin oder einen typischen Wähler {'des' if name=='BSW' else 'der'} {pillname(C.LABELLED_de[name])}"
+                displNameTH = f"Wähler/Wählerin {'des' if name=='BSW' else 'der'} <strong>{C.LABELLED_de[name]}</strong>"
+                displNameRow = f"{pillname('dieser Person')}"
+
         fields = [
             f"{prefix}{q}"
             for q in [C.QUS[i] for i in json.loads(player.question_sorting)]
@@ -831,21 +862,7 @@ class slide04_PersonOpinion(Page):
         ]
         field_question_pairs = []
         for field, question in zip(fields, questions):
-            # choices = dict(
-            #     zip(
-            #         C.LIKERT5_string_noNA[::-1],
-            #         (
-            #             C.LIKERT5_string_noNA[::-1]
-            #             if lan == 'en'
-            #             else C.LIKERT5_string_noNA_de[::-1]
-            #         ),
-            #     )
-            # )  # convert list of tuples to dict
-            if lan == 'en':
-                labels = C.LIKERT7_string_noNA
-            else:
-                labels = C.LIKERT7_string_noNA_de
-
+            labels = C.LIKERT7_string_noNA if lan == "en" else C.LIKERT7_string_noNA_de
             field_question_pairs.append(
                 {
                     "field_name": field,
@@ -855,37 +872,40 @@ class slide04_PersonOpinion(Page):
                     "last_label": labels[6],  # Strongly Agree
                 }
             )
+        letter = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "j"][idx]
         return {
             "lan_en": lan == "en",
             "maxslides": C.MAXSLIDES,
-            "nslide": 3
-            + idx
-            + (1 + C.NCONTACTS if player.which_contact_type == "labelledPerson" else 0),
+            "nslide": (
+                f"6{letter} "
+                if player.which_contact_type == "labelledPerson"
+                else f"5{letter} "
+            ),
             "name": name,
             "color": color,
             "person_type": player.which_contact_type,
             "fields": fields,
             "questions": questions,
             "would_respond": (
-                f"I think {displName4} would respond with:"
-                if lan == 'en'
-                else f"Ich denke, die Antwort {displName4} wäre:"
+                f"I think {displNameRow} would respond with:"
+                if lan == "en"
+                else f"Ich denke, die Antwort {displNameRow} wäre:"
             ),
             "field_question_pairs": field_question_pairs,
             "page_title": (
                 "Political Opinions of Others"
-                if lan == 'en'
+                if lan == "en"
                 else "Politische Meinungen von anderen Menschen"
             ),
             "instruction_text": (
-                f"Thinking about <strong>{displName}</strong>, how do you think <strong>{displName}</strong> would respond to the political questions?"
-                if lan == 'en'
-                else f"Denken Sie nun an {displName1}. Wie würde er/sie die politischen Fragen beantworten?"
+                f"Thinking about {displNameTex}, how do you think he/she would respond to the political questions?"
+                if lan == "en"
+                else f"Denken Sie nun an {displNameTex}. Wie würde er/sie die politischen Fragen beantworten?"
             ),
             "table_head": (
-                f"<strong>{displName}</strong>'s responses"
-                if lan == 'en'
-                else f"Antworten von <strong>{displName3}</strong>"
+                f"{displNameTH}'s responses"
+                if lan == "en"
+                else f"Antworten von   {displNameTH}"
             ),
         }
 
@@ -945,9 +965,7 @@ class slide05a_MapGame(Page):
             {
                 "dottype": "food",
                 "varname": "lasagne",
-                "name_disp": (
-                    "Lasagne" if lan == 'en' else "Lasagne"
-                ),
+                "name_disp": ("Lasagne" if lan == "en" else "Lasagne"),
                 "x": 330,
                 "y": 50,
                 "color": "#d97565   ",
@@ -955,7 +973,7 @@ class slide05a_MapGame(Page):
             {
                 "dottype": "food",
                 "varname": "pizza",
-                "name_disp": "Pizza Margherita" if lan == 'en' else "Pizza Margherita",
+                "name_disp": "Pizza Margherita" if lan == "en" else "Pizza Margherita",
                 "x": 330,
                 "y": 100,
                 "color": "#d97565",
@@ -964,7 +982,7 @@ class slide05a_MapGame(Page):
                 "dottype": "food",
                 "varname": "spaghetticarbo",
                 "name_disp": (
-                    "Spaghetti Carbonara" if lan == 'en' else "Spaghetti Carbonara"
+                    "Spaghetti Carbonara" if lan == "en" else "Spaghetti Carbonara"
                 ),
                 "x": 330,
                 "y": 150,
@@ -973,38 +991,38 @@ class slide05a_MapGame(Page):
         ]
         return {
             "maxslides": C.MAXSLIDES,
-            "nslide": 3 + len(C.LABELLED) + C.NCONTACTS + 1,
+            "nslide": 7,
             "lan_en": lan == "en",
             "dots": init_dots,
             "page_title": (
                 "Political Mapping – Practice round 1"
-                if lan == 'en'
+                if lan == "en"
                 else "Politisches Mapping – Übungsrunde 1"
             ),
             "lan": lan,
             "instruction_text2": (
                 "Imagine you have to place the following meals – Lasagne, Spaghetti Carbonara, and Pizza Margherita – in a room (the rectangle below)."
-                if lan == 'en'
-                else "Stellen Sie sich vor, Sie müssten die folgenden Gerichte – Lasagne, Spaghetti Carbonara, und Pizza Margherita – in einem Raum platzieren (das Rechteck unten)."
+                if lan == "en"
+                else "Stellen Sie sich vor, Sie müssten die folgenden Gerichte – Lasagne, Spaghetti Carbonara und Pizza Margherita – in einem Raum platzieren (das Rechteck unten)."
             ),
             "instruction_text3": (
                 "<p><ul><li><strong>Place meals closer together if you perceive them as similar.</strong></li><li><strong>Place meals farther apart if you perceive them as different.</strong></li></ul>"
-                if lan == 'en'
+                if lan == "en"
                 else "<p><ul><li>Platzieren Sie Gerichte <strong>näher beieinander</strong>, wenn Sie diese als <strong>ähnlich</strong> wahrnehmen.</li><li>Platzieren Sie Gerichte <strong>weiter auseinander</strong>, wenn Sie diese als <strong>unterschiedlich</strong> wahrnehmen.</li></ul>"
             ),
             "detailed_instructions_1": (
                 "<ul><li>You will start with several points on the right side.</li><li>Drag these one by one into the rectangle and place them as described above.</li><li>You can re-position any dot at any time until you are satisfied with the arrangement.</li></ul>"
-                if lan == 'en'
+                if lan == "en"
                 else "<ul><li>Sie beginnen mit mehreren Punkten auf der rechten Seite.</li><li>Ziehen Sie diese nacheinander in das Rechteck und ordnen Sie die Punkte wie oben beschrieben an.</li><li>Sie können jeden Punkt verschieben bis Sie mit der Anordnung zufrieden sind.</li></ul>"
             ),
             "no_wrong_answers": (
-                f"<ul><li>There are of course NO right or wrong answers here</li><li>For example, two participants might arrange the dishes quite differently, if one dislikes meat the other tomatoes</li><li>We are interested in your <strong>personal perceptions</strong> in this survey</li></ul>"
-                if lan == 'en'
-                else "<ul><li>Es gibt hier natürlich weder falsche noch richtige Antworten</li><li>Zwei Personen würden die Gerichte vermutlich ziemlich unterschiedlich anordnen, wenn die eine kein Fleisch, die andere keine Tomaten mag</li><li>Wir sind in dieser Umfrage ausschließlich an <strong>Ihrer persönlichen Einschätzung</strong> interessiert</li></ul>"
+                f"<ul><li>There are of course NO right or wrong answers here</li><li><em>A participant who dislikes tomatoes might arrange the dishes quite differently compared to a person, who dislikes meat</em></li><li>We are interested in your <strong>personal perceptions</strong> in this survey</li></ul>"
+                if lan == "en"
+                else "<ul><li>Es gibt hier natürlich weder falsche noch richtige Antworten</li><li><em>Eine Person, die keine Tomaten mag, würde die Gerichte vermutlich anders anordnen als jemand, der kein Fleisch isst</em></li><li>Wir sind in dieser Umfrage ausschließlich an <strong>Ihrer persönlichen Einschätzung</strong> interessiert</li></ul>"
             ),
             "all_dots_instr": (
                 "All dots must be within the square boundary to proceed."
-                if lan == 'en'
+                if lan == "en"
                 else "Um fortzufahren müssen alle Punkte im Rechteck platziert werden."
             ),
         }
@@ -1040,7 +1058,7 @@ class slide05a_MapTest(Page):
                 {
                     "dottype": "self",
                     "varname": "self",
-                    "name_disp": "Self" if lan == 'en' else "Ich",
+                    "name_disp": "Self" if lan == "en" else "Ich",
                     "x": 330,
                     "y": 50,
                     "color": "grey",
@@ -1048,7 +1066,7 @@ class slide05a_MapTest(Page):
                 {
                     "dottype": "friend",
                     "varname": "friend",
-                    "name_disp": "Friend" if lan == 'en' else "Freund",
+                    "name_disp": "Friend" if lan == "en" else "Freund",
                     "x": 330,
                     "y": 100,
                     "color": "blue",
@@ -1056,7 +1074,7 @@ class slide05a_MapTest(Page):
                 {
                     "dottype": "coworker",
                     "varname": "coworker",
-                    "name_disp": "Co-Worker" if lan == 'en' else "Kollegin",
+                    "name_disp": "Co-Worker" if lan == "en" else "Kollegin",
                     "x": 330,
                     "y": 150,
                     "color": "blue",
@@ -1064,7 +1082,7 @@ class slide05a_MapTest(Page):
                 {
                     "dottype": "relative",
                     "varname": "relative",
-                    "name_disp": "Relative" if lan == 'en' else "Verwandter",
+                    "name_disp": "Relative" if lan == "en" else "Verwandter",
                     "x": 330,
                     "y": 200,
                     "color": "blue",
@@ -1074,38 +1092,38 @@ class slide05a_MapTest(Page):
             init_dots = json.loads(getattr(player, "positionsTest", []))
         return {
             "maxslides": C.MAXSLIDES,
-            "nslide": 3 + len(C.LABELLED) + C.NCONTACTS + 1,
+            "nslide": 8,
             "lan_en": lan == "en",
             "dots": init_dots,
             "page_title": (
                 "Political Mapping – Practice round"
-                if lan == 'en'
+                if lan == "en"
                 else "Politisches Mapping – Übungsrunde"
             ),
             "lan": lan,
             "instruction_text1": (
                 "In the <strong>second practice round</strong> we now focus on perception of political similarity."
-                if lan == 'en'
+                if lan == "en"
                 else "In der <strong>zweiten Übungsrunde</strong> geht es nun um Wahrnehmungen politischer Ähnlichkeit."
             ),
             "instruction_text2": (
                 "Imagine you, a friend, a co-worker, and your relative are in a room (the rectangle below)."
-                if lan == 'en'
+                if lan == "en"
                 else "Stellen Sie sich vor, Sie sind zusammen mit einem Freund, einer Arbeitskollegin und einem Verwandten in einem Raum (das Rechteck unten)."
             ),
             "instruction_text3": (
                 "<p>Arrange the people in the room based on how <em>you</em> see their political views:</p><ul><li><strong>Place individuals closer together if you perceive them as <em>politically</em> similar.</strong></li><li><strong>Place individuals farther apart if you perceive them as <em>politically</em> different.</strong></li></ul>"
-                if lan == 'en'
+                if lan == "en"
                 else "<p>Ordnen Sie die Personen im Raum so an, wie <em>Sie</em> deren politische Ansichten wahrnehmen:</p><ul> <li>Platzieren Sie Personen <strong>näher beieinander</strong>, wenn Sie diese als <strong><em>politisch</em> ähnlich</strong> wahrnehmen.</li><li>Platzieren Sie Personen <strong>weiter auseinander</strong>, wenn Sie diese als <strong><em>politisch</em> unterschiedlich</strong> wahrnehmen.</li></ul>"
             ),
             "disclaimer": (
                 "<p>This is a practice round – some arrangements match the instructions below, others do not. When you click <em>Next</em>, we will show you whether your arrangement meets all the instructions."
-                if lan == 'en'
+                if lan == "en"
                 else "<p>Dies ist eine Übungsrunde – einige Anordnungen entsprechen den untenstehenden Anweisungen, andere nicht. Wenn Sie auf <em>Weiter</em> klicken, erfahren Sie, ob Ihre Anordnung alle Vorgaben erfüllt.</p>"
             ),  # In the main task on the next slide, there will be NO right or wrong answers — only your personal perception will matter.</p> #  Im Hauptteil auf der nächsten Seite wird es dagegegen KEINE richtigen oder falschen Antworten geben – nur Ihre persönliche Wahrnehmung wird relevant sein.
             "detailed_instructions_1": (
                 "<h3>Practice Round Step-by-Step Instructions</h4><p>Drag the points on the right side one by one into the rectangle as described in the following instructions:</p>"
-                if lan == 'en'
+                if lan == "en"
                 else "<h3>Übungsrunde Schritt-für-Schritt Anleitung</h4> <p>Ziehen Sie die Punkte auf der rechten Seite nacheinander in das Rechteck, wie in der folgenden Anleitung beschrieben:</p>"
             ),
             "detailed_instructions_2": (
@@ -1115,7 +1133,7 @@ class slide05a_MapTest(Page):
                     + "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 3:</strong> 'Co-worker'</summary><p>Place <strong>Co-worker</strong> farther away, as they often have different opinions – but closer to <strong>Self</strong> than to <strong>Friend</strong>, because you perceive an even greater political difference between Co-worker and Friend.</p></details>"
                     + "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 4:</strong> 'Relative'</summary><p>Your <strong>Relative</strong> has very different political views – place them far from <strong>Me</strong>, but somewhat closer to <strong>Friend</strong> and <strong>Co-worker</strong>, as you feel they share some opinions with them.</p></details>"
                 )
-                if lan == 'en'
+                if lan == "en"
                 else (
                     "<details  open style='margin-bottom: 0em;'> <summary  style='white-space: nowrap;'><strong>Schritt 1:</strong> 'Ich'</summary> <p>Platzieren Sie den Punkt <strong>Ich</strong> irgendwo im Rechteck – er steht für Ihre politischen Ansichten.</p></details>"
                     + "<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Schritt 2:</strong> 'Freund'</summary><p>Setzen Sie den Punkt <strong>Freund</strong> in Ihre Nähe – er teilt ähnliche Ansichten wie Sie.</p></details>"
@@ -1125,12 +1143,12 @@ class slide05a_MapTest(Page):
             ),
             "all_dots_instr": (
                 "All dots must be within the square boundary to proceed. You can re-position any dot at any time until you are satisfied with the arrangement."
-                if lan == 'en'
+                if lan == "en"
                 else "Um fortzufahren müssen alle Punkte im Rechteck platziert werden. Sie können jeden Punkt verschieben bis Sie mit der Anordnung zufrieden sind."
             ),
             "latest_error_msg": (
                 "<p><strong>Error(s) in your previous attempt:</strong></p>"
-                if lan == 'en'
+                if lan == "en"
                 else "<p><strong>Fehler in Ihrem vorherigen Versuch:</strong></p>"
             )
             + player.latest_error_msg,
@@ -1142,7 +1160,7 @@ class slide05a_MapTest(Page):
 #####  Practice Run Results   #####
 #################################
 class slide05b_MapTestResult(Page):
-    
+
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
@@ -1170,7 +1188,7 @@ class slide05b_MapTestResult(Page):
         player.isTrainingPassed = isTrainingPassed
 
         errors = ""
-        if lan == 'en':
+        if lan == "en":
             errors += (
                 r"- <em>Instructions 2/3: </em> The distance between 'Self' and 'Co-worker' should be larger than the distance between 'Self' and 'Friend'. <br>"
                 if player.isTrainingCondFvC == 0
@@ -1217,7 +1235,7 @@ class slide05b_MapTestResult(Page):
 
         return {
             "maxslides": C.MAXSLIDES,
-            "nslide": 3 + len(C.LABELLED) + C.NCONTACTS + 2,
+            "nslide": 8,
             "lan_en": lan == "en",
             "passed": player.isTrainingPassed,
             "button_msg": (
@@ -1230,7 +1248,7 @@ class slide05b_MapTestResult(Page):
                         else "Repeat Training"
                     )
                 )
-                if lan == 'en'
+                if lan == "en"
                 else (
                     "Weiter"
                     if player.isTrainingPassed
@@ -1243,29 +1261,29 @@ class slide05b_MapTestResult(Page):
             ),
             "attempt_msg": (
                 f"Attempt {player.attemptPractice} of {C.N_MAX_PRACTICE_RUNS}"
-                if lan == 'en'
+                if lan == "en"
                 else f"Versuch {player.attemptPractice} von {C.N_MAX_PRACTICE_RUNS}"
             ),
             "page_title": (
                 "Political Mapping – Practice – Results"
-                if lan == 'en'
+                if lan == "en"
                 else "Politisches Mapping – Training – Ergebnis"
             ),
             "success_msg": (
                 "<strong>Well done!</strong> Your arrangement fulfills all criteria."
-                if lan == 'en'
+                if lan == "en"
                 else "<strong>Gut gemacht!</strong> Ihre Anordnung der Punkte erfüllt alle Kriterien."
             ),
             "error_msg": (
                 f"<strong>Your arrangement does not meet all steps of the instructions:</strong></p><p style='white-space: pre-line;'>{errors}</p><p>Please repeat the training and try to arrange the dots so that all criteria are fulfilled.</p>"
-                if lan == 'en'
+                if lan == "en"
                 else f"<strong>Ihre Anordnung erfüllt nicht alle Schritte der Anleitung:</strong></p><p style='white-space: pre-line;'>{errors}</p><p>Bitte wiederholen Sie das Training und versuchen Sie, die Punkte so anzuordnen, dass alle Kriterien erfüllt sind.</p>"
             ),
             "img_help": not (player.attemptPractice <= 1 or player.isTrainingPassed),
             "img_help_text": "<p>"
             + (
                 "Below you can find one possible arrangement of the dots that fulfills all criteria:"
-                if lan == 'en'
+                if lan == "en"
                 else "Unten sehen Sie eine mögliche Anordnung der Punkte, die alle Kriterien erfüllt:"
             )
             + ":</p>",
@@ -1307,7 +1325,7 @@ class slide06_SPaM(Page):
     def vars_for_template(player: Player):
         lan = player.language
         displ_names = (
-            ["Self" if lan == 'en' else "Ich"]
+            ["Self" if lan == "en" else "Ich"]
             + [getattr(player, f"contact{f}") for f in range(1, C.NCONTACTS + 1)]
             + [
                 f"{v+' voter' if lan=='en' else C.LABELLED_de[v]+' Wähler/Wählerin'}"
@@ -1340,32 +1358,32 @@ class slide06_SPaM(Page):
         ]
         return {
             "maxslides": C.MAXSLIDES,
-            "nslide": 3 + len(C.LABELLED) + C.NCONTACTS + 2 + 1,
+            "nslide": 9,
             "lan_en": lan == "en",
             "dots": init_dots,
             "page_title": (
                 "Political Mapping – Part 1"
-                if lan == 'en'
+                if lan == "en"
                 else "Politisches Mapping – Teil 1"
             ),
             "instru1": (
                 "We now continue to the main task in this survey."
-                if lan == 'en'
+                if lan == "en"
                 else "Wir beginnen nun mit dem Hauptteil dieser Umfrage."
             ),
             "instruRoom": (
                 "Imagine you, your social contacts, and typical voters of the German parties are in a room (the rectangle below)."
-                if lan == 'en'
+                if lan == "en"
                 else "Stellen Sie sich vor, Sie sind zusammen mit Ihren Kontakten und mit jeweils den typischen Wählern oder Wählerinnen der vorher genannten Parteien in einem Raum (das Rechteck unten)."
             ),
             "instru_main": (
                 "<p>Arrange the people in the room based on how <em>you</em> see their political views about questions regarding climate change, migration, inequality and diversity:</p><ul><li><strong>Place individuals closer together if you perceive them as politically similar.</strong></li><li><strong>Place individuals farther apart if you perceive them as politically different.</strong></li></ul>"
-                if lan == 'en'
+                if lan == "en"
                 else "<p>Ordnen Sie die Personen im Raum so an, wie <em>Sie</em> deren politische Ansichten zu Fragen über Klimawandel, Migration, Ungleichheit und Vielfalt wahrnehmen:</p><ul> <li>Platzieren Sie Personen <strong>näher beieinander</strong>, wenn Sie diese als <strong>politisch ähnlich</strong> wahrnehmen.</li><li>Platzieren Sie Personen <strong>weiter auseinander</strong>, wenn Sie diese als <strong>politisch unterschiedlich</strong> wahrnehmen.</li></ul>"
             ),
             "no_wrong_answers": (
                 f"<p>There are NO right or wrong answers — we are interested in your personal perception.</p>"
-                if lan == 'en'
+                if lan == "en"
                 else "<p>Es gibt weder falsche noch richtige Antworten – wir sind an Ihrer persönliche Einschätzung interessiert.</p>"
             ),
             # "instru_click": (
@@ -1375,7 +1393,7 @@ class slide06_SPaM(Page):
             # ),
             "all_dots_instr": (
                 "All dots must be within the square boundary to proceed. You can re-position any dot at any time until you are satisfied with the arrangement."
-                if lan == 'en'
+                if lan == "en"
                 else "Um fortzufahren müssen alle Punkte im Rechteck platziert werden. Sie können jeden Punkt verschieben bis Sie mit der Anordnung zufrieden sind."
             ),
             # "labelClose": "similar" if lan == 'en' else "ähnlich",
@@ -1561,7 +1579,11 @@ class slide08_PlausibilityCheck_Pairs(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return (player.consent) and (player.n_check <= (player.n_checks)) and player.isTrainingPassed
+        return (
+            (player.consent)
+            and (player.n_check <= (player.n_checks))
+            and player.isTrainingPassed
+        )
 
     @staticmethod
     def get_form_fields(player: Player):
@@ -1597,29 +1619,28 @@ class slide08_PlausibilityCheck_Pairs(Page):
         def get_descr(p):
             if "contact" in p:
                 plabel = (
-                    f"Your contact <span class='pill' style='background-color: {C.FRIENDCOLOR}; color: white;'><strong>"
-                    if lan == 'en'
+                    f"your contact <span class='pill' style='background-color: {C.FRIENDCOLOR}; color: white;'><strong>"
+                    if lan == "en"
                     else f"Ihr Kontakt <span class='pill' style='background-color: {C.FRIENDCOLOR}; color: white;'><strong>"
                 )
                 plabel += f"{getattr(player, p)}</strong></span>"
             if p == "self":
                 plabel = (
-                    f"<span class='pill' style='background-color: #808080; color: white;'><strong>Yourself</strong></span>"
-                    if lan == 'en'
+                    f"<span class='pill' style='background-color: #808080; color: white;'><strong>yourself</strong></span>"
+                    if lan == "en"
                     else f"<span class='pill' style='background-color: #808080; color: white;'><strong>Sie selbst</strong></span>"
                 )
             if p in C.LABELLED:
                 plabel = (
-                    f"A typical <span class='pill' style='background-color: {C.LABELLEDCOLORS[p]}; color: {'white' if not p=='FDP' else '#424949'};'><strong>{p} voter</strong></span>"
-                    if lan == 'en'
-                    else f"typische Person, die <span class='pill' style='background-color: {C.LABELLEDCOLORS[p]}; color: {'white' if not p=='FDP' else '#424949'};'>{'die ' if p=='Green Party' or p=='Left Party' else ''} <strong>{C.LABELLED_de[p]} wählt</strong></span>"
+                    f"a typical <span class='pill' style='background-color: {C.LABELLEDCOLORS[p]}; color: {'white' if not p=='FDP' else '#424949'};'><strong>{p} voter</strong></span>"
+                    if lan == "en"
+                    else f"eine typische Person, die <span class='pill' style='background-color: {C.LABELLEDCOLORS[p]}; color: {'white' if not p=='FDP' else '#424949'};'>{'die ' if p=='Green Party' or p=='Left Party' else ''} <strong>{C.LABELLED_de[p]} wählt</strong></span>"
                 )
             return plabel
 
-
         return {
             "maxslides": C.MAXSLIDES,
-            "nslide": 3 + len(C.LABELLED) + C.NCONTACTS + 2 + 2 + 1,
+            "nslide": 10,
             "lan_en": lan == "en",
             "p1": p1,
             "p2": p2,
@@ -1628,42 +1649,42 @@ class slide08_PlausibilityCheck_Pairs(Page):
             "current_check": f"checkPair{player.n_check}",
             "page_title": (
                 f"Pairwise comparison of political views – {player.n_check} of {player.n_checks}"
-                if lan == 'en'
+                if lan == "en"
                 else f"Paarweiser Vergleich politischer Meinungen {player.n_check} von {player.n_checks}"
             ),
             "instru1": (
                 f"<p>Now consider the following two individuals:</p><ol><li style='font-size:18px;'>{get_descr(p1)}</li><li style='font-size:18px;'>{get_descr(p2)}</li></ol>"
-                if lan == 'en'
+                if lan == "en"
                 else f"<p>Denken Sie nun an die folgenden beiden Personen:</p><ol><li style='font-size:18px;'>{get_descr(p1)}</li><li style='font-size:18px;'>{get_descr(p2)}</li></ol>"
             ),
             "question": (
                 "<p>In <em>your</em> opinion, how similar are these two individuals overall in their political views on migration, climate change, inequality and diversity?</p>"
-                if lan == 'en'
+                if lan == "en"
                 else "<p>Wie ähnlich sind sich diese beiden Personen <em>Ihrer Meinung nach</em> insgesamt in ihren politischen Ansichten zu Migration, Klimawandel, Ungleichheit und Vielfalt?</p>"
             ),
             "Ithink": "",  # "Your estimate:" if lan == 'en' else "Ihre Einschätzung:",
             # "img1": p1_dot["dottype"] == "P",
             # "img2": p2_dot["dottype"] == "P",
-            "choices": list(range(0, 11)),
+            # "choices": list(range(0, 11)),
             "similarity_min": 0,
             "similarity_max": 10,
             "similarity_min_label": (
-                "Not at all similar" if lan == 'en' else "Überhaupt nicht ähnlich"
+                "Not at all similar" if lan == "en" else "Überhaupt nicht ähnlich"
             ),
             "similarity_max_label": (
-                "Extremely similar" if lan == 'en' else "Extrem ähnlich"
+                "Extremely similar" if lan == "en" else "Extrem ähnlich"
             ),
         }
 
 
 class slide09_Importance(Page):
     form_model = "player"
-    form_fields = [f"importance_{q}" for q in C.QUS]+["importance_comments"]
+    form_fields = [f"importance_{q}" for q in C.QUS] + ["importance_comments"]
 
-    @staticmethod 
+    @staticmethod
     def before_next_page(player: Player, timeout_happened):
         player.t_on_satisfaction = int(time.time())
-        
+
     @staticmethod
     def is_displayed(player: Player):
         return player.consent and player.isTrainingPassed
@@ -1674,38 +1695,44 @@ class slide09_Importance(Page):
         questions = [C.QUS[i] for i in json.loads(player.question_sorting)]
         fields = [f"importance_{q}" for q in questions]
         questions = [C.QUESTIONNAMES[player.language][q] for q in questions]
-        
+
         field_question_pairs = []
         for field, question in zip(fields, questions):
             field_question_pairs.append(
                 {
                     "field_name": field,
                     "question_text": question,
-                    "first_label": "not important at all" if lan=='en' else "überhaupt nicht wichtig",  # Strongly Disagree
-                    "last_label": "extremely important"  if lan=='en' else "extrem wichtig",  # Strongly Agree
-                    "choices": dict(
-                        zip(np.arange(0, 101), np.arange(0, 101))
-                    ),  # dict(zip(range(1, 8), labels)),  # 1-7 mapping
+                    "first_label": (
+                        "not important at all"
+                        if lan == "en"
+                        else "überhaupt nicht wichtig"
+                    ),  # Strongly Disagree
+                    "last_label": (
+                        "extremely important" if lan == "en" else "extrem wichtig"
+                    ),  # Strongly Agree
+                    # "choices": dict(
+                    #    zip(np.arange(0, 101), np.arange(0, 101))
+                    # ),  # dict(zip(range(1, 8), labels)),  # 1-7 mapping
                 }
-            )            
+            )
         return {
             "maxslides": C.MAXSLIDES,
-            "nslide": 3 + len(C.LABELLED) + C.NCONTACTS + 2 + 2 + 2,
+            "nslide": 11,
             "lan_en": lan == "en",
             "field_question_pairs": field_question_pairs,
             "page_title": (
                 "Key Topics Influencing Your Arrangement"
-                if lan == 'en'
+                if lan == "en"
                 else "Wichtige Themen für Ihre Anordnung"
             ),
             "question": (
                 "Please rate the importance of each of the four political topics for your Arrangement (0–100):"
-                if lan == 'en'
+                if lan == "en"
                 else "Bitte bewerten Sie die Wichtigkeit jedes der vier politischen Themen für Ihre Anordnung (0–100):"
             ),
             "explain_text": (
                 "You can add further comments or explanations here (optional):"
-                if lan == 'en'
+                if lan == "en"
                 else "Sie können hier weitere Anmerkungen oder Erklärungen hinzufügen (optional):"
             ),
         }
@@ -1716,11 +1743,11 @@ class slide09_Importance(Page):
 #################################
 class slide10_Satisfaction(Page):
     form_model = "player"
-    form_fields = ["satisfaction_text", "satisfaction"]
+    form_fields = ["satisfaction_text", "satisfaction", "accurateMapping"]
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent  and player.isTrainingPassed
+        return player.consent and player.isTrainingPassed
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1780,37 +1807,54 @@ class slide10_Satisfaction(Page):
         ]
         return {
             "maxslides": C.MAXSLIDES,
-            "nslide": 3 + len(C.LABELLED) + C.NCONTACTS + 2 + 2 + 3,
+            "nslide": 12,
             "lan_en": lan == "en",
             "dots": init_dots,
             "page_title": (
                 "Overall satisfaction with your map"
-                if lan == 'en'
+                if lan == "en"
                 else "Zufriedenheit mit Ihrer Anordnung"
             ),
             "instru1": (
                 "Below we show the political map you created."
-                if lan == 'en'
+                if lan == "en"
                 else "Im Folgenden finden Sie die von Ihnen erstellte politische Karte."
             ),
             "question": (
-                "<p>How satisfied are you with your arrangement? Does the arrangement overall reflect your perception of the political similarities and differences between the individuals?</p>"
-                if lan == 'en'
-                else "<p>Wie zufrieden sind Sie mit Ihrer Anordnung? Entspricht die Gesamtanordnung Ihrer Wahrnehmung der politischen Ähnlichkeiten und Unterschiede zwischen den einzelnen Personen?</p>"
+                "<p>How satisfied are you with your arrangement? </p>"
+                if lan == "en"
+                else "<p>Wie zufrieden sind Sie mit Ihrer Anordnung?</p>"
+            ),
+            "questionaccurateMapping": (
+                "<p>Does the arrangement reflect how you perceive the political similarities and differences between the individuals?</p>"
+                if lan == "en"
+                else "<p>Spiegelt Ihre Anordnung Ihre Wahrnehmung der politischen Ähnlichkeiten und Unterschiede der Personen wider?</p>"
             ),
             "explain_text": (
                 "If you would like, you can add further comments or explanations here (optional):"
-                if lan == 'en'
+                if lan == "en"
                 else "Falls Sie möchten, können Sie hier weitere Anmerkungen oder Erklärungen hinzufügen (optional):"
             ),
-            "choices": list(range(0, 11)),
+            # "choices": list(range(0, 11)),
             "satisfaction_min": 0,
             "satisfaction_max": 10,
             "satisfaction_min_label": (
-                "Not accurate at all" if lan == 'en' else "Trifft überhaupt nicht zu"
+                "Not satisfied at all (0)" if lan == "en" else "Gar nicht zufrieden (0)"
             ),
             "satisfaction_max_label": (
-                "Completely accurate" if lan == 'en' else "Trifft voll und ganz zu"
+                "Very satisfied (10)" if lan == "en" else "Sehr zufrieden (10)"
+            ),
+            "acc_min": 0,
+            "acc_max": 10,
+            "acc_min_label": (
+                "Not accurate at all (0)"
+                if lan == "en"
+                else "Trifft überhaupt nicht zu (0)"
+            ),
+            "acc_max_label": (
+                "Completely accurate (10)"
+                if lan == "en"
+                else "Trifft voll und ganz zu (10)"
             ),
         }
 
@@ -1828,7 +1872,7 @@ class slide11_Relationships(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent  and player.isTrainingPassed
+        return player.consent and player.isTrainingPassed
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1842,7 +1886,7 @@ class slide11_Relationships(Page):
                     C.OPTIONS_CONTACTS_CLOSE,
                     (
                         C.OPTIONS_CONTACTS_CLOSE
-                        if lan == 'en'
+                        if lan == "en"
                         else [
                             "Nicht besonders nah",
                             "Etwas nah",
@@ -1858,7 +1902,7 @@ class slide11_Relationships(Page):
                     "field_name": field,
                     "question_text": (
                         f"Your relation with <span class='pill' style='background-color: {C.FRIENDCOLOR}; color: white;'><strong>{getattr(player, f'contact{n}')}</strong></span>"
-                        if lan == 'en'
+                        if lan == "en"
                         else f"Ihre Beziehung zu <span class='pill' style='background-color: {C.FRIENDCOLOR}; color: white;'><strong>{getattr(player, f'contact{n}')}</strong></span>"
                     ),
                     "choices": choices,
@@ -1866,22 +1910,22 @@ class slide11_Relationships(Page):
             )
         return {
             "maxslides": C.MAXSLIDES,
-            "nslide": 3 + len(C.LABELLED) + C.NCONTACTS + 2 + 2 + 4,
+            "nslide": 13,
             "lan_en": lan == "en",
             "page_title": (
                 "<em>Social</em> Closeness to the Contacts"
-                if lan == 'en'
+                if lan == "en"
                 else "<em>Soziale</em> Nähe zu den Kontakten"
             ),
             "field_question_pairs": field_question_pairs,
             "qu_closeness": (
                 "How would you rate in general the social closeness to your contacts mentioned – regardless of political views?"
-                if lan == 'en'
+                if lan == "en"
                 else "Wie würden Sie allgemein die soziale Nähe zwischen Ihnen und den genannten Kontakten einschätzen – unabhängig von politischen Ansichten?"
             ),
             "disclaimer": (
                 "All your responses are linked to generic names <em>Contact 1</em>, <em>Contact 2</em>, etc. To protect privacy, we do <strong>not store</strong> the actual names or initials of your social contacts."
-                if lan == 'en'
+                if lan == "en"
                 else "Alle Ihre Antworten werden generischen Bezeichnungen wie <em>Kontakt 1</em>, <em>Kontakt 2</em> usw. zugeordnet. Zum Schutz der Privatsphäre werden die von Ihnen angegebenen Namen oder Initialen <strong>nicht gespeichert</strong>.."
             ),
         }
@@ -1904,25 +1948,22 @@ class slide12_Demographics(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent  and player.isTrainingPassed
-
+        return player.consent and player.isTrainingPassed
 
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
         return {
             "maxslides": C.MAXSLIDES,
-            "nslide": 3 + len(C.LABELLED) + C.NCONTACTS + 2 + 2 + 5,
+            "nslide": 14,
             "lan_en": lan == "en",
             "page_title": (
-                "Final questions"
-                if lan == 'en'
-                else "Abschließende Fragen"
+                "Final questions" if lan == "en" else "Abschließende Fragen"
             ),
-            "qu_age": "How old are you?" if lan == 'en' else "Wie alt sind Sie?",
+            "qu_age": "How old are you?" if lan == "en" else "Wie alt sind Sie?",
             "qu_interest": (
                 "How interested would you say you are in politics – are you..."
-                if lan == 'en'
+                if lan == "en"
                 else "Wie sehr sind Sie persönlich an Politik interessiert? Sind Sie ...?"
             ),
             "choices_interest": dict(
@@ -1930,7 +1971,7 @@ class slide12_Demographics(Page):
                     C.CHOICES_INTEREST,
                     (
                         C.CHOICES_INTEREST
-                        if lan == 'en'
+                        if lan == "en"
                         else [
                             "Überhaupt nicht interessiert",
                             "Kaum interessiert",
@@ -1940,40 +1981,25 @@ class slide12_Demographics(Page):
                     ),
                 )
             ),
-            "qu_identity": (
-                "Do you feel closer to one of the political parties in Germany than the others? If so, which one?"
-                if lan == 'en'
-                else "Gibt es eine bestimmte politische Partei in Deutschland, der Sie sich politisch näher fühlen als allen anderen Parteien? Welcher?"
-            ),
-            "choices_identity": dict(
-                zip(
-                    C.CHOICES_IDENTITY,
-                    (
-                        C.CHOICES_IDENTITY
-                        if lan == 'en'
-                        else [
-                            "CDU/CSU",
-                            "AfD",
-                            "SPD",
-                            "Bündnis 90/Die Grünen",
-                            "Die Linke",
-                            "BSW",
-                            "FDP",
-                            "Andere Partei",
-                            "Keiner Partei",
-                            "Keine Antwort",
-                        ]
-                    ),
-                )
-            ),
-            "qu_party_comment": (
-                "Would you like to add anything to the question above? (optional):"
-                if lan == 'en'
-                else "Möchten Sie etwas dazu ergänzen zu dieser Frage? (optional)"
-            ),
+            # "qu_identity": (
+            #     "Do you feel closer to one of the political parties in Germany than the others? If so, which one?"
+            #     if lan == "en"
+            #     else "Gibt es eine bestimmte politische Partei in Deutschland, der Sie sich politisch näher fühlen als allen anderen Parteien? Welcher?"
+            # ),
+            # "choices_identity": dict(
+            #     zip(
+            #         C.CHOICES_IDENTITY,
+            #         (C.CHOICES_IDENTITY if lan == "en" else C.CHOICES_IDENTITY_DE),
+            #     )
+            # ),
+            # "qu_party_comment": (
+            #     "Would you like to add anything to the question above? (optional):"
+            #     if lan == "en"
+            #     else "Möchten Sie etwas dazu ergänzen zu dieser Frage? (optional)"
+            # ),
             "qu_polarization": (
                 "What do you think: How politically divided are the people in your country these days?"
-                if lan == 'en'
+                if lan == "en"
                 else "Was denken Sie: Wie politisch gespalten sind die Menschen in Ihrem Land heutzutage?"
             ),
             "choices_pol": dict(
@@ -1981,7 +2007,7 @@ class slide12_Demographics(Page):
                     C.CHOICES_POLARISED,
                     (
                         C.CHOICES_POLARISED
-                        if lan == 'en'
+                        if lan == "en"
                         else [
                             "Überhaupt nicht gespalten",
                             "Etwas gespalten",
@@ -2009,8 +2035,6 @@ class slideSuccess(Page):
     def vars_for_template(player: Player):
         return {
             "lan_en": player.language == "en",
-            "maxslides": C.MAXSLIDES,
-            "nslide": 3 + len(C.LABELLED) + C.NCONTACTS + 2 + 2 + 6,
         }
 
     @staticmethod
@@ -2018,8 +2042,7 @@ class slideSuccess(Page):
         player.completed = True
 
     def is_displayed(player: Player):
-        return player.consent  and player.isTrainingPassed
-
+        return player.consent and player.isTrainingPassed
 
 
 #################################

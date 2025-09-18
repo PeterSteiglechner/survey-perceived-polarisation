@@ -1,6 +1,51 @@
 {% block styles %}
 <link rel="stylesheet" href="{{ static 'main.css' }}" />
-{% endblock %} {{ block content }}
+{% endblock %} {{ block content }} {% load static %}
+<script src="{% static 'colors.js' %}"></script>
+
+<style>
+  /* Make unselected cards look dimmer */
+  .option-card {
+    opacity: 0.7;
+    transition: all 0.2s ease;
+    border: 2px solid #ccc;
+  }
+
+  /* Selected card pops out */
+  .option-card.selected {
+    opacity: 1 !important;
+    border: 3px solid #000; /* thicker, darker border */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4); /* glow effect */
+    transform: scale(1.03); /* slight zoom */
+    z-index: 1; /* keep above others */
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const cards = document.querySelectorAll(".option-card");
+
+    cards.forEach((card) => {
+      const label = card.textContent.trim();
+
+      if (COLORS[label]) {
+        card.style.backgroundColor = COLORS[label];
+        card.style.color =
+          label === "FDP"
+            ? "#424949"
+            : COLORS[label] === "#c7c7c7"
+            ? "black"
+            : "white";
+      }
+    });
+
+    // Force last two cards to span full width (two columns)
+    const lastTwo = Array.from(cards).slice(-2);
+    lastTwo.forEach((card) => {
+      card.style.gridColumn = "1 / span 3";
+    });
+  });
+</script>
 
 <h2>{{page_title}}</h2>
 
@@ -8,9 +53,16 @@
   <div class="card">
     <div class="form-group">
       <label class="form-label"> {{qu_identity}} </label>
-      <div class="option-cards" data-field="feel_closest_party">
+      <div
+        class="option-cards"
+        data-field="feel_closest_party"
+        style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px"
+      >
         {% for choice, label in choices_identity.items %}
-        <label class="option-card">
+        <label
+          class="option-card"
+          style="width: 100%; flex: none; max-width: none; min-width: 0"
+        >
           <input type="radio" name="feel_closest_party" value="{{ choice }}" />
           {{ label }}
         </label>
@@ -47,7 +99,7 @@
     </div>
     <div style="text-align: center; margin-top: 12px">
       {% if lan_en %} Selected value: {% else %} Ausgewählter Wert:
-      {%endif%}<span id="sliderValue" style="color: #999"
+      {%endif%}<span id="sliderValue" style="color: #999; font-size: 10pt"
         >{% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den
         Schieberegler{% endif %}</span
       >
@@ -62,13 +114,7 @@
   {% if lan_en %} {{ next_button }}
   <div style="margin-left: auto">Page {{nslide}}/{{maxslides}}</div>
   {% else %}
-  <button
-    type="submit"
-    class="otree-btn-next btn btn-primary big-button"
-    id="nextButton"
-    disabled
-    style="opacity: 0.5"
-  >
+  <button type="submit" class="otree-btn-next btn btn-primary big-button">
     Weiter
   </button>
   <div style="margin-left: auto">Seite {{nslide}}/{{maxslides}}</div>

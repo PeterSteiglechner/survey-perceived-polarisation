@@ -28,7 +28,7 @@
                   {% for item in field_question_pairs %}
       <tr>
         <td>
-          <label class="form-label"><b>{{ item.question_text }}</b></label>
+          <label class="form-label"><strong>{{ item.question_text }}</strong></label>
           {% comment %} <p>{{ would_respond }}</p> {% endcomment %}
           <input
             type="range"
@@ -63,7 +63,8 @@
             <span id="sliderValue{{ forloop.counter }}">
                   {% comment %} <td style="font-size: 12pt; text-align: center; width: 30%"> {% endcomment %}
                     {% comment %} {{would_respond}} {% endcomment %}
-                    <p style="margin-top: 25pt; margin-bottom: 25pt">{% if lan_en %}Please move the slider{% else %}Bitte bewegen
+                    <p style="margin-top: 23pt; margin-bottom: 23pt; color: #999 ;font-size: 10pt;"
+>{% if lan_en %}Please move the slider{% else %}Bitte bewegen
                     Sie den Schieberegler{% endif %}
                     </p>
                   {% comment %} </td>
@@ -113,7 +114,7 @@
           if (numVal <= -71) return "Stimme überhaupt nicht zu";
           else if (numVal <= -41) return "Stimme nicht zu";
           else if (numVal <= -11) return "Stimme eher nicht zu";
-          else if (numVal <= 11) return "Neutral";
+          else if (numVal <= 11) return "Teils/teils";
           else if (numVal <= 41) return "Stimme eher zu";
           else if (numVal <= 71) return "Stimme zu";
           else return "Stimme voll und ganz zu";
@@ -126,8 +127,8 @@
       document.getElementById('sliderValue{{ forloop.counter }}').innerHTML =
         `<table style="width:100%; border-collapse:collapse;">
           <tr>
-            <td style="font-size:12pt; text-align:center; width:30%;">{{would_respond}}</td>
-            <td style="font-size:12pt; text-align:center;"><b>${label}</b></td>
+            <td style="font-size:12pt; text-align:center; width:27%;">{{would_respond}}</td>
+            <td style="font-size:12pt; text-align:center;"><strong>${label}</strong></td>
             <td style="font-size:12pt; text-align:right;">around ${Math.round(value/10)} (on scale -10 to 10)</td>
           </tr>
         </table>`;
@@ -135,8 +136,8 @@
       document.getElementById('sliderValue{{ forloop.counter }}').innerHTML =
         `<table style="width:100%; border-collapse:collapse;">
           <tr>
-            <td style="font-size:12pt; text-align:center; width:30%;">{{would_respond}}</td>
-            <td style="font-size:12pt; text-align:center; "><b>${label}</b></td>
+            <td style="font-size:12pt; text-align:center; width:27%;">{{would_respond}}</td>
+            <td style="font-size:12pt; text-align:center; "><strong>${label}</strong></td>
             <td style="font-size:12pt; text-align:right;">ca. ${Math.round(value/10)} (auf der Skala von -10 bis 10)</td>
           </tr>
         </table>`;

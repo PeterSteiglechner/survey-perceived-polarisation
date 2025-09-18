@@ -495,7 +495,7 @@ input[type="range"] {
 
 /* Make button much bigger */
 .big-button {
-    font-size: 20px;      /* bigger text */
-    padding: 10px 10px;   /* more space inside */
-    border-radius: 10px;  /* rounded corners */
+    font-size: 24px;      /* bigger text */
+    padding: 14px 14px;   /* more space inside */
+    border-radius: 12px;  /* rounded corners */
 }

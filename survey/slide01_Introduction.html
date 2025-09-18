@@ -166,12 +166,12 @@ const translations = {
         procedureBody1: "Answer a few questions about your own political views and your political identity.", 
         procedureBody2: "Name ten people you know well and estimate their political views.", 
         procedureBody3: "Estimate the political views of typical voters of the major political parties in Germany.", 
-        procedureBody4: "Place the individuals on a political map based on political similarity.", 
+        procedureBody4: "Place the individuals on a political map based on how you perceive their political closeness.", 
         procedureBody5: "For a few randomly selected individuals, indicate how politically similar or different you think they are.",
-        procedureBody6: "Complete a few brief questions about your perceptions of political polarisation and some background questions about yourself.",
+        procedureBody6: "Complete a few brief questions about your perceptions of political polarisation, the closeness of the relationship to your ten social contacts, and some background questions about yourself.",
         paymentTitle: "Compensation",
-        paymentBody: "You will be compensated for the duration of the study through Prolific according to standard hourly rates:",
-        paymentMoney: "5 GBP for 30 minutes.",
+        paymentBody: "You will be compensated for the duration of the study through Prolific according to standard hourly rates (9 GBP/Stunde):",
+        paymentMoney: "4 GBP for 20-25 minutes.",
         withdrawal: "Voluntary Participation and Withdrawal",
         withdrawalInfo: "Your participation in this research study is voluntary. You may refuse to participate or stop at any time without penalty. If you complete the study but later wish to have your data removed, please contact us within 30 days at:",
         studyCoordinators: "(Study coordinators: Mirta Galesic and Peter Steiglechner)",
@@ -188,7 +188,7 @@ const translations = {
         consentYes: "I give consent.",
         consentNo: "I do not give consent.",
         nextBtn: "Next",
-        pageText: "Page 1/23"
+        pageText: "Page 1"
     },
     de: {
   "welcomeTitle": "Willkommen zu unserer Umfrage über Wahrnehmungen von politischen Meinungen!",
@@ -209,12 +209,12 @@ const translations = {
 "procedureBody1": "Sie beantworten zunächst einige Fragen zu Ihren eigenen politischen Einstellungen und Ihrer politischen Identität.",
 "procedureBody2": "Dann nennen Sie zehn Personen, die Sie gut kennen, und schätzen deren politische Ansichten ein.",
 "procedureBody3": "Anschließend schätzen Sie ein, wie typische Wähler oder Wählerinnen der Parteien in Deutschland politisch eingestellt sind.",
-"procedureBody4": "Sie verorten alle genannten Personen auf einer politischen Karte basierend auf deren politische Ähnlichkeit.",
+"procedureBody4": "Sie verorten alle genannten Personen auf einer politischen Karte abhängig davon wie Sie deren politische Nähe wahrnehmen.",
 "procedureBody5": "Für ein paar zufällig ausgewählte Personen, geben Sie an wie ähnlich oder unterschiedlich Sie deren politischen Ansichten zueinander einschätzen.",
-  "procedureBody6": "Zum Schluss beantworten Sie einige kurze Fragen zu Ihrer Wahrnehmung von Polarisierung sowie zu Ihrer Person.",
+  "procedureBody6": "Zum Schluss beantworten Sie einige kurze Fragen zu Ihrer Wahrnehmung von Polarisierung, zu der sozialen Nähe zu Ihren zehn angegebenen Kontakten, sowie zu Ihrer Person.",
   "paymentTitle": "Vergütung",
-  "paymentBody": "Sie erhalten für Ihre Teilnahme eine Vergütung über Prolific gemäß den üblichen Stundensätzen:",
-  "paymentMoney": "5 GBP für 30 Minuten.",
+  "paymentBody": "Sie erhalten für Ihre Teilnahme eine Vergütung über Prolific gemäß den üblichen Stundensätzen (9 GBP/Stunde):",
+  "paymentMoney": "4 GBP für 25 Minuten.",
   "withdrawal": "Freiwillige Teilnahme und Rücktritt",
   "withdrawalInfo": "Die Teilnahme an dieser Studie ist freiwillig. Sie können die Teilnahme jederzeit ohne Angabe von Gründen und ohne Nachteile abbrechen. Wenn Sie die Studie abgeschlossen haben, Ihre Daten aber später löschen lassen möchten, kontaktieren Sie uns bitte innerhalb von 30 Tagen unter:",
   "studyCoordinators": "(Studienleitung: Mirta Galesic und Peter Steiglechner)",
@@ -231,35 +231,16 @@ const translations = {
   "consentYes": "Ich gebe mein Einverständnis.",
   "consentNo": "Ich gebe mein Einverständnis nicht.",
   "nextBtn": "Weiter",
-  "pageText": "Seite 1/23"
+  "pageText": "Seite 1"
 }
 };
 
     // Initially hide oTree's next button
     document.addEventListener("DOMContentLoaded", function () {
         const nextButton = document.querySelector('button[type="submit"]');
+        if (nextButton) nextButton.style.display = 'none';
 
-        // Handle language + consent selection
-        document.querySelectorAll('.option-cards').forEach(group => {
-            const field = group.dataset.field;
-            group.querySelectorAll('input[type="radio"]').forEach(radio => {
-                radio.addEventListener('change', () => {
-                    // Remove all selected
-                    group.querySelectorAll('.option-card').forEach(card => card.classList.remove('selected'));
-                    radio.closest('.option-card').classList.add('selected');
-
-                    if (field === 'language') {
-                        document.getElementById('consent-section').style.display = 'block';
-                        updateLanguage(radio.value);
-                    }
-                });
-            });
-        });
-    });
-
-
-
-        function updateLanguage(lang) {
+         function updateLanguage(lang) {
             const elements = document.querySelectorAll('[data-i18n]');
             elements.forEach(el => {
                 const key = el.getAttribute('data-i18n');
@@ -267,6 +248,11 @@ const translations = {
                     el.textContent = translations[lang][key];
                 }
             });
+            const nextButton = document.querySelector('button[type="submit"]');
+            if (nextButton && translations[lang].nextBtn) {
+                nextButton.textContent = translations[lang].nextBtn;
+            } 
+            document.getElementById('pagedispl').textContent = translations[lang].pageText;
         }
 
         // Option card selection handling
@@ -287,5 +273,6 @@ const translations = {
                 });
             });
         });
+    }); 
 </script>
 {% endblock %}

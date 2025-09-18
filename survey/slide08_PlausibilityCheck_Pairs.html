@@ -60,10 +60,10 @@
       </div>
       <div style="text-align: center; margin-top: 15px">
         {% if lan_en %} Selected value: {% else %} Ausgewählter Wert:
-        {%endif%}<span id="sliderValue" style="color: #999"
-          >{% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den
-          Schieberegler{% endif %}</span
-        >
+        {%endif%}<span id="sliderValue" style="color: #999; font-size: 10pt">
+          {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den
+          Schieberegler{% endif %}
+        </span>
       </div>
 
       {{ formfield_errors current_check }}

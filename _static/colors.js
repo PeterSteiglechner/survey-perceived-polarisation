@@ -1,12 +1,20 @@
 const COLORS = {
     "self": "#808080",
     "Green Party": "#7cbb15",
+    "Bündnis 90/Die Grünen": "#7cbb15",
     "AfD": "#009de0",
     "Left Party": "#bd3075",
+    "Die Linke": "#bd3075",
     "FDP": "#ffcc00",
     "CDU/CSU": "#121212",
     "SPD": "#d71f1f",
     "BSW": "#691940",
     "contact": "#ff6600",
-    "P": "#00e6b8"
+    "P": "#00e6b8",
+    'No party': "#c7c7c7",
+    'Keiner Partei': "#c7c7c7",
+    'Other party': "#808080",
+    'Andere Partei': "#808080",
+    'Keine Antwort': "#c7c7c7",
+    'Refuse to say/No answer': "#c7c7c7",
 };

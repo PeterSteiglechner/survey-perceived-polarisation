@@ -1,16 +1,22 @@
 {% block styles %}
-    <link rel="stylesheet" href="{{ static 'main.css' }}">
-{% endblock %}
-
-
-{{ block content }}
+<link rel="stylesheet" href="{{ static 'main.css' }}" />
+{% endblock %} {{ block content }}
 <h2>{{ page_title }}</h2>
 
+<style>
+  .form-label {
+    font-size: 1rem;
+    font-weight: normal;
+  }
+</style>
 <form method="post">
-  <table class="survey-table-clean" style="width: 100%; border-collapse: collapse;">
+  <table
+    class="survey-table-clean"
+    style="width: 100%; border-collapse: collapse"
+  >
     <thead>
       <tr>
-        <th colspan="2" style="text-align: left; padding: 8px;">
+        <th colspan="2" style="text-align: left; padding: 8px">
           {{ question }}
         </th>
       </tr>
@@ -19,12 +25,12 @@
       {% for item in field_question_pairs %}
       <tr>
         <!-- Question text cell (30%) -->
-        <td style="width: 55%; vertical-align: top; padding: 8px;">
+        <td style="width: 55%; vertical-align: top; padding: 8px">
           <label class="form-label">{{ item.question_text }}</label>
         </td>
 
         <!-- Slider cell (70%) -->
-        <td style="width: 45%; padding: 8px;">
+        <td style="width: 45%; padding: 8px">
           <input
             type="range"
             class="likert-slider"
@@ -33,21 +39,38 @@
             min="0"
             max="100"
             step="1"
+            style="color: #aaaaaa; background: #ccc"
             oninput="handleSliderInput{{ forloop.counter }}(this.value)"
             required
-            style="width: 100%;"
+            style="width: 100%"
           />
 
-          <div style="display: flex; justify-content: space-between; margin-top: 5px;">
-            <span style="font-size: 10pt; color: #777">{{ item.first_label }}</span>
-            <span style="font-size: 10pt; color: #777">{{ item.last_label }}</span>
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              margin-top: 5px;
+            "
+          >
+            <span style="font-size: 10pt; color: #777"
+              >{{ item.first_label }}</span
+            >
+            <span style="font-size: 10pt; color: #777"
+              >{{ item.last_label }}</span
+            >
           </div>
 
-          <div style="text-align: center; margin-top: 5px;">
+          <div style="text-align: center; margin-top: 5px">
             {% if lan_en %}
-              <span id="sliderValue{{ forloop.counter }}" style="color:#999;"><p style='font-size: 10pt;'>Please move the slider</p></span>
+            <span id="sliderValue{{ forloop.counter }}" style="color: #999"
+              ><p style="font-size: 10pt">Please move the slider</p></span
+            >
             {% else %}
-              <span id="sliderValue{{ forloop.counter }}" style="color:#999;"><p style='font-size: 10pt;'>Bitte bewegen Sie den Schieberegler</p></span>
+            <span id="sliderValue{{ forloop.counter }}" style="color: #999"
+              ><p style="font-size: 10pt">
+                Bitte bewegen Sie den Schieberegler
+              </p></span
+            >
             {% endif %}
           </div>
 
@@ -59,28 +82,24 @@
   </table>
 </form>
 
-
-
 <!-- Comment Card -->
 <div class="card">
-  {{explain_text}} 
-  {{ formfield "importance_comments" }}
-  {{ formfield_errors "importance_comments" }}
+  {{explain_text}} {{ formfield "importance_comments" }} {{ formfield_errors
+  "importance_comments" }}
 </div>
 
-<br>
+<br />
 
-<div style="display: flex; justify-content: space-between; align-items: center;">
-    {% if lan_en %}
-        {{ next_button }}
-        <div style="margin-left: auto;">Page {{nslide}}/{{maxslides}}</div>
-    {% else %}
-        <button type="submit" class="otree-btn-next btn btn-primary big-button">Weiter</button>
-        <div style="margin-left: auto;">Seite {{nslide}}/{{maxslides}}</div>
-    {% endif %}
+<div style="display: flex; justify-content: space-between; align-items: center">
+  {% if lan_en %} {{ next_button }}
+  <div style="margin-left: auto">Page {{nslide}}/{{maxslides}}</div>
+  {% else %}
+  <button type="submit" class="otree-btn-next btn btn-primary big-button">
+    Weiter
+  </button>
+  <div style="margin-left: auto">Seite {{nslide}}/{{maxslides}}</div>
+  {% endif %}
 </div>
-
-
 
 <script>
   let slidersTouched = {};

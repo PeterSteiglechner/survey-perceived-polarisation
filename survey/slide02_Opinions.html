@@ -49,9 +49,17 @@
           </div>
           <div style="text-align: center; margin-top: 0pt; margin-bottom: 0pt">
             <span id="sliderValue{{ forloop.counter }}">
-                <p style="margin-top: 16pt; margin-bottom: 16pt">{% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den Schieberegler{% endif %}
-                    </p>
-
+              <p
+                style="
+                  margin-top: 15pt;
+                  margin-bottom: 14pt;
+                  color: #999;
+                  font-size: 10pt;
+                "
+              >
+                {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
+                den Schieberegler{% endif %}
+              </p>
             </span>
           </div>
           {{ formfield_errors item.field_name }}
@@ -66,7 +74,9 @@
   {% if lan_en %} {{ next_button }}
   <div style="margin-left: auto">Page {{ nslide }}/{{ maxslides }}</div>
   {% else %}
-  <button type="submit" class="otree-btn-next btn btn-primary big-button">Weiter</button>
+  <button type="submit" class="otree-btn-next btn btn-primary big-button">
+    Weiter
+  </button>
   <div style="margin-left: auto">Seite {{ nslide }}/{{ maxslides }}</div>
   {% endif %}
 </div>
@@ -93,7 +103,7 @@
           if (numVal <= -71) return "Stimme überhaupt nicht zu";
           else if (numVal <= -41) return "Stimme nicht zu";
           else if (numVal <= -11) return "Stimme eher nicht zu";
-          else if (numVal <= 11) return "Neutral";
+          else if (numVal <= 11) return "Teils/teils";
           else if (numVal <= 41) return "Stimme eher zu";
           else if (numVal <= 71) return "Stimme zu";
           else return "Stimme voll und ganz zu";

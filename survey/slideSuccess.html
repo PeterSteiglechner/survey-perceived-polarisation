@@ -1,38 +1,38 @@
 {% block styles %}
-    <link rel="stylesheet" href="{{ static 'main.css' }}">
-{% endblock %}
+<link rel="stylesheet" href="{{ static 'main.css' }}" />
+{% endblock %} {{ block title }} {% if lan_en %} Thank you for participating in
+our survey. {% else %} Vielen Dank, dass Sie an unserer Umfrage teilgenommen
+haben. {% endif %} {{ endblock }} {{ block content }} {% if lan_en %}
+<p>
+  We will approve and issue payments manually shortly. Please allow up to two
+  days for your submission to be reviewed and approved.
+</p>
 
-
-{{ block title }}
-{% if lan_en %}
-    Thank you for participating in our survey.
+<p>
+  Feel very welcome to contact us via
+  <a
+    href="mailto:collectivemindslab@csh.ac.at
+"
+    >collectivemindslab@csh.ac.at</a
+  >, if you have any questions, feedback, or want to know more about the study
+  and the results.
+</p>
 {% else %}
-    Vielen Dank, dass Sie an unserer Umfrage teilgenommen haben.
-{% endif %}
-{{ endblock }}
+<p>
+  Wir werden die Zahlungen in Kürze manuell ausführen. Bitte haben Sie bis zu 2
+  Tagen Geduld, bis Ihre Teilnahme überprüft und genehmigt wurde.
+</p>
 
-
-{{ block content }}
-
-{% if lan_en %}
-<p>We will approve and issue payments manually shortly.
-Please allow up to two days for your submission to be reviewed and approved.</p>
-
-<p >Feel very welcome to contact us via <a href= "mailto:collectivemindslab@csh.ac.at
-">collectivemindslab@csh.ac.at</a>, if you have any questions, feedback, or want to know more about the study and the results.</p>
-{% else %}
-<p>Wir werden die Zahlungen in Kürze manuell ausführen.
-Bitte haben Sie bis zu 2 Tagen Geduld, bis Ihre Teilnahme überprüft und genehmigt wurde.</p>
-
-<p >Kontaktieren Sie uns sehr gerne über <a href= "mailto:collectivemindslab@csh.ac.at
-">collectivemindslab@csh.ac.at</a>, wenn Sie Fragen haben, Feedback geben wollen oder mehr über die Studie und die Resultate wissen wollen.</p>
-    {% endif %}
-
-{% comment %} {% if lan_en %}
-    {{ next_button }}
-{% else %}
-    <button type="submit" class="otree-btn-next btn btn-primary big-button">Weiter</button>{% endif %} {% endcomment %}
-
-{{ endblock }}
-
-
+<p>
+  Kontaktieren Sie uns sehr gerne über
+  <a
+    href="mailto:collectivemindslab@csh.ac.at
+"
+    >collectivemindslab@csh.ac.at</a
+  >, wenn Sie Fragen haben, Feedback geben wollen oder mehr über die Studie und
+  die Resultate wissen wollen.
+</p>
+{% endif %} {% comment %} {% if lan_en %} {{ next_button }} {% else %}
+<button type="submit" class="otree-btn-next btn btn-primary big-button">
+  Weiter</button
+>{% endif %} {% endcomment %} {{ endblock }}

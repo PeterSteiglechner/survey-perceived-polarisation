@@ -1,93 +1,77 @@
 {% block styles %}
-    <link rel="stylesheet" href="{{ static 'main.css' }}">
-{% endblock %}
-
-
-{{ block content }}
+<link rel="stylesheet" href="{{ static 'main.css' }}" />
+{% endblock %} {{ block content }}
 
 <h2>{{page_title}}</h2>
 
-
-
 <div class="card-section">
-    <!-- Demographic Card -->
-    <div class="card">
-          <label class="form-label">
-                {{qu_age}}
-            </label>
-        <div class="form-group">
-            {% formfield player.age %}
-            {{ formfield_errors "age" }}
-        </div>
-</div> 
-
-    <!-- Interest Card -->
-    <div class="card">
-        <div class="form-group">
-            <label class="form-label">
-                                {{qu_interest}}
-            </label>
-            <div class="option-cards" data-field="political_interest">
-                {% for choice, label in choices_interest.items %}
-                <label class="option-card">
-                    <input type="radio" name="political_interest" value="{{ choice }}">
-                    {{ label }}
-                </label>
-                {% endfor %}
-            </div>
-            {{ formfield_errors "political_interest" }}
-        </div> 
+  <!-- Demographic Card -->
+  <div class="card">
+    <label class="form-label"> {{qu_age}} </label>
+    <div class="form-group">
+      {% formfield player.age %} {{ formfield_errors "age" }}
     </div>
-</div>
+  </div>
 
-    <!-- Polarization Perception Card -->
-    <div class="card">
-        <label class="form-label">
-            {{qu_polarization}}
+  <!-- Interest Card -->
+  <div class="card">
+    <div class="form-group">
+      <label class="form-label"> {{qu_interest}} </label>
+      <div class="option-cards" data-field="political_interest">
+        {% for choice, label in choices_interest.items %}
+        <label class="option-card">
+          <input type="radio" name="political_interest" value="{{ choice }}" />
+          {{ label }}
         </label>
-        <div class="option-cards" data-field="how_polarised">
-            {% for choice, label in choices_pol.items %}
-            <label class="option-card">
-                <input type="radio" name="how_polarised" value="{{ choice }}">
-                {{ label }}
-            </label>
-            {% endfor %}
-        </div>
-        {{ formfield_errors "how_polarised" }}
+        {% endfor %}
+      </div>
+      {{ formfield_errors "political_interest" }}
     </div>
-
-    <br>
-
-
-<div style="display: flex; justify-content: space-between; align-items: center;">
-    {% if lan_en %}
-    <button type="submit" class="otree-btn-next btn btn-primary big-button">Complete survey</button>
-        <div style="margin-left: auto;">Page {{nslide}}/{{maxslides}}</div>
-    {% else %}
-    <button type="submit" class="otree-btn-next btn btn-primary big-button">Umfrage abschließen</button>
-        <div style="margin-left: auto;">Seite {{nslide}}/{{maxslides}}</div>
-    {% endif %}
+  </div>
 </div>
 
+<!-- Polarization Perception Card -->
+<div class="card">
+  <label class="form-label"> {{qu_polarization}} </label>
+  <div class="option-cards" data-field="how_polarised">
+    {% for choice, label in choices_pol.items %}
+    <label class="option-card">
+      <input type="radio" name="how_polarised" value="{{ choice }}" />
+      {{ label }}
+    </label>
+    {% endfor %}
+  </div>
+  {{ formfield_errors "how_polarised" }}
+</div>
+
+<br />
+
+<div style="display: flex; justify-content: space-between; align-items: center">
+  {% if lan_en %}
+  <button type="submit" class="otree-btn-next btn btn-primary big-button">
+    Complete survey
+  </button>
+  <div style="margin-left: auto">Page {{nslide}}/{{maxslides}}</div>
+  {% else %}
+  <button type="submit" class="otree-btn-next btn btn-primary big-button">
+    Umfrage abschließen
+  </button>
+  <div style="margin-left: auto">Seite {{nslide}}/{{maxslides}}</div>
+  {% endif %}
+</div>
 
 <script>
-document.querySelectorAll('.option-cards').forEach(group => {
+  document.querySelectorAll(".option-cards").forEach((group) => {
     const name = group.dataset.field;
-    group.querySelectorAll('input[type="radio"]').forEach(radio => {
-        radio.addEventListener('change', () => {
-            group.querySelectorAll('.option-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            radio.closest('.option-card').classList.add('selected');
+    group.querySelectorAll('input[type="radio"]').forEach((radio) => {
+      radio.addEventListener("change", () => {
+        group.querySelectorAll(".option-card").forEach((card) => {
+          card.classList.remove("selected");
         });
+        radio.closest(".option-card").classList.add("selected");
+      });
     });
-});
+  });
 </script>
-
-
-
-
-
-
 
 {{ endblock }}
