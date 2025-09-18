@@ -1,6 +1,5 @@
 from otree.api import *
 import json
-import pandas as pd
 import random
 import numpy as np
 from itertools import combinations
@@ -672,7 +671,7 @@ class slide02_Opinions(Page):
             )
         )
 
-        player.n_checks = 1 + C.NCONTACTS + len(ps) + len(C.LABELLED)
+        player.n_checks = 1 + C.NCONTACTS + len(C.LABELLED)
         player.t_on_identity = int(time.time())
 
 
