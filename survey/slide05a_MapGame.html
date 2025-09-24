@@ -28,10 +28,14 @@
     
         <input type="hidden" id="positionsGame" name="positionsGame">
 
-
-         <div class="instructions" style="margin: 10px 0; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
-        {{no_wrong_answers}}
+   <div class="instructions" style="margin: 10px 0; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+            {{no_wrong_answers}}
+            <div class="instructions" style="margin: 5px 0; padding: 10px; background: #ddddffff; border-left: 3px solid #0000ffff; border-radius: 3px;">
+            <p  style="margin: 0; color:rgb(0, 0, 0);">{{tomato}}</p>
+    </div>  
     </div>   
+
+          
     
         <div class="instructions" style="margin: 20px 0; padding: 15px; background:rgb(255, 235, 235); border-left: 4px solid rgb(255, 0, 0); border-radius: 4px;">
             <p style="margin: 0; color:rgb(0, 0, 0);">
@@ -42,7 +46,9 @@
 
     <div style="display: flex; justify-content: space-between; align-items: center;">
         {% if lan_en %}
-            {{ next_button }}
+            <button type="submit" class="otree-btn-next btn btn-primary big-button">
+    Continue
+  </button>
             <div style="margin-left: auto;">Page {{nslide}}/{{maxslides}}</div>
         {% else %}
             <button type="submit" class="otree-btn-next btn btn-primary big-button">Weiter</button>

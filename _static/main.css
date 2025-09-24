@@ -441,19 +441,19 @@ input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
     width: 80%;
-    height: 12px;
+    height: 18px;
     border-radius: 3px;
     background: #e0e0e0;
     cursor: pointer;
     margin-top: 10px;
 }
-
+ 
 /* Thumb (Chrome, Safari) */
 .likert-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 20px; height: 20px;
     border-radius: 50%;
-    background: #424242;
+    background: #5f5f5f;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     cursor: pointer;
 }
@@ -462,11 +462,11 @@ input[type="range"] {
 .likert-slider::-moz-range-thumb {
     width: 20px; height: 20px;
     border-radius: 50%;
-    background: #424242;
+    background: #5f5f5f;
     border: none;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     cursor: pointer;
-}
+} 
 
 /* Labels under slider */
 .slider-labels {
@@ -495,7 +495,7 @@ input[type="range"] {
 
 /* Make button much bigger */
 .big-button {
-    font-size: 24px;      /* bigger text */
-    padding: 14px 14px;   /* more space inside */
-    border-radius: 12px;  /* rounded corners */
+    font-size: 18px;      /* bigger text */
+    padding: 10px 10px;   /* more space inside */
+    border-radius: 10px;  /* rounded corners */
 }

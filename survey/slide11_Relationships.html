@@ -1,70 +1,115 @@
 {% block styles %}
-    <link rel="stylesheet" href="{{ static 'main.css' }}">
-{% endblock %}
-
-{{ block content }}
+<link rel="stylesheet" href="{{ static 'main.css' }}" />
+{% endblock %} {{ block content }}
 
 <h2>{{page_title}}</h2>
 
-<p> {{qu_closeness}}</p>
-
+<p>{{qu_closeness}}</p>
 
 <form method="post">
-    <table class="survey-table-clean">
-        <tbody>
-            {% for item in field_question_pairs %}
-            <tr>
-                <!-- Question text in the first column -->
-                <td class="question-cell" width="21%">
-                    {{ item.question_text }}
-                </td>
+  <table class="survey-table-clean">
+    <tbody>
+      {% for item in field_question_pairs %}
+      <tr>
+        <!-- Question text in the first column -->
+        <td class="question-cell" width="21%">{{ item.question_text }}</td>
 
-                <td class="options-cell">
-                    <div class="option-cards" data-field="{{ item.field_name }}">
-                    {% for value, label in item.choices.items %}
-                    {% comment %}{% if value == "No answer" %}
-                    <div class="option-separator"></div>
-                    {% endif %}
-                    {% endcomment %}
-                    <label class="option-card {% if value == 'No answer' %}no-answer{% endif %}" data-value="{{ value }}">
-                    <input type="radio" name="{{ item.field_name }}" value="{{ value }}">
-                    {{ label }}
-                    </label>
-                    {% endfor %}
-                    </div>
-                    {{ formfield_errors item.field_name }}
-            </td>
-            </tr>
+        <td class="options-cell">
+          <div class="option-cards" data-field="{{ item.field_name }}">
+            {% for value, label in item.choices.items %} {% comment %}{% if
+            value == "No answer" %}
+            <div class="option-separator"></div>
+            {% endif %} {% endcomment %}
+            <label
+              class="option-card {% if value == 'No answer' %}no-answer{% endif %}"
+              data-value="{{ value }}"
+            >
+              <input
+                type="radio"
+                name="{{ item.field_name }}"
+                value="{{ value }}"
+              />
+              {{ label }}
+            </label>
             {% endfor %}
-        </tbody>
-    </table>
+          </div>
+          {{ formfield_errors item.field_name }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </form>
 
-
-<div style="display: flex; justify-content: space-between; align-items: center;">
-    {% if lan_en %}
-        {{ next_button }}
-        <div style="margin-left: auto;">Page {{nslide}}/{{maxslides}}</div>
-    {% else %}
-        <button type="submit" class="otree-btn-next btn btn-primary big-button">Weiter</button>
-        <div style="margin-left: auto;">Seite {{nslide}}/{{maxslides}}</div>
-    {% endif %}
+<div style="display: flex; justify-content: space-between; align-items: center">
+  {% if lan_en %}
+  <button
+    type="submit"
+    class="otree-btn-next btn btn-primary big-button"
+    disabled
+  >
+    Continue
+  </button>
+  <div style="margin-left: auto">Page {{nslide}}/{{maxslides}}</div>
+  {% else %}
+  <button
+    type="submit"
+    class="otree-btn-next btn btn-primary big-button"
+    disabled
+  >
+    Weiter
+  </button>
+  <div style="margin-left: auto">Seite {{nslide}}/{{maxslides}}</div>
+  {% endif %}
 </div>
 
+{% comment %}
 <script>
-document.querySelectorAll('.option-cards').forEach(group => {
+  document.querySelectorAll(".option-cards").forEach((group) => {
     const name = group.dataset.field;
-    group.querySelectorAll('input[type="radio"]').forEach(radio => {
-        radio.addEventListener('change', () => {
-            group.querySelectorAll('.option-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            radio.closest('.option-card').classList.add('selected');
+    group.querySelectorAll('input[type="radio"]').forEach((radio) => {
+      radio.addEventListener("change", () => {
+        group.querySelectorAll(".option-card").forEach((card) => {
+          card.classList.remove("selected");
         });
+        radio.closest(".option-card").classList.add("selected");
+      });
     });
-});
+  });
 </script>
+{% endcomment %}
 
+<script>
+  const optionGroups = document.querySelectorAll(".option-cards");
+  const submitBtn = document.querySelector(".otree-btn-next");
 
+  function checkAllAnswered() {
+    let allAnswered = true;
+    optionGroups.forEach((group) => {
+      const name = group.dataset.field;
+      const selected = group.querySelector('input[type="radio"]:checked');
+      if (!selected) {
+        allAnswered = false;
+      }
+    });
+    submitBtn.disabled = !allAnswered;
+  }
+
+  optionGroups.forEach((group) => {
+    const name = group.dataset.field;
+    group.querySelectorAll('input[type="radio"]').forEach((radio) => {
+      radio.addEventListener("change", () => {
+        group.querySelectorAll(".option-card").forEach((card) => {
+          card.classList.remove("selected");
+        });
+        radio.closest(".option-card").classList.add("selected");
+        checkAllAnswered();
+      });
+    });
+  });
+
+  // Initial check in case of prefilled values
+  checkAllAnswered();
+</script>
 
 {{endblock}}

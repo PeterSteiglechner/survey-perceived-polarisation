@@ -138,10 +138,10 @@
 
 <br>
 
-<div style="display: flex; justify-content: space-between; align-items: center;">
+{% comment %} <div style="display: flex; justify-content: space-between; align-items: center;">
     {{ next_button }}
     <div id="pagedispl"></div>
-</div>
+</div> {% endcomment %}
 
 
 
@@ -188,7 +188,7 @@ const translations = {
         consentYes: "I give consent.",
         consentNo: "I do not give consent.",
         nextBtn: "Next",
-        pageText: "Page 1"
+        {% comment %} pageText: "Page 1" {% endcomment %}
     },
     de: {
   "welcomeTitle": "Willkommen zu unserer Umfrage über Wahrnehmungen von politischen Meinungen!",
@@ -231,48 +231,49 @@ const translations = {
   "consentYes": "Ich gebe mein Einverständnis.",
   "consentNo": "Ich gebe mein Einverständnis nicht.",
   "nextBtn": "Weiter",
-  "pageText": "Seite 1"
+  {% comment %} "pageText": "Seite 1" {% endcomment %}
 }
 };
+document.addEventListener("DOMContentLoaded", function () {
+    // Hide oTree's next button completely
+    const nextButton = document.querySelector('button[type="submit"]');
+    if (nextButton) nextButton.style.display = 'none';
 
-    // Initially hide oTree's next button
-    document.addEventListener("DOMContentLoaded", function () {
-        const nextButton = document.querySelector('button[type="submit"]');
-        if (nextButton) nextButton.style.display = 'none';
-
-         function updateLanguage(lang) {
-            const elements = document.querySelectorAll('[data-i18n]');
-            elements.forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[lang][key]) {
-                    el.textContent = translations[lang][key];
-                }
-            });
-            const nextButton = document.querySelector('button[type="submit"]');
-            if (nextButton && translations[lang].nextBtn) {
-                nextButton.textContent = translations[lang].nextBtn;
-            } 
+    function updateLanguage(lang) {
+        const elements = document.querySelectorAll('[data-i18n]');
+        elements.forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang][key]) {
+                el.textContent = translations[lang][key];
+            }
+        });
+        if (translations[lang].pageText) {
             document.getElementById('pagedispl').textContent = translations[lang].pageText;
         }
+    }
 
-        // Option card selection handling
-        document.querySelectorAll('.option-cards').forEach(group => {
-            const field = group.dataset.field;
-            group.querySelectorAll('input[type="radio"]').forEach(radio => {
-                radio.addEventListener('change', () => {
-                    // Remove all selected
-                    group.querySelectorAll('.option-card').forEach(card => card.classList.remove('selected'));
-                    // Add selected class to the parent
-                    radio.closest('.option-card').classList.add('selected');
+    // Option card selection handling
+    document.querySelectorAll('.option-cards').forEach(group => {
+        const field = group.dataset.field;
+        group.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                // Remove all selected
+                group.querySelectorAll('.option-card').forEach(card => card.classList.remove('selected'));
+                // Add selected class
+                radio.closest('.option-card').classList.add('selected');
 
-                    // Handle language change
-                    if (field === 'language') {
-                        document.getElementById('consent-section').style.display = 'block';
-                        updateLanguage(radio.value);
-                    }
-                });
+                if (field === 'language') {
+                    document.getElementById('consent-section').style.display = 'block';
+                    updateLanguage(radio.value);
+                }
+
+                // Automatically submit if user clicks "I consent"
+                if (field === 'consent' && radio.value === "1") {
+                    document.querySelector('form').submit();
+                }
             });
         });
-    }); 
+    });
+});
 </script>
 {% endblock %}

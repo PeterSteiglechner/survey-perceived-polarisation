@@ -1,4 +1,5 @@
 from os import environ
+import time
 
 SESSION_CONFIGS = [
     # dict(
@@ -16,8 +17,8 @@ SESSION_CONFIGS = [
 
 ROOMS = [
     dict(
-        name="20250730_prolific_pilot",
-        display_name="20250730_prolific_pilot",
+        name=f"{time.strftime("%Y%m%d", time.gmtime())}_pilot",
+        display_name=f"{time.strftime("%Y%m%d", time.gmtime())}_pilot",
     )
 ]
 

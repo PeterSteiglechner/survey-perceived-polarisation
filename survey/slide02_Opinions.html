@@ -1,6 +1,7 @@
 {% load static %} {% block styles %}
 <link rel="stylesheet" href="{{ static 'main.css' }}" />
 {% endblock %} {% block content %}
+<script src="{{ static 'global.js' }}"></script>
 
 <h2>{{ page_title }}</h2>
 
@@ -18,18 +19,6 @@
       <tr>
         <td>
           <label class="form-label"><b>{{ item.question_text }}</b></label>
-          <input
-            type="range"
-            class="likert-slider"
-            name="{{ item.field_name }}"
-            id="slider_{{ forloop.counter }}"
-            min="-100"
-            max="100"
-            step="1"
-            style="color: #aaaaaa; background: #ccc"
-            oninput="handleSliderInput{{ forloop.counter }}(this.value)"
-            required
-          />
           <div
             style="
               display: flex;
@@ -47,12 +36,26 @@
               >{{ item.last_label }}</span
             >
           </div>
+
+          <input
+            type="range"
+            class="likert-slider"
+            name="{{ item.field_name }}"
+            id="slider_{{ forloop.counter }}"
+            min="-100"
+            max="100"
+            step="1"
+            style="color: #aaaaaa; background: #ccc"
+            oninput="handleSliderInput{{ forloop.counter }}(this.value)"
+            required
+          />
+
           <div style="text-align: center; margin-top: 0pt; margin-bottom: 0pt">
             <span id="sliderValue{{ forloop.counter }}">
               <p
                 style="
-                  margin-top: 15pt;
-                  margin-bottom: 14pt;
+                  margin-top: 0pt;
+                  margin-bottom: 16pt;
                   color: #999;
                   font-size: 10pt;
                 "
@@ -71,7 +74,10 @@
 </form>
 
 <div style="display: flex; justify-content: space-between; align-items: center">
-  {% if lan_en %} {{ next_button }}
+  {% if lan_en %}
+  <button type="submit" class="otree-btn-next btn btn-primary big-button">
+    Continue
+  </button>
   <div style="margin-left: auto">Page {{ nslide }}/{{ maxslides }}</div>
   {% else %}
   <button type="submit" class="otree-btn-next btn btn-primary big-button">
@@ -89,45 +95,22 @@
   function handleSliderInput{{ forloop.counter }}(value) {
       slidersTouched[{{ forloop.counter }}] = true;
 
-      function getLikertLabel(val) {
-          const numVal = parseInt(val);
-          {% if lan_en %}
-          if (numVal <= -71) return "Strongly Disagree";
-          else if (numVal <= -41) return "Disagree";
-          else if (numVal <= -11) return "Somewhat Disagree";
-          else if (numVal <= 11) return "Neutral";
-          else if (numVal <= 41) return "Somewhat Agree";
-          else if (numVal <= 71) return "Agree";
-          else return "Strongly Agree";
-          {% else %}
-          if (numVal <= -71) return "Stimme überhaupt nicht zu";
-          else if (numVal <= -41) return "Stimme nicht zu";
-          else if (numVal <= -11) return "Stimme eher nicht zu";
-          else if (numVal <= 11) return "Teils/teils";
-          else if (numVal <= 41) return "Stimme eher zu";
-          else if (numVal <= 71) return "Stimme zu";
-          else return "Stimme voll und ganz zu";
-          {% endif %}
-      }
-
-      const label = getLikertLabel(value);
+      const label = getLikertLabel(value, "{{lan_en}}");
 
       {% if lan_en %}
       document.getElementById('sliderValue{{ forloop.counter }}').innerHTML =
-        `<table style="width:100%; border-collapse:collapse;">
+        `<table style="width:100%; border-collapse:collapse; margin-top:-15pt">
           <tr>
-            <td style="font-size:12pt; text-align:center; width:20%;">Selected:</td>
-            <td style="font-size:12pt; text-align:center;"><b>${label}</b></td>
-            <td style="font-size:12pt; text-align:right;">around ${Math.round(value/10)} (on the scale from -10 to 10)</td>
+            <td style="font-size:10pt; text-align:center; width:70%;">Selected:  <b>${label}</b></td>
+            <td style="font-size:8pt; text-align:right;">around ${Math.round(value/10)} (on the scale from -10 to 10)</td>
           </tr>
         </table>`;
       {% else %}
       document.getElementById('sliderValue{{ forloop.counter }}').innerHTML =
-        `<table style="width:100%; border-collapse:collapse;">
+        `<table style="width:100%; border-collapse:collapse; margin-top:-15pt">
           <tr>
-            <td style="font-size:12pt; text-align:center; width:20%;">Ausgewählt:</td>
-            <td style="font-size:12pt; text-align:center; "><b>${label}</b></td>
-            <td style="font-size:12pt; text-align:right;">ca. ${Math.round(value/10)} (auf der Skala von -10 bis 10)</td>
+            <td style="font-size:10pt; text-align:center; width:70%;">Ausgewählt:   <b>${label}</b></td>
+            <td style="font-size:8pt; text-align:right;">ca. ${Math.round(value/10)} (auf der Skala von -10 bis 10)</td>
           </tr>
         </table>`;
       {% endif %}

@@ -6,7 +6,7 @@
 <style>
   /* Make unselected cards look dimmer */
   .option-card {
-    opacity: 0.7;
+    opacity: 0.6;
     transition: all 0.2s ease;
     border: 2px solid #ccc;
   }
@@ -56,7 +56,7 @@
       <div
         class="option-cards"
         data-field="feel_closest_party"
-        style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px"
+        style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 9px"
       >
         {% for choice, label in choices_identity.items %}
         <label
@@ -71,6 +71,7 @@
       {{ formfield_errors "feel_closest_party" }}
     </div>
 
+    <p style="font-size: 8pt; color: grey">{{partytext}}</p>
     <p style="margin-bottom: -0.5em">{{qu_party_comment}}</p>
     {{formfield "party_comment"}}
   </div>
@@ -84,8 +85,8 @@
       class="likert-slider"
       name="lrscale"
       id="sliderlr"
-      min="0"
-      max="10"
+      min="-5"
+      max="5"
       step="1"
       style="color: #aaaaaa; background: #ccc"
       oninput="handleSliderInput(this.value)"
@@ -97,9 +98,10 @@
       <span style="font-size: 14pt; color: #777">{{ lr_first_label }}</span>
       <span style="font-size: 14pt; color: #777">{{ lr_last_label }}</span>
     </div>
-    <div style="text-align: center; margin-top: 12px">
-      {% if lan_en %} Selected value: {% else %} Ausgewählter Wert:
-      {%endif%}<span id="sliderValue" style="color: #999; font-size: 10pt"
+    <div style="text-align: center; margin-top: 5px; font-size: 10pt">
+      {% if lan_en %} Selected: {% else %} Ausgewählt: {%endif%}<span
+        id="sliderValue"
+        style="color: #999; font-size: 10pt"
         >{% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den
         Schieberegler{% endif %}</span
       >
@@ -111,7 +113,10 @@
 <br />
 
 <div style="display: flex; justify-content: space-between; align-items: center">
-  {% if lan_en %} {{ next_button }}
+  {% if lan_en %}
+  <button type="submit" class="otree-btn-next btn btn-primary big-button">
+    Continue
+  </button>
   <div style="margin-left: auto">Page {{nslide}}/{{maxslides}}</div>
   {% else %}
   <button type="submit" class="otree-btn-next btn btn-primary big-button">
@@ -159,10 +164,10 @@
     sliderTouched = true;
 
     // Update the displayed value
-    document.getElementById(
-      "sliderValue"
-    ).textContent = `${value}{% if lan_en %} of {% else %} von {%endif%} 10`;
-    document.getElementById("sliderValue").style.color = "black";
+    let va = document.getElementById("sliderValue");
+    va.innerHTML = "<strong>"+value + "</strong>   " + ({% if lan_en %}"on the scale between -5 to 5"{% else %}"auf der Skala zwischen -5 und 5"{% endif %});
+    va.style.color = "black";
+    va.style.fontSize = "10pt";
 
     // Enable the next button
     const nextButton = document.getElementById("nextButton");
