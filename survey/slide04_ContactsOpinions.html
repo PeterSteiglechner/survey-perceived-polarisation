@@ -57,18 +57,20 @@
           <td style="width: 65%">
             <div
               style="
-                display: flex;
-                justify-content: space-between;
-                margin-top: 0.5em;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                margin-top: 5px;
+                width: 100%;
               "
             >
-              <span style="font-size: 10pt; color: #000000ff"
+              <span style="font-size: 10pt; color: #000000ff; text-align: left"
                 >{{ first_label }}</span
               >
-              <span style="font-size: 10pt; color: #000000ff"
+              <span
+                style="font-size: 10pt; color: #000000ff; text-align: center"
                 >{{ neutral_label }}</span
               >
-              <span style="font-size: 10pt; color: #000000ff"
+              <span style="font-size: 10pt; color: #000000ff; text-align: right"
                 >{{ last_label }}</span
               >
             </div>
@@ -110,7 +112,9 @@
   {% endfor %}
 </form>
 
+{% comment %}
 <p>{{instruction_text_batch}}</p>
+{% endcomment %}
 
 <div style="display: flex; justify-content: space-between; align-items: center">
   {% if lan_en %}
@@ -133,7 +137,7 @@
   function handleSliderInput(field, value) {
       slidersTouched[field] = true;
       const numVal = parseInt(value, 10);
-      let label = getLikertLabel(value, "{{lan_en}}")
+      let label = getLikertLabel(value, "{{lan_en}}");
       // update text under slider
       const div = document.getElementById('sliderValue' + field);
       if (div) {

@@ -24,6 +24,11 @@ endblock %} {{ block title }}{{ page_title }}{{ endblock }} {{ block content }}
         <span style="font-size: 10pt; color: #777"
           >{{ similarity_min_label }}</span
         >
+        {% comment %}
+        <span style="font-size: 10pt; color: #777"
+          >{{ similarity_neutral_label }}</span
+        >
+        {% endcomment %}
         <span style="font-size: 10pt; color: #777"
           >{{ similarity_max_label }}</span
         >
@@ -114,7 +119,7 @@ endblock %} {{ block title }}{{ page_title }}{{ endblock }} {{ block content }}
 
 <script>
   let totalPairs = {{ pairs|length }};
-  let currentIndex = {{ completed }};
+  let currentIndex = {{ completedPairs }};
   document.getElementById("progressBar").style.width = currentIndex/totalPairs *100 + "%";
   document.getElementById("progressText").textContent = currentIndex + " / " + totalPairs;
 
@@ -126,7 +131,7 @@ endblock %} {{ block title }}{{ page_title }}{{ endblock }} {{ block content }}
     // Update the displayed value
     document.getElementById('sliderLabel').innerHTML =
       "<p style='font-size: 10pt'>"+"{% if lan_en %}Selected: {% else %}Ausgewählt: {% endif %}<b>" +
-      value +
+      Math.round(value/10) +
       "</b> {% if lan_en %}out of 10{% else %}von 10{% endif %}"+"</p>";
     document.getElementById('sliderLabel').style.color = 'black';
 

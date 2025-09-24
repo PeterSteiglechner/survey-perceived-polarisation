@@ -47,18 +47,20 @@
           <td style="width: 65%">
             <div
               style="
-                display: flex;
-                justify-content: space-between;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
                 margin-top: 5px;
+                width: 100%;
               "
             >
-              <span style="font-size: 10pt; color: #000000ff; margin-top: -3pt"
+              <span style="font-size: 10pt; color: #000000ff; text-align: left"
                 >{{ first_label }}</span
               >
-              <span style="font-size: 10pt; color: #000000ff; margin-top: -3pt"
+              <span
+                style="font-size: 10pt; color: #000000ff; text-align: center"
                 >{{ neutral_label }}</span
               >
-              <span style="font-size: 10pt; color: #000000ff; margin-top: -3pt"
+              <span style="font-size: 10pt; color: #000000ff; text-align: right"
                 >{{ last_label }}</span
               >
             </div>
@@ -126,7 +128,7 @@
 
 
       // Likert label
-      let label = getLikertLabel(numVal, "{{lan_en}}");
+      let label = getLikertLabel(value, "{{lan_en}}");
 
       // update text under slider
       const div = document.getElementById('sliderValue' + field);

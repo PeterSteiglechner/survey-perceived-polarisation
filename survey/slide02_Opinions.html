@@ -21,18 +21,19 @@
           <label class="form-label"><b>{{ item.question_text }}</b></label>
           <div
             style="
-              display: flex;
-              justify-content: space-between;
+              display: grid;
+              grid-template-columns: 1fr 1fr 1fr;
               margin-top: 5px;
+              width: 100%;
             "
           >
-            <span style="font-size: 10pt; color: #777"
+            <span style="font-size: 10pt; color: #777; text-align: left"
               >{{ item.first_label }}</span
             >
-            <span style="font-size: 10pt; color: #777"
+            <span style="font-size: 10pt; color: #777; text-align: center"
               >{{ item.neutral_label }}</span
             >
-            <span style="font-size: 10pt; color: #777"
+            <span style="font-size: 10pt; color: #777; text-align: right"
               >{{ item.last_label }}</span
             >
           </div>
@@ -101,7 +102,7 @@
       document.getElementById('sliderValue{{ forloop.counter }}').innerHTML =
         `<table style="width:100%; border-collapse:collapse; margin-top:-15pt">
           <tr>
-            <td style="font-size:10pt; text-align:center; width:70%;">Selected:  <b>${label}</b></td>
+            <td style="font-size:10pt; text-align:center; width:60%;">Selected:  <b>${label}</b></td>
             <td style="font-size:8pt; text-align:right;">around ${Math.round(value/10)} (on the scale from -10 to 10)</td>
           </tr>
         </table>`;
@@ -109,7 +110,7 @@
       document.getElementById('sliderValue{{ forloop.counter }}').innerHTML =
         `<table style="width:100%; border-collapse:collapse; margin-top:-15pt">
           <tr>
-            <td style="font-size:10pt; text-align:center; width:70%;">Ausgewählt:   <b>${label}</b></td>
+            <td style="font-size:10pt; text-align:center; width:60%;">Ausgewählt:   <b>${label}</b></td>
             <td style="font-size:8pt; text-align:right;">ca. ${Math.round(value/10)} (auf der Skala von -10 bis 10)</td>
           </tr>
         </table>`;
@@ -133,9 +134,6 @@
         #e0e0e0 ${r}%, #e0e0e0 100%)`;
 
 
-      {% comment %} const slider = document.getElementById('slider_{{ forloop.counter }}');
-      const pct = (value - slider.min) / (slider.max - slider.min) * 100;
-      slider.style.background = `linear-gradient(to right, #424242ff 0%, #424242ff ${pct}%, #e0e0e0 ${pct}%, #e0e0e0 100%)`; {% endcomment %}
 
       if (Object.keys(slidersTouched).length === totalSliders) {
           const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');

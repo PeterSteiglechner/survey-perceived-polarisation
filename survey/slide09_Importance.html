@@ -34,6 +34,21 @@
 
         <!-- Slider cell (70%) -->
         <td style="width: 45%; padding: 8px">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              margin-top: 5px;
+              margin-bottom: -2px;
+            "
+          >
+            <span style="font-size: 10pt; color: #777"
+              >{{ item.first_label }}</span
+            >
+            <span style="font-size: 10pt; color: #777"
+              >{{ item.last_label }}</span
+            >
+          </div>
           <input
             type="range"
             class="likert-slider"
@@ -48,21 +63,6 @@
             style="width: 100%"
           />
 
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              margin-top: 5px;
-            "
-          >
-            <span style="font-size: 10pt; color: #777"
-              >{{ item.first_label }}</span
-            >
-            <span style="font-size: 10pt; color: #777"
-              >{{ item.last_label }}</span
-            >
-          </div>
-
           <div style="text-align: center; margin-top: 5px">
             {% if lan_en %}
             <span id="sliderValue{{ forloop.counter }}" style="color: #999"
@@ -70,7 +70,7 @@
             >
             {% else %}
             <span id="sliderValue{{ forloop.counter }}" style="color: #999"
-              ><p style="font-size: 10pt">
+              ><p style="font-size: 10pt; color: #999">
                 Bitte bewegen Sie den Schieberegler
               </p></span
             >

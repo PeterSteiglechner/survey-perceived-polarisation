@@ -10,13 +10,13 @@
   <p>{{instru1}}</p>
   <canvas
     id="dragCanvas"
-    width="500"
-    height="500"
+    width="{{ satisfaction_canvas_width }}"
+    height="{{ satisfaction_canvas_width }}"
     style="
       border: 0px solid #333;
       background: #fafafa;
       display: block;
-      margin: 20px 0;
+      margin: 0px 0;
       cursor: grab;
     "
   ></canvas>
@@ -26,26 +26,39 @@
     style="
       display: none;
       position: absolute;
-      width: 320px;
+      width: 350px;
       padding: 8px;
       background: white;
       border: 2px solid #333;
       border-radius: 6px;
       box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.3);
       z-index: 1000;
-      font-size: 13px;
+      font-size: 10px;
       line-height: 1.3;
     "
   ></div>
 
   <input type="hidden" name="positions" id="positions" />
 
-  <br />
+  <div
+    class="instructions"
+    style="
+      margin: 20px 0;
+      padding: 10px;
+      background: #ddddffff;
+      border-left: 4px solid #0000ffff;
+      border-radius: 4px;
+    "
+  >
+    <p style="margin: 0; color: rgb(0, 0, 0)">{{instru2}}</p>
+  </div>
 
   <div class="card-section">
     <div class="card">
       <!-- Satisfaction Slider -->
-      <label class="form-label">{{ question }}</label>
+      <label class="form-label" style="margin-bottom: -0.2em"
+        >{{ question }}</label
+      >
       <input
         type="range"
         class="likert-slider"
@@ -87,7 +100,9 @@
       {{ formfield_errors "satisfaction" }}
 
       <!-- Accurate Mapping Slider -->
-      <label class="form-label">{{ questionaccurateMapping }}</label>
+      <label class="form-label" style="margin-bottom: -0.2em"
+        >{{ questionaccurateMapping }}</label
+      >
       <input
         type="range"
         class="likert-slider"
@@ -132,8 +147,6 @@
     <div class="card">{{explain_text}} {{ formfield "satisfaction_text" }}</div>
   </div>
 
-  <br />
-
   <div
     style="display: flex; justify-content: space-between; align-items: center"
   >
@@ -169,7 +182,7 @@
     // Update displayed value
     const valueSpan = sliderName === 'satisfaction' ? 'satisfactionsliderValue' : 'accsliderValue';
     const sliderSpan = document.getElementById(valueSpan);
-    sliderSpan.textContent = value;
+    sliderSpan.textContent = Math.round(value/10);
     sliderSpan.style.color = 'black';
 
     // Update slider background gradient
@@ -211,11 +224,11 @@
                   {
                   name_disp: "{{ dot.name_disp }}",
                   varname: "{{ dot.varname }}",
-                  x: {{ dot.x }},
-                  y: {{ dot.y }},
+                  x: {{ dot.x }} * {{satisfaction_canvas_width}}/ {{canvas_width}},
+                  y: {{ dot.y }}* {{satisfaction_canvas_width}}/ {{canvas_width}},
                   dottype: "{{ dot.dottype }}" ,
                   descr:"{{ dot.descr }}",
-                  radius: 12
+                  radius: 12 * {{satisfaction_canvas_width}}/ {{canvas_width}}
                   },
               {% endfor %}
           ];
@@ -282,13 +295,12 @@
               const canvasOffsetLeft = canvas.offsetLeft;
 
               // Position popup to the right of canvas, starting at x=510px from canvas left
-              popup.style.left = `${canvasOffsetLeft + 505}px`;
+              popup.style.left = `${canvasOffsetLeft + canvas.width + 10}px`;
               popup.style.top = `${canvasOffsetTop}px`;
 
               // Function to get color styling based on answer value
   function getAnswerStyling(answer) {
       const label = getLikertLabel(answer, "{{lan_en}}");
-
       const trimmedAnswer = label.toLowerCase().trim();
       let backgroundColor = '';
       let texcolor = "black";
@@ -311,6 +323,9 @@
       } else if (trimmedAnswer === 'strongly agree' || trimmedAnswer === 'stimme voll und ganz zu') {
           backgroundColor = 'rgba(40, 167, 69, 1)'; // deep green
           texcolor = "rgb(255, 255, 255)";
+      } else {
+          backgroundColor = 'rgba(161, 161, 161, 1)'; // grey
+          texcolor = "rgba(0, 0, 0, 1)";
       }
 
       return backgroundColor
@@ -328,10 +343,10 @@
                       if (colonIndex !== -1) {
                           const question = line.substring(0, colonIndex);
                           const answer = line.substring(colonIndex + 1).trim();
-                          const label = getLikertLabel(answer);
+                          const label = getLikertLabel(answer, "{{lan_en}}");
                           const answerStyling = getAnswerStyling(answer);
 
-                          return `<tr><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; width: 55%; word-wrap: break-word; line-height: 1.3;">${question}</td></td><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; font-weight: bold; width: 39%; word-wrap: break-word;line-height:1.8"><span style="${answerStyling}">${label}</span></td></tr>`;
+                          return `<tr><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; width: 60%; word-wrap: break-word; line-height: 1.3;">${question}</td></td><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; font-weight: bold; width: 33%; word-wrap: break-word;line-height:1.8"><span style="${answerStyling}">${label}</span></td></tr>`;
                       }
                       return `<tr><td colspan="2" style="padding: 10px 0px; border-bottom: 1px solid #eee;">${line}</td></tr>`;
                   }).join('');
