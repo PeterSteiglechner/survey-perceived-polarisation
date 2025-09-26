@@ -1,6 +1,10 @@
-{% block styles %} <link rel="stylesheet" href="{{ static 'main.css' }}" /> {%
-endblock %} {{ block title }}{{ page_title }}{{ endblock }} {{ block content }}
-{{ instru1 }}
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{{ static 'main.css' }}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{{ static 'global.js' }}"></script>
+
+{{ block title }}{{ page_title }}{{ endblock }} {{ instru1 }}
 <div>
   <div class="card-section">
     <div class="card">
@@ -18,9 +22,7 @@ endblock %} {{ block title }}{{ page_title }}{{ endblock }} {{ block content }}
         oninput="handleSliderInput(this.value)"
         required
       />
-      <div
-        style="display: flex; justify-content: space-between; margin-top: 5px"
-      >
+      <div style="display: flex; justify-content: space-between">
         <span style="font-size: 10pt; color: #777"
           >{{ similarity_min_label }}</span
         >
@@ -34,18 +36,11 @@ endblock %} {{ block title }}{{ page_title }}{{ endblock }} {{ block content }}
         >
       </div>
 
-      <div style="text-align: center; margin-top: 5px">
-        {% if lan_en %}
-        <span id="sliderLabel" style="color: #999"
-          ><p style="font-size: 10pt">Please move the slider</p></span
-        >
-        {% else %}
-        <span id="sliderLabel" style="color: #999"
-          ><p style="font-size: 10pt">
-            Bitte bewegen Sie den Schieberegler
-          </p></span
-        >
-        {% endif %}
+      <div class="slider-label-container" id="sliderValue">
+        <div class="slider-label-text" style="color: gray">
+          {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den
+          Schieberegler{% endif %}
+        </div>
       </div>
       {{ formfield_errors current_check }}
     </div>
@@ -56,7 +51,7 @@ endblock %} {{ block title }}{{ page_title }}{{ endblock }} {{ block content }}
       <tr>
         <td style="width: 15%">
           <div style="text-align: left; font-size: 10pt; margin-top: 2px">
-            {%if lan_en%}Progress {%else%} Fortschritt{%endif%}
+            {%if lan_en%}Your Progress {%else%}Ihr Fortschritt{%endif%}
           </div>
         </td>
         <td style="width: 40%">
@@ -88,9 +83,7 @@ endblock %} {{ block title }}{{ page_title }}{{ endblock }} {{ block content }}
     </table>
   </div>
 
-  <div
-    style="display: flex; justify-content: space-between; align-items: center"
-  >
+  <div class="nav-container">
     {% if lan_en %}
     <button
       type="submit"
@@ -101,7 +94,7 @@ endblock %} {{ block title }}{{ page_title }}{{ endblock }} {{ block content }}
     >
       {% if final%} Continue {%else%} Next Pair {%endif%}
     </button>
-    <div style="margin-left: auto">Page {{nslide}}/{{maxslides}}</div>
+    <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
     {% else %}
     <button
       type="submit"
@@ -112,7 +105,7 @@ endblock %} {{ block title }}{{ page_title }}{{ endblock }} {{ block content }}
     >
       {% if final%} Weiter {%else%} Nächstes Paar {%endif%}
     </button>
-    <div style="margin-left: auto">Seite {{nslide}}/{{maxslides}}</div>
+    <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
     {% endif %}
   </div>
 </div>
@@ -129,11 +122,16 @@ endblock %} {{ block title }}{{ page_title }}{{ endblock }} {{ block content }}
     sliderTouched = true;
 
     // Update the displayed value
-    document.getElementById('sliderLabel').innerHTML =
-      "<p style='font-size: 10pt'>"+"{% if lan_en %}Selected: {% else %}Ausgewählt: {% endif %}<b>" +
-      Math.round(value/10) +
-      "</b> {% if lan_en %}out of 10{% else %}von 10{% endif %}"+"</p>";
-    document.getElementById('sliderLabel').style.color = 'black';
+    const div = document.getElementById('sliderValue')
+      if (div) {
+          div.innerHTML = `<div class="slider-label-container"><div class="slider-label-text">` +
+      `{% if lan_en %}Selected:  {% else %}Ausgewählt: {%endif%}` +
+      `<strong><span class="slider-num">${Math.round(
+        value / 10
+      )}</span></strong> / 10 </div>` +
+      `</div></div>`;
+          div.style.color = 'black';
+      }
 
     // Enable the next button
     const nextButton = document.getElementById('nextButton');
@@ -168,4 +166,4 @@ endblock %} {{ block title }}{{ page_title }}{{ endblock }} {{ block content }}
   });
 </script>
 
-{{ endblock }}
+{% endblock %}

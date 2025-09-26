@@ -1,60 +1,33 @@
-{% block styles %}
+{% load static %} {% block styles %}
 <link rel="stylesheet" href="{{ static 'main.css' }}" />
 {% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
 <script src="{{ static 'global.js' }}"></script>
 
 <h2>{{ page_title }}</h2>
-<style>
-  .survey-table-clean thead {
-    background: rgba(150, 150, 150);
-  }
-
-  .survey-table-clean td {
-    padding: 3px;
-    border-bottom: 1px solid #a8a8a8ff;
-    vertical-align: center;
-    font-size: 15px;
-  }
-
-  .survey-table-clean tr:hover {
-    background-color: rgba(71, 98, 216, 0.05);
-  }
-</style>
 
 <p>{{ instruction_text }}</p>
 
-<p>{{would_respond}}</p>
+<div class="yellow-instructions">{{instruction_bestguess}}</div>
 
-<div
-  class="instructions"
-  style="
-    margin: 10px 0;
-    padding: 10px;
-    background: #fff3cd;
-    border-left: 4px solid #ffc107;
-    border-radius: 4px;
-  "
->
-  {{instruction_bestguess}}
-</div>
+<p>{{would_respond}}</p>
 
 <form method="post">
   {% for q in questions %}
   <div class="question-block">
-    {% comment %} <label><strong>{{ q.text }}</strong></label> {% endcomment %}
     <table class="survey-table-clean">
       <thead>
         <tr>
           <td></td>
-          <th style="width: 65%">
+          <th style="width: 67%">
             <label><strong>{{ q.text }}</strong></label>
           </th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td style="width: 35%"></td>
-          <td style="width: 65%">
+          <td style="width: 33%"></td>
+          <td style="width: 67%">
             <div
               style="
                 display: grid;
@@ -76,7 +49,7 @@
             </div>
           </td>
         </tr>
-        {% for c in contacts %}
+        {% for c in references %}
         <tr>
           <td>
             <label class="form-label"> {{ c.name }} </label>
@@ -93,15 +66,9 @@
               required
               oninput="handleSliderInput('{{ q.prefix }}{{ c.id }}', this.value)"
             />
-            <div
-              id="sliderValue{{ q.prefix }}{{ c.id }}"
-              class="slider-label"
-              style="text-align: center"
-            >
-              <p style="color: #999; font-size: 10pt; margin-top: 0pt">
-                {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
-                den Schieberegler{% endif %}
-              </p>
+            <div id="sliderValue{{ q.prefix }}{{ c.id }}" class="slider-label">
+              {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
+              den Schieberegler{% endif %}
             </div>
           </td>
         </tr>
@@ -109,26 +76,24 @@
       </tbody>
     </table>
   </div>
-  {% endfor %}
+  {% endfor %} {% comment %}
+  <p>{{instruction_text_batch}}</p>
+  {% endcomment %}
+
+  <div class="nav-container">
+    {% if lan_en %}
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+      Continue
+    </button>
+    <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+    {% else %}
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+      Weiter
+    </button>
+    <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+    {% endif %}
+  </div>
 </form>
-
-{% comment %}
-<p>{{instruction_text_batch}}</p>
-{% endcomment %}
-
-<div style="display: flex; justify-content: space-between; align-items: center">
-  {% if lan_en %}
-  <button type="submit" class="otree-btn-next btn btn-primary big-button">
-    Continue
-  </button>
-  <div style="margin-left: auto">Page {{nslide}}/{{maxslides}}</div>
-  {% else %}
-  <button type="submit" class="otree-btn-next btn btn-primary big-button">
-    Weiter
-  </button>
-  <div style="margin-left: auto">Seite {{nslide}}/{{maxslides}}</div>
-  {% endif %}
-</div>
 
 <script>
   let slidersTouched = {};
@@ -141,10 +106,8 @@
       // update text under slider
       const div = document.getElementById('sliderValue' + field);
       if (div) {
-          div.innerHTML = `<p style="font-size: 10pt; margin-top:0pt">
-              <strong>${label}</strong>
-          </p>`;
-          div.style.color = 'black';
+          div.innerHTML = `<span class='pill' style='background-color: {{ color }}; color: {{ textcolor }};'>${label}</span>`;
+          div.style.color = "{{ color }}";
       }
 
       // update slider gradient

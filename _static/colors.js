@@ -9,7 +9,7 @@ const COLORS = {
     "CDU/CSU": "#121212",
     "SPD": "#d71f1f",
     "BSW": "#691940",
-    "contact": "#ff6600",
+    "reference": "#ff6600",
     "P": "#00e6b8",
     'No party': "#c7c7c7",
     'Keiner Partei': "#c7c7c7",
@@ -17,4 +17,8 @@ const COLORS = {
     'Andere Partei': "#808080",
     'Keine Antwort': "#c7c7c7",
     'Refuse to say/No answer': "#c7c7c7",
+    'friend': "#0000ff",
+    'co-worker': "#009c00ff",
+    'relative': "#ff0000",
 };
+

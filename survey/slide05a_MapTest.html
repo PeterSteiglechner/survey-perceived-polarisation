@@ -1,37 +1,32 @@
-{% block styles %}
+{% load static %} {% block styles %}
 <link rel="stylesheet" href="{{ static 'main.css' }}" />
 {% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{{ static 'global.js' }}"></script>
 <div class="container">
   <h2>{{page_title}}</h2>
 
   <p>{{instruction_text1}}</p>
 
-  <p style="margin-bottom: -1em; color: black">{{instruction_text2}}</p>
+  <p>{{instruction_text2}}</p>
 
-  <div
-    class="instructions"
-    style="
-      margin: 20px 0;
-      padding: 10px;
-      background: #fff3cd;
-      border-left: 4px solid #ffc107;
-      border-radius: 4px;
-    "
-  >
-    <p style="margin-bottom: 0.5em; color: black">{{instruction_text3}}</p>
-  </div>
+  <div class="yellow-instructions">{{instruction_text3}}</div>
 
   <p>{{ disclaimer }}</p>
 
+  <br> 
+  
   {% if show_error_msg %}
-  <div id="hidden-content" style="display: block; margin-top: 20px">
     {% else %}
-    <button id="continue-btn" type="button" class="btn btn-primary">
+    <button id="continue-btn" type="button" class="btn btn-primary big-button">
       {% if lan_en %} Continue to practice round {% else %} Weiter zur
       Übungsrunde {% endif %}
     </button>
     <div id="hidden-content" style="display: none; margin-top: 20px">
-      {% endif %} {{detailed_instructions_1}}
+      {% endif %}
+
+      <p>{{detailed_instructions_1}}</p>
+
       <div
         style="
           display: flex;
@@ -57,70 +52,26 @@
         >
         </canvas>
       </div>
-      {% comment %} {{detailed_instructions}}
-
-      <canvas
-        id="dragCanvas"
-        width="360"
-        height="300"
-        style="
-          border: 0px solid #333;
-          background: rgb(250, 250, 250);
-          display: block;
-          margin: 20px auto;
-          cursor: grab;
-          touch-action: none;
-        "
-      ></canvas>
-      {% endcomment %}
 
       <input type="hidden" id="positionsTest" name="positionsTest" />
 
       {% if show_error_msg %}
-      <div
-        class="instructions"
-        style="
-          margin: 20px 0;
-          padding: 15px;
-          background: rgb(255, 235, 235);
-          border-left: 4px solid rgb(255, 0, 0);
-          border-radius: 4px;
-        "
-      >
-        <p style="margin: 0; color: rgb(0, 0, 0)">{{latest_error_msg}}</p>
-      </div>
+      <div class="red-instructions">{{latest_error_msg}}</div>
       {% endif %}
 
-      <div
-        class="instructions"
-        style="
-          margin: 20px 0;
-          padding: 15px;
-          background: rgb(255, 235, 235);
-          border-left: 4px solid rgb(255, 0, 0);
-          border-radius: 4px;
-        "
-      >
-        <p style="margin: 0; color: rgb(0, 0, 0)">{{all_dots_instr}}</p>
-      </div>
+      <div class="red-instructions">{{all_dots_instr}}</div>
 
-      <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        "
-      >
+      <div class="nav-container">
         {% if lan_en %}
         <button type="submit" class="otree-btn-next btn btn-primary big-button">
           Continue
         </button>
-        <div style="margin-left: auto">Page {{nslide}}/{{maxslides}}</div>
+        <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
         {% else %}
         <button type="submit" class="otree-btn-next btn btn-primary big-button">
           Weiter
         </button>
-        <div style="margin-left: auto">Seite {{nslide}}/{{maxslides}}</div>
+        <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
         {% endif %}
       </div>
     </div>
@@ -161,37 +112,47 @@
 
       console.log("Loaded points:", points);
 
+
       function drawCanvas() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-          // Draw the boundary square with enhanced styling
-          ctx.strokeStyle = "#333";
-          ctx.lineWidth = 1;
-          ctx.strokeRect(0, 0, canvas.height, canvas.height);
+                // Draw the boundary square with enhanced styling
+                ctx.strokeStyle = "#333";
+                ctx.lineWidth = 1;
+                ctx.strokeRect(0, 0, canvas.height, canvas.height);
 
 
-          // Draw all points
-          points.forEach(p => {
-              ctx.beginPath();
-              ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                // Draw all points
+                points.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
 
-              // Set fill color based on type
-              ctx.fillStyle =p.color;
-              ctx.fill();
+                    // Set fill color based on type
+                    ctx.fillStyle =p.color;
+                    ctx.fill();
 
-              // Add border with hover effect
-              ctx.strokeStyle = p === hoveredPoint ? "#fff" : "#333";
-              ctx.lineWidth = p === hoveredPoint ? 3 : 2;
-              ctx.stroke();
+                    // Add border with hover effect
+                    ctx.strokeStyle = p === hoveredPoint ? "#fff" : "#333";
+                    ctx.lineWidth = p === hoveredPoint ? 3 : 2;
+                    ctx.stroke();
 
-              // Draw name with better positioning
-              ctx.fillStyle = "#333";
-              ctx.font = "12px Arial";
-              ctx.textAlign = "center";
-              ctx.textBaseline = "bottom";
-              ctx.fillText(p.name_disp, p.x, p.y - 18);
-          });
-      }
+                    // Draw name with better positioning
+                    ctx.fillStyle = "#333";
+                    ctx.font = "12px Arial";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "bottom";
+                    ctx.fillText(p.name_disp, p.x, p.y - 15);
+                });
+            }
+
+
+      function recordMove(dot) {
+            const now = Math.floor(Date.now() / 1000);
+            if (dot.t_first_moved === -1) dot.t_first_moved = now;
+            dot.t_last_moved = now;
+          }
+
+
 
       function getMousePos(evt) {
           const rect = canvas.getBoundingClientRect();
@@ -212,6 +173,13 @@
       function findPoint(pos) {
           return points.find(p => Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius);
       }
+
+
+      // Validation function for boundary checking
+      function allPointsInsideBox() {
+          return points.every(p => p.x >= 0 && p.x <= canvas.height && p.y >= 0 && p.y <= canvas.height);
+      }
+
 
       canvas.addEventListener("dragstart", function(evt) {
           evt.preventDefault();
@@ -356,4 +324,72 @@
       }
   });
 </script>
+
+<script>
+  function drawCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the boundary square with enhanced styling
+    ctx.strokeStyle = "#333";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, 0, canvas.height, canvas.height);
+
+    // Draw all points
+    points.forEach((p) => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+
+      // Set fill color based on type
+      ctx.fillStyle = p.color;
+      ctx.fill();
+
+      // Add border with hover effect
+      ctx.strokeStyle = p === hoveredPoint ? "#fff" : "#333";
+      ctx.lineWidth = p === hoveredPoint ? 3 : 2;
+      ctx.stroke();
+
+      // Draw name with better positioning
+      ctx.fillStyle = "#333";
+      ctx.font = "12px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "bottom";
+      ctx.fillText(p.name_disp, p.x, p.y - 15);
+    });
+  }
+
+  function recordMove(dot) {
+    const now = Math.floor(Date.now() / 1000);
+    if (dot.t_first_moved === -1) dot.t_first_moved = now;
+    dot.t_last_moved = now;
+  }
+
+  function getMousePos(evt) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: evt.clientX - rect.left,
+      y: evt.clientY - rect.top,
+    };
+  }
+
+  function getTouchPos(touch) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top,
+    };
+  }
+
+  function findPoint(pos) {
+    return points.find((p) => Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius);
+  }
+
+  // Validation function for boundary checking
+  function allPointsInsideBox() {
+    return points.every(
+      (p) =>
+        p.x >= 0 && p.x <= canvas.height && p.y >= 0 && p.y <= canvas.height
+    );
+  }
+</script>
+
 {% endblock %}

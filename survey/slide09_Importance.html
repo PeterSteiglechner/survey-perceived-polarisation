@@ -1,6 +1,9 @@
-{% block styles %}
+{% load static %} {% block styles %}
 <link rel="stylesheet" href="{{ static 'main.css' }}" />
-{% endblock %} {{ block content }}
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{{ static 'global.js' }}"></script>
+
 <h2>{{ page_title }}</h2>
 
 <style>
@@ -13,10 +16,7 @@
 <p>{{question}}</p>
 
 <form method="post">
-  <table
-    class="survey-table-clean"
-    style="width: 100%; border-collapse: collapse"
-  >
+  <table class="survey-table-clean">
     <thead>
       <tr>
         <th colspan="2" style="text-align: left; padding: 8px">
@@ -28,7 +28,7 @@
       {% for item in field_question_pairs %}
       <tr>
         <!-- Question text cell (30%) -->
-        <td style="width: 55%; vertical-align: top; padding: 8px">
+        <td style="width: 55%; vertical-align: center; padding: 8px">
           <label class="form-label">{{ item.question_text }}</label>
         </td>
 
@@ -86,24 +86,22 @@
 </form>
 
 <!-- Comment Card -->
-<div class="card">
+<div class="card" style="margin-bottom: 1em">
   {{explain_text}} {{ formfield "importance_comments" }} {{ formfield_errors
   "importance_comments" }}
 </div>
 
-<br />
-
-<div style="display: flex; justify-content: space-between; align-items: center">
+<div class="nav-container">
   {% if lan_en %}
   <button type="submit" class="otree-btn-next btn btn-primary big-button">
     Continue
   </button>
-  <div style="margin-left: auto">Page {{nslide}}/{{maxslides}}</div>
+  <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
   {% else %}
   <button type="submit" class="otree-btn-next btn btn-primary big-button">
     Weiter
   </button>
-  <div style="margin-left: auto">Seite {{nslide}}/{{maxslides}}</div>
+  <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
   {% endif %}
 </div>
 

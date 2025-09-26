@@ -1,68 +1,60 @@
-{% block styles %}
-    <link rel="stylesheet" href="{{ static 'main.css' }}">
-{% endblock %}
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{{ static 'main.css' }}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{{ static 'global.js' }}"></script>
 
-{{ block content }}
-<h2> {{ page_title }}</h2>
+<h2>{{ page_title }}</h2>
 
-<div style="margin: 2em auto; padding: 1.5em; border-radius: 12px; background-color: #f9f9f9; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-family: Arial, sans-serif; color: #333;">
+<p style="margin-bottom: 1em; font-weight: bold; font-size: 1.1em">
+  {{ attempt_msg }}
+</p>
 
-  <p style="margin-bottom: 1em; font-weight: bold; font-size: 1.1em;">
-    {{ attempt_msg }}
-  </p>
+{% if passed %}
+<div class="green-instructions">
+  <p>{{success_msg}}</p>
+</div>
+{% else %}
+<div class="red-instructions">
+  <p>{{error_msg}}</p>
+</div>
+{% if img_help %} {{ img_help_text }}
+<div style="text-align: center; margin: 1.5em 0">
+  <img
+    id="training-result-img"
+    src="{% static img_source %}"
+    alt="Training Result Example"
+    style="
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    "
+  />
+</div>
+{% endif %} {% endif %}
 
-  {% if passed %}
-    <div style="padding: 1em; border-left: 4px solid #4CAF50; background-color: #e8f5e9; border-radius: 8px; margin-bottom: 1.5em;">
-      <p style="margin: 0; font-size: 1.05em;">
-        {{success_msg}}
-      </p>
-    </div>
+<div class="nav-container">
+  <button
+    style="
+      background-color: #4caf50;
+      color: white;
+      padding: 0.6em 1.2em;
+      margin: 0 0.5em;
+      border: none;
+      border-radius: 6px;
+      font-size: 1em;
+      cursor: pointer;
+    "
+    name="next"
+  >
+    {{button_msg}}
+  </button>
+
+  {% if lan_en %}
+  <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
   {% else %}
-    <div style="padding: 1em; border-left: 4px solid #f44336; background-color: #ffebee; border-radius: 8px; margin-bottom: 1.5em;">
-      <p style="margin: 0 0 1em 0; font-size: 1.05em;">
-        {{error_msg}}
-      </p>
-    </div>
-      {% if img_help %}
-          {{ img_help_text }}
-          <div style='text-align: center; margin: 1.5em 0;'><img id='training-result-img' src="{% static img_source %}" alt='Training Result Example' style='max-width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);'></div>
-        {% endif %}
-        
+  <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
   {% endif %}
-
-  
-  <div style="text-align: center; margin-top: 2em;">
-      <button style="background-color: #4CAF50; color: white; padding: 0.6em 1.2em; margin: 0 0.5em; border: none; border-radius: 6px; font-size: 1em; cursor: pointer;" name="next">
-        {{button_msg}}
-      </button>
-  </div>
-
-
 </div>
 
-  <div style="display: flex; justify-content: space-between; align-items: center;">
-    {% if lan_en %}
-        <div style="margin-left: auto;">Page  {{nslide}}/{{maxslides}}</div>
-    {% else %}
-        <div style="margin-left: auto;">Seite  {{nslide}}/{{maxslides}}</div>
-    {% endif %}
-</div>
-
-
-{% comment %}
-<!-- 
-<script>
-    var isTrainingPassed = {{ isTrainingPassed }};
-    var messageElement = document.getElementById("training-message");
-    var imageElement = document.getElementById("training-result-img");
-    messageElement.textContent = isTrainingPassed;
-    if (isTrainingPassed) {
-        messageElement.textContent = "You have passed the training.";
-    } else {
-        messageElement.textContent = "Hmm, something went wrong. You did not meet at least one of the criteria. (1) the distance between F and 'self' should be smaller than the distance between C and 'self'. (2) the distance between S and C (and S and F) should be smaller than the distance between S and 'self'";
-        imageElement.style.display = "block"; // Show image only when training fails    
-    }
-</script> -->
-{% endcomment %}
-
-{{ endblock }}
+{% endblock %}

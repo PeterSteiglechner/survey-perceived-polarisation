@@ -1,13 +1,14 @@
-{% block styles %}
+{% load static %} {% block styles %}
 <link rel="stylesheet" href="{{ static 'main.css' }}" />
-{% endblock %} {{ block content }}
+{% endblock %} {% block content %}
 <script src="{% static 'colors.js' %}"></script>
 <script src="{{ static 'global.js' }}"></script>
 
-<h2>{{ page_title }}</h2>
+<div class="container">
+  <h2>{{ page_title }}</h2>
 
-<div>
   <p>{{instru1}}</p>
+
   <canvas
     id="dragCanvas"
     width="{{ satisfaction_canvas_width }}"
@@ -40,23 +41,14 @@
 
   <input type="hidden" name="positions" id="positions" />
 
-  <div
-    class="instructions"
-    style="
-      margin: 20px 0;
-      padding: 10px;
-      background: #ddddffff;
-      border-left: 4px solid #0000ffff;
-      border-radius: 4px;
-    "
-  >
-    <p style="margin: 0; color: rgb(0, 0, 0)">{{instru2}}</p>
+  <div class="blue-instructions">
+    <p>{{instru2}}</p>
   </div>
 
   <div class="card-section">
     <div class="card">
       <!-- Satisfaction Slider -->
-      <label class="form-label" style="margin-bottom: -0.2em"
+      <label class="form-label" style="margin-bottom: -1em"
         >{{ question }}</label
       >
       <input
@@ -81,16 +73,12 @@
           >{{ satisfaction_max_label }}</span
         >
       </div>
-      <div
-        style="
-          text-align: center;
-          margin-top: 5px;
-          margin-bottom: 35px;
-          font-size: 10pt;
-        "
-      >
+      <div class="slider-label" style="color: black">
         {% if lan_en %} Selected: {% else %} Ausgewählt: {%endif%}
-        <span id="satisfactionsliderValue" style="color: #999; font-size: 10pt"
+        <span
+          id="satisfactionsliderValue"
+          class="slider-label"
+          style="color: grey"
           ><strong>
             {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den
             Schieberegler{% endif %}</strong
@@ -100,7 +88,7 @@
       {{ formfield_errors "satisfaction" }}
 
       <!-- Accurate Mapping Slider -->
-      <label class="form-label" style="margin-bottom: -0.2em"
+      <label class="form-label" style="margin-bottom: -1em; margin-top: 1em"
         >{{ questionaccurateMapping }}</label
       >
       <input
@@ -125,16 +113,9 @@
           >{{ acc_max_label }}</span
         >
       </div>
-      <div
-        style="
-          text-align: center;
-          margin-top: 5px;
-          margin-bottom: 35px;
-          font-size: 10pt;
-        "
-      >
+      <div class="slider-label" style="color: black">
         {% if lan_en %} Selected: {% else %} Ausgewählt: {%endif%}
-        <span id="accsliderValue" style="color: #999; font-size: 10pt">
+        <span id="accsliderValue" class="slider-label" style="color: grey">
           <strong>
             {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den
             Schieberegler{% endif %}
@@ -144,287 +125,416 @@
       </div>
     </div>
 
-    <div class="card">{{explain_text}} {{ formfield "satisfaction_text" }}</div>
-  </div>
+    <div class="card-section" style="margin-top: 0em">
+      <div class="card">
+        <!-- Easier Mapping Slider -->
+        <label class="form-label" style="margin-bottom: 0em; margin-top: 0em"
+          >{{ questioneasierMapping }}</label
+        >
 
-  <div
-    style="display: flex; justify-content: space-between; align-items: center"
-  >
-    {% if lan_en %}
-    <button type="submit" class="otree-btn-next btn btn-primary big-button">
-      Continue
-    </button>
-    <div style="margin-left: auto">Page {{nslide}}/{{maxslides}}</div>
-    {% else %}
-    <button
-      type="submit"
-      class="otree-btn-next btn btn-primary"
-      id="nextButton"
-      disabled
-      style="opacity: 0.5"
-    >
-      Weiter
-    </button>
-    <div style="margin-left: auto">Seite {{nslide}}/{{maxslides}}</div>
-    {% endif %}
+        <input
+          type="range"
+          class="likert-slider"
+          name="mappingEasier"
+          id="easierSlider"
+          min="{{ easier_min }}"
+          max="{{ easier_max }}"
+          step="1"
+          value="0"
+          style="color: #aaaaaa; background: #ccc"
+          oninput="handleSliderInput('mappingEasier', this.value)"
+          required
+        />
+
+        <div
+          style="display: flex; justify-content: space-between; margin-top: 5px"
+        >
+          <span
+            style="
+              font-size: 10pt;
+              color: #777;
+              margin-top: -3pt;
+              width: 28%;
+              word-wrap: break-word;
+              text-align: center;
+              white-space: normal;
+            "
+            >{{ easier_min_label }}</span
+          >
+          <span
+            style="
+              font-size: 10pt;
+              color: #777;
+              margin-top: -3pt;
+              width: 28%;
+              word-wrap: break-word;
+              text-align: center;
+              white-space: normal;
+            "
+            >{{ easier_neutral_label }}</span
+          >
+          <span
+            style="
+              font-size: 10pt;
+              color: #777;
+              margin-top: -3pt;
+              width: 28%;
+              word-wrap: break-word;
+              text-align: center;
+              white-space: normal;
+            "
+            >{{ easier_max_label }}</span
+          >
+        </div>
+
+        <div class="slider-label" style="color: black">
+          {% if lan_en %} Selected: {% else %} Ausgewählt: {%endif%}
+          <span id="easierSliderValue" class="slider-label" style="color: grey">
+            <strong>
+              {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
+              den Schieberegler{% endif %}
+            </strong>
+          </span>
+          {{ formfield_errors "mappingEasier" }}
+        </div>
+
+        <!-- Enjoy Mapping Slider -->
+        <label class="form-label" style="margin-bottom: 0em; margin-top: 1em"
+          >{{ questionenjoyMapping }}</label
+        >
+
+        <input
+          type="range"
+          class="likert-slider"
+          name="mappingEnjoy"
+          id="enjoySlider"
+          min="{{ enjoy_min }}"
+          max="{{ enjoy_max }}"
+          step="1"
+          value="0"
+          style="color: #aaaaaa; background: #ccc"
+          oninput="handleSliderInput('mappingEnjoy', this.value)"
+          required
+        />
+
+        <div
+          style="display: flex; justify-content: space-between; margin-top: 5px"
+        >
+          <span
+            style="
+              font-size: 10pt;
+              color: #777;
+              margin-top: -3pt;
+              width: 28%;
+              word-wrap: break-word;
+              text-align: center;
+              white-space: normal;
+            "
+            >{{ enjoy_min_label }}</span
+          >
+          <span
+            style="
+              font-size: 10pt;
+              color: #777;
+              margin-top: -3pt;
+              width: 28%;
+              word-wrap: break-word;
+              text-align: center;
+              white-space: normal;
+            "
+            >{{ enjoy_neutral_label }}</span
+          >
+          <span
+            style="
+              font-size: 10pt;
+              color: #777;
+              margin-top: -3pt;
+              width: 28%;
+              word-wrap: break-word;
+              text-align: center;
+              white-space: normal;
+            "
+            >{{ enjoy_max_label }}</span
+          >
+        </div>
+
+        <div class="slider-label" style="color: black">
+          {% if lan_en %} Selected: {% else %} Ausgewählt: {%endif%}
+          <span id="enjoySliderValue" class="slider-label" style="color: grey">
+            <strong>
+              {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
+              den Schieberegler{% endif %}
+            </strong>
+          </span>
+          {{ formfield_errors "mappingEnjoy" }}
+        </div>
+      </div>
+    </div>
+
+    <div class="card-section" style="margin-top: -2em">
+      <div class="card">
+        {{explain_text}} {{ formfield "satisfaction_text" }}
+      </div>
+    </div>
+
+    <div class="nav-container">
+      {% if lan_en %}
+      <button type="submit" class="otree-btn-next btn btn-primary big-button">
+        Continue
+      </button>
+      <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+      {% else %}
+      <button type="submit" class="otree-btn-next btn btn-primary big-button">
+        Weiter
+      </button>
+      <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+      {% endif %}
+    </div>
   </div>
 </div>
 
 <script>
-  let slidersTouched = {
-    satisfaction: false,
-    accurateMapping: false
-  };
+    let slidersTouched = {
+      mappingEasier: false,
+      mappingEnjoy: false,
+      satisfaction: false,
+      accurateMapping: false
+    };
 
-  function handleSliderInput(sliderName, value) {
+    function handleSliderInput(sliderName, value) {
     slidersTouched[sliderName] = true;
 
     // Update displayed value
-    const valueSpan = sliderName === 'satisfaction' ? 'satisfactionsliderValue' : 'accsliderValue';
+    const valueSpan = sliderName === 'satisfaction' ? 'satisfactionsliderValue'
+      : sliderName === 'accurateMapping' ? 'accsliderValue'
+      : sliderName === 'mappingEasier' ? "easierSliderValue"
+      : "enjoySliderValue";
     const sliderSpan = document.getElementById(valueSpan);
-    sliderSpan.textContent = Math.round(value/10);
+    sliderSpan.innerHTML = `<span class="slider-num"><b>${Math.round(value/10)}</b></span>`;
     sliderSpan.style.color = 'black';
 
     // Update slider background gradient
-    const slider = sliderName === 'satisfaction' ? document.getElementById('satisfactionSlider') : document.getElementById('accSlider');
-    const percentage = ((value - slider.min) / (slider.max - slider.min)) * 100;
-    slider.style.background = `linear-gradient(to right, #007bff 0%, #007bff ${percentage}%, #e0e0e0 ${percentage}%, #e0e0e0 100%)`;
+    const sliderObject = sliderName === 'satisfaction' ? 'satisfactionSlider'
+      : sliderName === 'accurateMapping' ? 'accSlider'
+      : sliderName === 'mappingEasier' ? "easierSlider"
+      : "enjoySlider";
+    const slider = document.getElementById(sliderObject);
+    if (sliderName==='satisfaction' || sliderName==='accurateMapping'){
+      const percentage = ((value - slider.min) / (slider.max - slider.min)) * 100;
+      slider.style.background = `linear-gradient(to right, #007bff 0%, #007bff ${percentage}%, #e0e0e0 ${percentage}%, #e0e0e0 100%)`;
+    } else {
+          const val = parseFloat(value);
+          const min = parseFloat(slider.min), max = parseFloat(slider.max);
+          const mid = (min + max) / 2;
+          const l = val < mid ? Math.max(0, 50 + ((val - mid) / (mid - min)) * 50) : 50;
+          const r = val < mid ? 50 : Math.min(100, 50 + ((val - mid) / (max - mid)) * 50);
+
+          slider.style.background = `linear-gradient(to right,
+            #e0e0e0 0%, #e0e0e0 ${l}%,
+            #007bff ${l}%, #007bff ${r}%,
+            #e0e0e0 ${r}%, #e0e0e0 100%)`;
+    }
 
     // Enable next button if at least one slider touched
     const nextButton = document.getElementById('nextButton');
-    if (nextButton && (slidersTouched.satisfaction || slidersTouched.accurateMapping)) {
+    if (nextButton && (slidersTouched.satisfaction || slidersTouched.accurateMapping || slidersTouched.mappingEasier || slidersTouched.mappingEnjoy)) {
       nextButton.disabled = false;
       nextButton.style.opacity = '1';
     }
   }
 
-  // Form validation before submission
-  document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
-    if (form) {
-      form.addEventListener('submit', function(e) {
-        if (!slidersTouched.satisfaction && !slidersTouched.accurateMapping) {
-          e.preventDefault();
-          const lang = {% if lan_en %}true{% else %}false{% endif %};
-          alert(lang ? 'Please move the slider to select a value.' : 'Bitte bewegen Sie den Schieberegler, um einen Wert auszuwählen.');
-          return false;
-        }
-      });
-    }
-  });
+
+    // Form validation before submission
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form');
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          if (!slidersTouched.satisfaction && !slidersTouched.accurateMapping) {
+            e.preventDefault();
+            const lang = {% if lan_en %}true{% else %}false{% endif %};
+            alert(lang ? 'Please move the slider to select a value.' : 'Bitte bewegen Sie den Schieberegler, um einen Wert auszuwählen.');
+            return false;
+          }
+        });
+      }
+    });
 </script>
 
 <script>
 
-      document.addEventListener("DOMContentLoaded", function () {
-          const canvas = document.getElementById("dragCanvas");
-          const ctx = canvas.getContext("2d");
-          const points = [
-              {% for dot in dots %}
-                  {
-                  name_disp: "{{ dot.name_disp }}",
-                  varname: "{{ dot.varname }}",
-                  x: {{ dot.x }} * {{satisfaction_canvas_width}}/ {{canvas_width}},
-                  y: {{ dot.y }}* {{satisfaction_canvas_width}}/ {{canvas_width}},
-                  dottype: "{{ dot.dottype }}" ,
-                  descr:"{{ dot.descr }}",
-                  radius: 12 * {{satisfaction_canvas_width}}/ {{canvas_width}}
-                  },
-              {% endfor %}
-          ];
-          const popup = document.getElementById("popup");
+  document.addEventListener("DOMContentLoaded", function () {
+      const canvas = document.getElementById("dragCanvas");
+      const ctx = canvas.getContext("2d");
+      const points = [
+          {% for dot in dots %}
+              {
+              name_disp: "{{ dot.name_disp }}",
+              varname: "{{ dot.varname }}",
+              x: {{ dot.x }} * {{satisfaction_canvas_width}}/ {{canvas_width}},
+              y: {{ dot.y }}* {{satisfaction_canvas_width}}/ {{canvas_width}},
+              dottype: "{{ dot.dottype }}" ,
+              descr:"{{ dot.descr }}",
+              radius: 12 * {{satisfaction_canvas_width}}/ {{canvas_width}}
+              },
+          {% endfor %}
+      ];
+      const popup = document.getElementById("popup");
 
-          let hoveredPoint = null;
+      let hoveredPoint = null;
 
-          console.log("Loaded points:", points);
+      console.log("Loaded points:", points);
 
-          function drawCanvas() {
-              ctx.clearRect(0, 0, canvas.width, canvas.height);
+      function drawCanvas() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-              // Draw the boundary square with enhanced styling
-              ctx.strokeStyle = "#333";
-              ctx.lineWidth = 1;
-              ctx.strokeRect(0, 0, canvas.height, canvas.height);
+          // Draw the boundary square with enhanced styling
+          ctx.strokeStyle = "#333";
+          ctx.lineWidth = 1;
+          ctx.strokeRect(0, 0, canvas.height, canvas.height);
 
-              // Draw all points
-              points.forEach(p => {
-                  ctx.beginPath();
-                  ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          // Draw all points
+          points.forEach(p => {
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
 
-                  // Set fill color based on type
-                  ctx.fillStyle =  COLORS[p.varname] || COLORS[p.dottype] || "white";
-                  ctx.fill();
+              // Set fill color based on type
+              ctx.fillStyle =  COLORS[p.varname] || COLORS[p.dottype] || "white";
+              ctx.fill();
 
-                  // Add border with hover effect
-                  ctx.strokeStyle = p === hoveredPoint ? "#fff" : "#333";
-                  ctx.lineWidth = p === hoveredPoint ? 3 : 2;
-                  ctx.stroke();
+              // Add border with hover effect
+              ctx.strokeStyle = p === hoveredPoint ? "#fff" : "#333";
+              ctx.lineWidth = p === hoveredPoint ? 3 : 2;
+              ctx.stroke();
 
-                  // Draw label with better positioning
-                  ctx.fillStyle = "#333";
-                  ctx.font = "12px Arial";
-                  ctx.textAlign = "center";
-                  ctx.textBaseline = "bottom";
-                  ctx.fillText(p.name_disp, p.x, p.y - 18);
-              });
-          }
-
-          function getMousePos(evt) {
-              const rect = canvas.getBoundingClientRect();
-              return {
-                  x: evt.clientX - rect.left,
-                  y: evt.clientY - rect.top
-              };
-          }
-
-          function getTouchPos(touch) {
-              const rect = canvas.getBoundingClientRect();
-              return {
-                  x: touch.clientX - rect.left,
-                  y: touch.clientY - rect.top
-              };
-          }
-
-          function findPoint(pos) {
-              return points.find(p => Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius);
-          }
-
-          function showPopup(point, mouseX, mouseY) {
-              const canvasRect = canvas.getBoundingClientRect();
-              const canvasOffsetTop = canvas.offsetTop;
-              const canvasOffsetLeft = canvas.offsetLeft;
-
-              // Position popup to the right of canvas, starting at x=510px from canvas left
-              popup.style.left = `${canvasOffsetLeft + canvas.width + 10}px`;
-              popup.style.top = `${canvasOffsetTop}px`;
-
-              // Function to get color styling based on answer value
-  function getAnswerStyling(answer) {
-      const label = getLikertLabel(answer, "{{lan_en}}");
-      const trimmedAnswer = label.toLowerCase().trim();
-      let backgroundColor = '';
-      let texcolor = "black";
-
-      if (trimmedAnswer === 'strongly disagree' || trimmedAnswer === 'stimme überhaupt nicht zu') {
-          backgroundColor = 'rgba(220, 53, 69, 1)'; // deep red
-          texcolor = "rgb(255, 255, 255)";
-      } else if (trimmedAnswer === 'disagree' || trimmedAnswer === 'stimme nicht zu') {
-          backgroundColor = 'rgba(255, 99, 132, 0.9)'; // medium red
-          texcolor = "rgb(255, 255, 255)";
-      } else if (trimmedAnswer === 'somewhat disagree' || trimmedAnswer === 'stimme eher nicht zu') {
-          backgroundColor = 'rgba(255, 178, 102, 0.8)'; // orange-red
-      } else if (trimmedAnswer === 'neutral' || trimmedAnswer === 'teils/teils') {
-          backgroundColor = 'rgba(201, 203, 207, 0.6)'; // light gray
-      } else if (trimmedAnswer === 'somewhat agree' || trimmedAnswer === 'stimme eher zu') {
-          backgroundColor = 'rgba(144, 238, 144, 0.8)'; // light green
-      } else if (trimmedAnswer === 'agree' || trimmedAnswer === 'stimme zu') {
-          backgroundColor = 'rgba(60, 179, 113, 0.9)'; // medium green
-          texcolor = "rgb(255, 255, 255)";
-      } else if (trimmedAnswer === 'strongly agree' || trimmedAnswer === 'stimme voll und ganz zu') {
-          backgroundColor = 'rgba(40, 167, 69, 1)'; // deep green
-          texcolor = "rgb(255, 255, 255)";
-      } else {
-          backgroundColor = 'rgba(161, 161, 161, 1)'; // grey
-          texcolor = "rgba(0, 0, 0, 1)";
+              // Draw label with better positioning
+              ctx.fillStyle = "#333";
+              ctx.font = "12px Arial";
+              ctx.textAlign = "center";
+              ctx.textBaseline = "bottom";
+              ctx.fillText(p.name_disp, p.x, p.y - 18);
+          });
       }
 
-      return backgroundColor
-          ? `background-color: ${backgroundColor}; color: ${texcolor}; padding: 4px 0px; border-radius: 0px;`
-          : '';
-  }
+      function getMousePos(evt) {
+          const rect = canvas.getBoundingClientRect();
+          return {
+              x: evt.clientX - rect.left,
+              y: evt.clientY - rect.top
+          };
+      }
 
+      function getTouchPos(touch) {
+          const rect = canvas.getBoundingClientRect();
+          return {
+              x: touch.clientX - rect.left,
+              y: touch.clientY - rect.top
+          };
+      }
 
-              // Create table from description
-              let tableContent = '';
-              if (point.descr && point.descr.includes(';')) {
-                  const lines = point.descr.split(';').map(line => line.trim()).filter(line => line);
-                  tableContent = lines.map(line => {
-                      const colonIndex = line.indexOf(':');
-                      if (colonIndex !== -1) {
-                          const question = line.substring(0, colonIndex);
-                          const answer = line.substring(colonIndex + 1).trim();
-                          const label = getLikertLabel(answer, "{{lan_en}}");
-                          const answerStyling = getAnswerStyling(answer);
+      function findPoint(pos) {
+          return points.find(p => Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius);
+      }
 
-                          return `<tr><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; width: 60%; word-wrap: break-word; line-height: 1.3;">${question}</td></td><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; font-weight: bold; width: 33%; word-wrap: break-word;line-height:1.8"><span style="${answerStyling}">${label}</span></td></tr>`;
-                      }
-                      return `<tr><td colspan="2" style="padding: 10px 0px; border-bottom: 1px solid #eee;">${line}</td></tr>`;
-                  }).join('');
-              } else {
-                  tableContent = `<tr><td style="padding: 0px 0;">${point.descr || 'No description available'}</td></tr>`;
-              }
-              popup.innerHTML = `
-                  <strong style="font-size: 12px;">${point.name_disp}</strong><br><br>
-                  <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-                      ${tableContent}
-                  </table>
-              `;
-              popup.style.display = "block";
+      function showPopup(point, mouseX, mouseY) {
+          const canvasRect = canvas.getBoundingClientRect();
+          const canvasOffsetTop = canvas.offsetTop;
+          const canvasOffsetLeft = canvas.offsetLeft;
+
+          // Position popup to the right of canvas, starting at x=510px from canvas left
+          popup.style.left = `${canvasOffsetLeft + canvas.width + 10}px`;
+          popup.style.top = `${canvasOffsetTop}px`;
+
+          // Create table from description
+          let tableContent = '';
+          if (point.descr && point.descr.includes(';')) {
+              const lines = point.descr.split(';').map(line => line.trim()).filter(line => line);
+              tableContent = lines.map(line => {
+                  const colonIndex = line.indexOf(':');
+                  if (colonIndex !== -1) {
+                      const question = line.substring(0, colonIndex);
+                      const answer = line.substring(colonIndex + 1).trim();
+                      const label = getLikertLabel(answer, "{{lan_en}}");
+                      const answerStyling = getAnswerStyling(answer);
+
+                      return `<tr><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; width: 60%; word-wrap: break-word; line-height: 1.3;">${question}</td></td><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; font-weight: bold; width: 33%; word-wrap: break-word;line-height:1.8"><span style="${answerStyling}">${label}</span></td></tr>`;
+                  }
+                  return `<tr><td colspan="2" style="padding: 10px 0px; border-bottom: 1px solid #eee;">${line}</td></tr>`;
+              }).join('');
+          } else {
+              tableContent = `<tr><td style="padding: 0px 0;">${point.descr || 'No description available'}</td></tr>`;
+          }
+          popup.innerHTML = `
+              <strong style="font-size: 12px;">${point.name_disp}</strong><br><br>
+              <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                  ${tableContent}
+              </table>
+          `;
+          popup.style.display = "block";
+      }
+
+      // Touch event handlers
+      canvas.addEventListener("touchstart", function (evt) {
+          const touch = evt.touches[0];
+          const touchPos = getTouchPos(touch);
+          const touchedPoint = findPoint(touchPos);
+
+          if (touchedPoint) {
+              showPopup(touchedPoint, touchPos.x, touchPos.y);
+          } else {
+              popup.style.display = "none";
+          }
+          evt.preventDefault();
+      }, { passive: false });
+
+      canvas.addEventListener("touchend", function () {
+          hoveredPoint = null;
+          drawCanvas();
+      }, { passive: false });
+
+      // Mouse event handlers (for desktop)
+      canvas.addEventListener("mousedown", function (evt) {
+          const mousePos = getMousePos(evt);
+          const clickedPoint = findPoint(mousePos);
+
+          if (clickedPoint) {
+              showPopup(clickedPoint, mousePos.x, mousePos.y);
+          } else {
+              popup.style.display = "none";
+          }
+      });
+
+      canvas.addEventListener("mousemove", function (evt) {
+          const mousePos = getMousePos(evt);
+          const newHoveredPoint = findPoint(mousePos);
+
+          // Update cursor based on what we're hovering over
+          if (newHoveredPoint) {
+              canvas.style.cursor = "pointer";
+          } else {
+              canvas.style.cursor = "default";
           }
 
-          // Touch event handlers
-          canvas.addEventListener("touchstart", function (evt) {
-              const touch = evt.touches[0];
-              const touchPos = getTouchPos(touch);
-              const touchedPoint = findPoint(touchPos);
-
-              if (touchedPoint) {
-                  showPopup(touchedPoint, touchPos.x, touchPos.y);
-              } else {
-                  popup.style.display = "none";
-              }
-              evt.preventDefault();
-          }, { passive: false });
-
-          canvas.addEventListener("touchend", function () {
-              hoveredPoint = null;
+          if (newHoveredPoint !== hoveredPoint) {
+              hoveredPoint = newHoveredPoint;
               drawCanvas();
-          }, { passive: false });
+          }
+      });
 
-          // Mouse event handlers (for desktop)
-          canvas.addEventListener("mousedown", function (evt) {
-              const mousePos = getMousePos(evt);
-              const clickedPoint = findPoint(mousePos);
-
-              if (clickedPoint) {
-                  showPopup(clickedPoint, mousePos.x, mousePos.y);
-              } else {
-                  popup.style.display = "none";
-              }
-          });
-
-          canvas.addEventListener("mousemove", function (evt) {
-              const mousePos = getMousePos(evt);
-              const newHoveredPoint = findPoint(mousePos);
-
-              // Update cursor based on what we're hovering over
-              if (newHoveredPoint) {
-                  canvas.style.cursor = "pointer";
-              } else {
-                  canvas.style.cursor = "default";
-              }
-
-              if (newHoveredPoint !== hoveredPoint) {
-                  hoveredPoint = newHoveredPoint;
-                  drawCanvas();
-              }
-          });
-
-          canvas.addEventListener("mouseleave", function () {
-              hoveredPoint = null;
-              canvas.style.cursor = "default";
-              drawCanvas();
-          });
-
-          document.addEventListener("click", function (e) {
-              if (!canvas.contains(e.target) && !popup.contains(e.target)) {
-                  popup.style.display = "none";
-              }
-          });
-
-          // Initial draw
+      canvas.addEventListener("mouseleave", function () {
+          hoveredPoint = null;
+          canvas.style.cursor = "default";
           drawCanvas();
       });
+
+      document.addEventListener("click", function (e) {
+          if (!canvas.contains(e.target) && !popup.contains(e.target)) {
+              popup.style.display = "none";
+          }
+      });
+
+      // Initial draw
+      drawCanvas();
+  });
 </script>
 <script>
   document.querySelectorAll(".option-cards").forEach((group) => {
@@ -439,4 +549,5 @@
     });
   });
 </script>
-{{endblock}}
+
+{% endblock %}

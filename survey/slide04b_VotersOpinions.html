@@ -1,50 +1,36 @@
-{% block styles %}
+{% load static %} {% block styles %}
 <link rel="stylesheet" href="{{ static 'main.css' }}" />
 {% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
 <script src="{{ static 'global.js' }}"></script>
 
 <h2>{{ page_title }}</h2>
-<style>
-  .survey-table-clean thead {
-    background: rgba(150, 150, 150);
-  }
-
-  .survey-table-clean td {
-    padding: 3px;
-    border-bottom: 1px solid #a8a8a8ff;
-    vertical-align: center;
-    font-size: 15px;
-  }
-
-  .survey-table-clean tr:hover {
-    background-color: rgba(71, 98, 216, 0.05);
-  }
-</style>
 
 <p>{{ instruction_text }}</p>
 
-<p style="font-size: 10pt; color: grey">
+<p style="font-size: 11pt; color: grey">
   {%if lan_en%} Note, the order of the parties is random.{% else %} Die
   Reihenfolge der Parteien ist zufällig gewählt. {% endif %}
 </p>
+
 <p>{{would_respond}}</p>
+
 <form method="post">
   {% for q in questions %}
   <div class="question-block">
-    {% comment %} <label><strong>{{ q.text }}</strong></label> {% endcomment %}
     <table class="survey-table-clean">
       <thead>
         <tr>
           <td></td>
-          <th style="width: 65%">
+          <th style="width: 67%">
             <label><strong>{{ q.text }}</strong></label>
           </th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td style="width: 35%"></td>
-          <td style="width: 65%">
+          <td style="width: 33%"></td>
+          <td style="width: 67%">
             <div
               style="
                 display: grid;
@@ -66,7 +52,7 @@
             </div>
           </td>
         </tr>
-        {% for c in contacts %}
+        {% for c in references %}
         <tr>
           <td>
             <label class="form-label"> {{ c.name }} </label>
@@ -83,15 +69,9 @@
               required
               oninput="handleSliderInput('{{ q.prefix }}{{ c.id }}' , '{{c.color}}', '{{c.textcolor}}',  this.value)"
             />
-            <div
-              id="sliderValue{{ q.prefix }}{{ c.id }}"
-              class="slider-label"
-              style="text-align: center"
-            >
-              <p style="color: #999; font-size: 10pt; margin-bottom: 0.47em">
-                {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
-                den Schieberegler{% endif %}
-              </p>
+            <div id="sliderValue{{ q.prefix }}{{ c.id }}" class="slider-label">
+              {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
+              den Schieberegler{% endif %}
             </div>
           </td>
         </tr>
@@ -101,19 +81,17 @@
   </div>
   {% endfor %}
 
-  <div
-    style="display: flex; justify-content: space-between; align-items: center"
-  >
+  <div class="nav-container">
     {% if lan_en %}
     <button type="submit" class="otree-btn-next btn btn-primary big-button">
       Continue
     </button>
-    <div style="margin-left: auto">Page {{nslide}}/{{maxslides}}</div>
+    <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
     {% else %}
     <button type="submit" class="otree-btn-next btn btn-primary big-button">
       Weiter
     </button>
-    <div style="margin-left: auto">Seite {{nslide}}/{{maxslides}}</div>
+    <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
     {% endif %}
   </div>
 </form>
@@ -133,9 +111,7 @@
       // update text under slider
       const div = document.getElementById('sliderValue' + field);
       if (div) {
-          div.innerHTML = `<p style="font-size: 10pt;margin-bottom:0.3em; color:black">
-              <span class='pill' style='background-color: ${color}; color: ${textcolor};'>${label}</span>
-          </p>`;
+          div.innerHTML = `<span class='pill' style='background-color: ${color}; color: ${textcolor};'>${label}</span>`;
           div.style.color =  color ;
       }
 

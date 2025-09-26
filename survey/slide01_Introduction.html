@@ -1,8 +1,8 @@
-{% block styles %}
-    <link rel="stylesheet" href="{{ static 'main.css' }}">
-{% endblock %}
-
-{% block content %}
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{{ static 'main.css' }}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{{ static 'global.js' }}"></script>
 
 <h2>Perceptions of Political Opinions / Wahrnehmung politischer Meinungen</h2>
 <p>Welcome to our survey! / Willkommen zu unserer Umfrage!
@@ -16,10 +16,10 @@
         <div class="form-group">
             <label class="form-label" data-i18n="selectLanguage">Please select your preferred language / Bitte wählen Sie Ihre bevorzugte Sprache:</label>
             <div class="option-cards" data-field="language">
-                <label class="option-card">
+                <label class="option-card" style="width:48%;">
                     <input type="radio" name="language" value="en"> English
                 </label>
-                <label class="option-card">
+                <label class="option-card" style="width:48%;">
                     <input type="radio" name="language" value="de"> Deutsch
                 </label>
             </div>
@@ -117,7 +117,7 @@
                 <p data-i18n="consentDisclaimer"></p>
             </div> {% endcomment %}
             
-            <div class="instructions" style="margin: 10px 0; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+            <div class="yellow-instructions">
                 <p data-i18n="consentDecl"></p>
             </div>
 
@@ -135,13 +135,6 @@
         </div>
     </div>
 </div>
-
-<br>
-
-{% comment %} <div style="display: flex; justify-content: space-between; align-items: center;">
-    {{ next_button }}
-    <div id="pagedispl"></div>
-</div> {% endcomment %}
 
 
 
@@ -164,11 +157,11 @@ const translations = {
         procedureTitle: "Study Procedure",
         procedureBody: "The study will take approximately 20-25 minutes and consists of the following steps:", 
         procedureBody1: "Answer a few questions about your own political views and your political identity.", 
-        procedureBody2: "Name ten people you know well and estimate their political views.", 
+        procedureBody2: "Name ten people you know well and whose opinions are familiar to you, and estimate their political views.", 
         procedureBody3: "Estimate the political views of typical voters of the major political parties in Germany.", 
         procedureBody4: "Place the individuals on a political map based on how you perceive their political closeness.", 
         procedureBody5: "For a few randomly selected individuals, indicate how politically similar or different you think they are.",
-        procedureBody6: "Complete a few brief questions about your perceptions of political polarisation, the closeness of the relationship to your ten social contacts, and some background questions about yourself.",
+        procedureBody6: "Complete a few brief questions about your perceptions of political polarisation, the closeness of the relationship to the ten referenced individuals, and some background questions about yourself.",
         paymentTitle: "Compensation",
         paymentBody: "You will be compensated for the duration of the study through Prolific according to standard hourly rates (9 GBP/Stunde):",
         paymentMoney: "4 GBP for 20-25 minutes.",
@@ -207,11 +200,11 @@ const translations = {
   "procedureTitle": "Ablauf der Studie",
   "procedureBody": "Die Teilnahme dauert etwa 20-25 Minuten und beinhaltet folgende Schritte:",
 "procedureBody1": "Sie beantworten zunächst einige Fragen zu Ihren eigenen politischen Einstellungen und Ihrer politischen Identität.",
-"procedureBody2": "Dann nennen Sie zehn Personen, die Sie gut kennen, und schätzen deren politische Ansichten ein.",
+"procedureBody2": "Dann nennen Sie zehn Personen, die Sie gut kennen und deren Meinungen Ihnen vertraut sind, und schätzen deren politische Ansichten ein.",
 "procedureBody3": "Anschließend schätzen Sie ein, wie typische Wähler oder Wählerinnen der Parteien in Deutschland politisch eingestellt sind.",
 "procedureBody4": "Sie verorten alle genannten Personen auf einer politischen Karte abhängig davon wie Sie deren politische Nähe wahrnehmen.",
 "procedureBody5": "Für ein paar zufällig ausgewählte Personen, geben Sie an wie ähnlich oder unterschiedlich Sie deren politischen Ansichten zueinander einschätzen.",
-  "procedureBody6": "Zum Schluss beantworten Sie einige kurze Fragen zu Ihrer Wahrnehmung von Polarisierung, zu der sozialen Nähe zu Ihren zehn angegebenen Kontakten, sowie zu Ihrer Person.",
+  "procedureBody6": "Zum Schluss beantworten Sie einige kurze Fragen zu Ihrer Wahrnehmung von Polarisierung, zu der sozialen Nähe zu Ihren zehn angegebenen Personen, sowie zu Ihrer eigenen Person.",
   "paymentTitle": "Vergütung",
   "paymentBody": "Sie erhalten für Ihre Teilnahme eine Vergütung über Prolific gemäß den üblichen Stundensätzen (9 GBP/Stunde):",
   "paymentMoney": "4 GBP für 25 Minuten.",
