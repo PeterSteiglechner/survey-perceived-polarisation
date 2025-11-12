@@ -69,7 +69,7 @@
       {{ formfield_errors "feel_closest_party" }}
     </div>
 
-    <p style="font-size: 8pt; color: gray">{{partytext}}</p>
+    <div style="font-size: 8pt; color: gray">{{partytext}}</div>
 
     <p style="margin-bottom: -0.5em">{{qu_party_comment}}</p>
 
@@ -98,16 +98,18 @@
       required
     />
 
-    <div id="sliderValue" class="slider-label-container">
-      <div class="slider-label-text" style="color: grey; text-align: center">
-        {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den
-        Schieberegler{% endif %}
-      </div>
-      <div class="slider-num-info">
-        <!-- keep empty space to reserve width -->
-        <span class="sldier-num">&nbsp;</span>
-      </div>
+    <div style="text-align: center; margin-top: 0px">
+      {% if lan_en %}
+      <span id="sliderValue" style="color: #999; font-size: 10pt"
+        >Please move the slider</span
+      >
+      {% else %}
+      <span id="sliderValue" style="color: #999; font-size: 10pt">
+        Bitte bewegen Sie den Schieberegler
+      </span>
+      {% endif %}
     </div>
+
     {{ formfield_errors "lrscale" }}
   </div>
 </div>
@@ -163,16 +165,13 @@
   function handleSliderInput(value) {
     sliderTouched = true;
 
-    // Update the displayed value
-    let va = document.getElementById("sliderValue");
-    va.innerHTML =
-      `<div class="slider-label-container"><div class="slider-label-text">` +
-      `{% if lan_en %}Selected:  {% else %}Ausgewählt: {%endif%}` +
-      `<strong><span class="slider-num">${Math.round(
-        value / 10
-      )}</span></strong></div>{% if lan_en %}
-             (on the scale from -5 to 5){% else %}  (auf der Skala von -5 bis 5){%endif%}` +
-      `</div>`;
+    const va = document.getElementById("sliderValue");
+    {% if lan_en %}
+      va.innerHTML = `Selected: <span class="slider-num"><b>${Math.round(value/10)}</b></span>`;
+    {% else %}
+      va.innerHTML = `Ausgewählt: <span class="slider-num"><b>${Math.round(value/10)}</b></span>`;
+    {% endif %}
+
     va.style.color = "black";
     va.style.fontSize = "10pt";
 

@@ -21,35 +21,35 @@ function getLikertLabel(val, lan_en) {
         }
 
 
- // Function to get color styling based on answer value
-  function getAnswerStyling(answer) {
-      const label = getLikertLabel(answer, "{{lan_en}}");
-      const trimmedAnswer = label.toLowerCase().trim();
-      let backgroundColor = '';
-      let texcolor = "black";
-
-      if (trimmedAnswer === 'strongly disagree' || trimmedAnswer === 'stimme überhaupt nicht zu') {
-          backgroundColor = 'rgba(220, 53, 69, 1)'; // deep red
-          texcolor = "rgb(255, 255, 255)";
-      } else if (trimmedAnswer === 'disagree' || trimmedAnswer === 'stimme nicht zu') {
-          backgroundColor = 'rgba(255, 99, 132, 0.9)'; // medium red
-          texcolor = "rgb(255, 255, 255)";
-      } else if (trimmedAnswer === 'somewhat disagree' || trimmedAnswer === 'stimme eher nicht zu') {
-          backgroundColor = 'rgba(255, 178, 102, 0.8)'; // orange-red
-      } else if (trimmedAnswer === 'neutral' || trimmedAnswer === 'teils/teils') {
-          backgroundColor = 'rgba(201, 203, 207, 0.6)'; // light gray
-      } else if (trimmedAnswer === 'somewhat agree' || trimmedAnswer === 'stimme eher zu') {
-          backgroundColor = 'rgba(144, 238, 144, 0.8)'; // light green
-      } else if (trimmedAnswer === 'agree' || trimmedAnswer === 'stimme zu') {
-          backgroundColor = 'rgba(60, 179, 113, 0.9)'; // medium green
-          texcolor = "rgb(255, 255, 255)";
-      } else if (trimmedAnswer === 'strongly agree' || trimmedAnswer === 'stimme voll und ganz zu') {
-          backgroundColor = 'rgba(40, 167, 69, 1)'; // deep green
-          texcolor = "rgb(255, 255, 255)";
-      } else {
-          backgroundColor = 'rgba(161, 161, 161, 1)'; // grey
-          texcolor = "rgba(0, 0, 0, 1)";
-      }
+// Function to get color styling based on answer value
+function getAnswerStyling(answer) {
+  const label = getLikertLabel(answer, "{{lan_en}}");
+  const trimmedAnswer = label.toLowerCase().trim();
+  let backgroundColor = '';
+  let texcolor = "black";
+  
+  if (trimmedAnswer === 'strongly disagree' || trimmedAnswer === 'stimme überhaupt nicht zu') {
+    backgroundColor = 'rgba(183, 28, 28, 1)'; // deep red
+    texcolor = "rgb(255, 255, 255)";
+  } else if (trimmedAnswer === 'disagree' || trimmedAnswer === 'stimme nicht zu') {
+    backgroundColor = 'rgba(229, 57, 53, 1)'; // medium red
+    texcolor = "rgb(255, 255, 255)";
+  } else if (trimmedAnswer === 'somewhat disagree' || trimmedAnswer === 'stimme eher nicht zu') {
+    backgroundColor = 'rgba(239, 154, 154, 1)'; // light red
+  } else if (trimmedAnswer === 'neutral' || trimmedAnswer === 'teils/teils') {
+    backgroundColor = 'rgba(224, 224, 224, 1)'; // neutral gray
+  } else if (trimmedAnswer === 'somewhat agree' || trimmedAnswer === 'stimme eher zu') {
+    backgroundColor = 'rgba(129, 199, 132, 1)'; // light green
+  } else if (trimmedAnswer === 'agree' || trimmedAnswer === 'stimme zu') {
+    backgroundColor = 'rgba(56, 142, 60, 1)'; // medium green
+    texcolor = "rgb(255, 255, 255)";
+  } else if (trimmedAnswer === 'strongly agree' || trimmedAnswer === 'stimme voll und ganz zu') {
+    backgroundColor = 'rgba(27, 94, 32, 1)'; // deep green
+    texcolor = "rgb(255, 255, 255)";
+  } else {
+    backgroundColor = 'rgba(161, 161, 161, 1)'; // grey
+    texcolor = "rgba(0, 0, 0, 1)";
+  }
 
       return backgroundColor
           ? `background-color: ${backgroundColor}; color: ${texcolor}; padding: 4px 0px; border-radius: 0px;`

@@ -232,7 +232,7 @@ h2 {
 
 
 .survey-table-clean thead {
-    background: #999;
+    background: #808080;
     color: white;
 }
 
@@ -242,13 +242,15 @@ h2 {
     font-weight: 600;
     font-size: 18px;
 }
+.survey-table-clean tr {
+    margin-top: 15px;
+}
 
   .survey-table-clean td {
     padding: 0px 10px 0px;
-    border-bottom: 1px solid #a8a8a8ff;
+    border-bottom: 1px solid #808080;
     vertical-align: center;
     font-size: 15px;
-
   }
 
   .statement{

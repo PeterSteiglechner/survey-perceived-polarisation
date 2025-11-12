@@ -4,6 +4,26 @@
 <script src="{% static 'colors.js' %}"></script>
 <script src="{{ static 'global.js' }}"></script>
 
+<style>
+  .lab {
+    font-size: 10pt;
+    color: #000000ff;
+    margin-top: -3pt;
+    width: 28%;
+    word-wrap: break-word;
+    text-align: center;
+    white-space: normal;
+  }
+  .lab2 {
+    font-size: 10pt;
+    color: #777;
+    margin-top: -3pt;
+    width: 28%;
+    word-wrap: break-word;
+    text-align: center;
+    white-space: normal;
+  }
+</style>
 <div class="container">
   <h2>{{ page_title }}</h2>
 
@@ -51,6 +71,12 @@
       <label class="form-label" style="margin-bottom: -1em"
         >{{ question }}</label
       >
+      <div
+        style="display: flex; justify-content: space-between; margin-top: 10px"
+      >
+        <span class="lab2">{{ satisfaction_min_label }}</span>
+        <span class="lab2">{{ satisfaction_max_label }}</span>
+      </div>
       <input
         type="range"
         class="likert-slider"
@@ -63,34 +89,30 @@
         oninput="handleSliderInput('satisfaction', this.value)"
         required
       />
-      <div
-        style="display: flex; justify-content: space-between; margin-top: 5px"
-      >
-        <span style="font-size: 10pt; color: #777; margin-top: -3pt"
-          >{{ satisfaction_min_label }}</span
-        >
-        <span style="font-size: 10pt; color: #777; margin-top: -3pt"
-          >{{ satisfaction_max_label }}</span
-        >
-      </div>
-      <div class="slider-label" style="color: black">
-        {% if lan_en %} Selected: {% else %} Ausgewählt: {%endif%}
-        <span
-          id="satisfactionsliderValue"
-          class="slider-label"
-          style="color: grey"
-          ><strong>
-            {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den
-            Schieberegler{% endif %}</strong
-          >
-        </span>
-      </div>
-      {{ formfield_errors "satisfaction" }}
 
+      <div style="text-align: center; margin-top: 0px">
+        {% if lan_en %}
+        <span id="satisfactionsliderValue" style="color: #999; font-size: 10pt"
+          >Please move the slider</span
+        >
+        {% else %}
+        <span id="satisfactionsliderValue" style="color: #999; font-size: 10pt">
+          Bitte bewegen Sie den Schieberegler
+        </span>
+        {% endif %}
+      </div>
+      {{ formfield_errors "satisfaction" }} {% comment %}
       <!-- Accurate Mapping Slider -->
       <label class="form-label" style="margin-bottom: -1em; margin-top: 1em"
         >{{ questionaccurateMapping }}</label
       >
+      <div
+        style="display: flex; justify-content: space-between; margin-top: 10px"
+      >
+        <span class="lab2">{{ acc_min_label }}</span>
+        <span class="lab2">{{ acc_max_label }}</span>
+      </div>
+
       <input
         type="range"
         class="likert-slider"
@@ -103,26 +125,20 @@
         oninput="handleSliderInput('accurateMapping', this.value)"
         required
       />
-      <div
-        style="display: flex; justify-content: space-between; margin-top: 5px"
-      >
-        <span style="font-size: 10pt; color: #777; margin-top: -3pt"
-          >{{ acc_min_label }}</span
+
+      <div style="text-align: center; margin-top: 0px">
+        {% if lan_en %}
+        <span id="accsliderValue" style="color: #999; font-size: 10pt"
+          >Please move the slider</span
         >
-        <span style="font-size: 10pt; color: #777; margin-top: -3pt"
-          >{{ acc_max_label }}</span
-        >
-      </div>
-      <div class="slider-label" style="color: black">
-        {% if lan_en %} Selected: {% else %} Ausgewählt: {%endif%}
-        <span id="accsliderValue" class="slider-label" style="color: grey">
-          <strong>
-            {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den
-            Schieberegler{% endif %}
-          </strong>
+        {% else %}
+        <span id="accsliderValue" style="color: #999; font-size: 10pt">
+          Bitte bewegen Sie den Schieberegler
         </span>
-        {{ formfield_errors "accurateMapping" }}
+        {% endif %}
       </div>
+
+      {{ formfield_errors "accurateMapping" }} {% endcomment %}
     </div>
 
     <div class="card-section" style="margin-top: 0em">
@@ -131,6 +147,18 @@
         <label class="form-label" style="margin-bottom: 0em; margin-top: 0em"
           >{{ questioneasierMapping }}</label
         >
+
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+          "
+        >
+          <span class="lab">{{ easier_min_label }}</span>
+          <span class="lab">{{ easier_neutral_label }}</span>
+          <span class="lab">{{ easier_max_label }}</span>
+        </div>
 
         <input
           type="range"
@@ -146,62 +174,34 @@
           required
         />
 
-        <div
-          style="display: flex; justify-content: space-between; margin-top: 5px"
-        >
-          <span
-            style="
-              font-size: 10pt;
-              color: #777;
-              margin-top: -3pt;
-              width: 28%;
-              word-wrap: break-word;
-              text-align: center;
-              white-space: normal;
-            "
-            >{{ easier_min_label }}</span
+        <div style="text-align: center; margin-top: 0px">
+          {% if lan_en %}
+          <span id="easierSliderValue" style="color: #999; font-size: 10pt"
+            >Please move the slider</span
           >
-          <span
-            style="
-              font-size: 10pt;
-              color: #777;
-              margin-top: -3pt;
-              width: 28%;
-              word-wrap: break-word;
-              text-align: center;
-              white-space: normal;
-            "
-            >{{ easier_neutral_label }}</span
-          >
-          <span
-            style="
-              font-size: 10pt;
-              color: #777;
-              margin-top: -3pt;
-              width: 28%;
-              word-wrap: break-word;
-              text-align: center;
-              white-space: normal;
-            "
-            >{{ easier_max_label }}</span
-          >
-        </div>
-
-        <div class="slider-label" style="color: black">
-          {% if lan_en %} Selected: {% else %} Ausgewählt: {%endif%}
-          <span id="easierSliderValue" class="slider-label" style="color: grey">
-            <strong>
-              {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
-              den Schieberegler{% endif %}
-            </strong>
+          {% else %}
+          <span id="easierSliderValue" style="color: #999; font-size: 10pt">
+            Bitte bewegen Sie den Schieberegler
           </span>
-          {{ formfield_errors "mappingEasier" }}
+          {% endif %}
         </div>
 
         <!-- Enjoy Mapping Slider -->
         <label class="form-label" style="margin-bottom: 0em; margin-top: 1em"
           >{{ questionenjoyMapping }}</label
         >
+
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+          "
+        >
+          <span class="lab">{{ enjoy_min_label }}</span>
+          <span class="lab">{{ enjoy_neutral_label }}</span>
+          <span class="lab">{{ enjoy_max_label }}</span>
+        </div>
 
         <input
           type="range"
@@ -217,63 +217,26 @@
           required
         />
 
-        <div
-          style="display: flex; justify-content: space-between; margin-top: 5px"
-        >
-          <span
-            style="
-              font-size: 10pt;
-              color: #777;
-              margin-top: -3pt;
-              width: 28%;
-              word-wrap: break-word;
-              text-align: center;
-              white-space: normal;
-            "
-            >{{ enjoy_min_label }}</span
+        <div style="text-align: center; margin-top: 0px">
+          {% if lan_en %}
+          <span id="enjoySliderValue" style="color: #999; font-size: 10pt"
+            >Please move the slider</span
           >
-          <span
-            style="
-              font-size: 10pt;
-              color: #777;
-              margin-top: -3pt;
-              width: 28%;
-              word-wrap: break-word;
-              text-align: center;
-              white-space: normal;
-            "
-            >{{ enjoy_neutral_label }}</span
-          >
-          <span
-            style="
-              font-size: 10pt;
-              color: #777;
-              margin-top: -3pt;
-              width: 28%;
-              word-wrap: break-word;
-              text-align: center;
-              white-space: normal;
-            "
-            >{{ enjoy_max_label }}</span
-          >
+          {% else %}
+          <span id="enjoySliderValue" style="color: #999; font-size: 10pt">
+            Bitte bewegen Sie den Schieberegler
+          </span>
+          {% endif %}
         </div>
 
-        <div class="slider-label" style="color: black">
-          {% if lan_en %} Selected: {% else %} Ausgewählt: {%endif%}
-          <span id="enjoySliderValue" class="slider-label" style="color: grey">
-            <strong>
-              {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
-              den Schieberegler{% endif %}
-            </strong>
-          </span>
-          {{ formfield_errors "mappingEnjoy" }}
-        </div>
+        {{ formfield_errors "mappingEnjoy" }}
       </div>
     </div>
 
     <div class="card-section" style="margin-top: -2em">
       <div class="card">
-        {{explain_text}} {{ formfield "satisfaction_text" }}
+        <p style="margin-bottom: -10px">{{explain_text}}</p>
+        {{ formfield "satisfaction_text" }}
       </div>
     </div>
 
@@ -310,7 +273,11 @@
       : sliderName === 'mappingEasier' ? "easierSliderValue"
       : "enjoySliderValue";
     const sliderSpan = document.getElementById(valueSpan);
-    sliderSpan.innerHTML = `<span class="slider-num"><b>${Math.round(value/10)}</b></span>`;
+    {% if lan_en %}
+      sliderSpan.innerHTML = `Selected: <span class="slider-num"><b>${Math.round(value/10)}</b></span>`;
+    {% else %}
+      sliderSpan.innerHTML = `Ausgewählt: <span class="slider-num"><b>${Math.round(value/10)}</b></span>`;
+    {% endif %}
     sliderSpan.style.color = 'black';
 
     // Update slider background gradient

@@ -3,23 +3,22 @@
 {% endblock %} {% block content %}
 <script src="{% static 'colors.js' %}"></script>
 <script src="{{ static 'global.js' }}"></script>
-
-<h2>Perceptions of Political Opinions / Wahrnehmung politischer Meinungen</h2>
-<p>Welcome to our survey! / Willkommen zu unserer Umfrage!
-</p>
-<br>
-
+            
+<h2 style="margin-bottom:0pt">Umfrage zu Wahrnehmung politischer Meinungen</h2>
+<p><em>Survey on Perceptions of Political Opinions</em><p>
+{% comment %} <p>Welcome to our survey! / Willkommen zu unserer Umfrage!
+</p> {% endcomment %}
 
 <!-- Language Selection -->
 <div class="language-section">
     <div class="card">
-        <div class="form-group">
-            <label class="form-label" data-i18n="selectLanguage">Please select your preferred language / Bitte wählen Sie Ihre bevorzugte Sprache:</label>
-            <div class="option-cards" data-field="language">
-                <label class="option-card" style="width:48%;">
+        <div class="form-group" >
+            <label class="form-label">Please select your preferred language / Bitte wählen Sie Ihre bevorzugte Sprache:</label>
+            <div class="option-cards" data-field="language"   style="margin-bottom:0pt">
+                <label class="option-card" style="width:28%;">
                     <input type="radio" name="language" value="en"> English
                 </label>
-                <label class="option-card" style="width:48%;">
+                <label class="option-card" style="width:28%;">
                     <input type="radio" name="language" value="de"> Deutsch
                 </label>
             </div>
@@ -34,89 +33,87 @@
     <div class="card">
         <div class="form-group">
             <h3 data-i18n="consentTitle"></h3>
-            <br>
-            <p data-i18n="dearParticipant"></p>
-            <p data-i18n="consentText"></p>
-            <p data-i18n="consentText2"></p>
+            {% comment %} <p data-i18n="dearParticipant"></p> {% endcomment %}
+            {% comment %} <p data-i18n="consentText"></p>
+            <p data-i18n="consentText2"></p> {% endcomment %}
 
-            <br>
-
-            <details>
-            <summary><strong data-i18n="purposeTitle"></strong></summary>
+            {% comment %} <strong data-i18n="purposeTitle"></strong> {% endcomment %}
             <p data-i18n="purposeBody"></p>
             <p data-i18n="purposeBody2"></p>
             <p data-i18n="purposeBody3"></p>
-            </details>
             
-            <details>
-            <summary><strong data-i18n="eligibility"></strong></summary>
-            <p data-i18n="eligibilityBody"></p>
-            </details>
             
-            <details>
-            <summary><strong data-i18n="procedureTitle"></strong></summary>
+            <strong data-i18n="procedureTitle"></strong>
             {% comment %} <p><strong data-i18n="procedureTitle"></strong></p> {% endcomment %}
             <p data-i18n="procedureBody"></p>
-            <ul>
-                <li>
-                    <p data-i18n="procedureBody1"></p>
+            <ol style="margin-bottom:0em;margin-top:0em;">
+                <li  data-i18n="procedureBody1">
                 </li>
-                <li>
-                    <p data-i18n="procedureBody2"></p>
+                <li data-i18n="procedureBody2">
                 </li>
-                <li>
-                    <p data-i18n="procedureBody3"></p>
+                <li data-i18n="procedureBody3">
                 </li>
-                <li>
-                    <p data-i18n="procedureBody4"></p>
+                <li data-i18n="procedureBody4">
                 </li>
-                <li>
-                    <p data-i18n="procedureBody5"></p>
+                <li data-i18n="procedureBody5">
                 </li>
-                <li>
-                    <p data-i18n="procedureBody6"></p>
+                <li data-i18n="procedureBody6">
                 </li>
-            </ul>
-        </details>
+            </ol>
 
-        <details>
-            <summary><strong data-i18n="paymentTitle"></strong></summary>
-            <p data-i18n="paymentBody"></p><p><strong data-i18n="paymentMoney"></strong></p>
-        </details>
-        <details>
-            <summary><strong data-i18n="withdrawal"></strong></summary>
+        
+        <p>           
+            <strong data-i18n="paymentBody"> </strong>
+        </p>
+        <p data-i18n="refuseOption"></p>
+        
+
+            <!-- Toggle button -->
+            <style>
+  #toggle-btn:focus,
+  #toggle-btn:active {
+    box-shadow: none !important;
+    outline: none !important;
+  }
+</style>
+            <button id="toggle-btn" class="btn btn-outline-secondary" type="button">
+            <div data-i18n="readmore"></div>
+            </button>
+            
+            <div id="more-text" style="display: none; margin-top:1em;">
+            <strong data-i18n="eligibility"></strong>
+            <p data-i18n="eligibilityBody"></p>
+            
+            <strong data-i18n="withdrawal"></strong>
             <p data-i18n="withdrawalInfo"></p>
             <p style="margin-top:-1em">📧 <a href='mailto:collectivemindslab@csh.ac.at'>collectivemindslab@csh.ac.at</a></p>
-            <p data-i18n="studyCoordinators"></p>
-        </details>
+         
         
-        <details>
-            <summary><strong data-i18n="dataUsageTitle"></strong></summary>
+        
+        <strong data-i18n="dataUsageTitle"></strong>
             {% comment %} <p><strong data-i18n="dataUsageTitle"></strong></p> {% endcomment %}
             <ul>
-                <li><p data-i18n="dataUsage1"></p></li>
-                <li><p data-i18n="dataUsage2"></p></li>
-                <li><p data-i18n="dataUsage3"></p></li>
-                <li><p data-i18n="dataUsage4"></p></li>
+                <li data-i18n="dataUsage1"></li>
+                <li data-i18n="dataUsage2"></li>
+                <li data-i18n="dataUsage3"></li>
+                <li data-i18n="dataUsage4"></li>
             </ul>
-        </details>
-
-        <details>
-            <summary><strong data-i18n="ethicsTitle"></strong></summary>
+        
+        <strong data-i18n="ethicsTitle"></strong>
             {% comment %} <p><strong data-i18n="dataUsageTitle"></strong></p> {% endcomment %}
             <p data-i18n="ethicsReview"></p>
-        </details>
-
-        <br>
-            <p><strong data-i18n="questionsTitle"></strong></p>
-            <p data-i18n="questionsBody"></p><p style="margin-top:-1em">📧 <a href='mailto:collectivemindslab@csh.ac.at'>collectivemindslab@csh.ac.at</a></p>
+      
+            <strong data-i18n="questionsTitle"></strong>
+            <p data-i18n="questionsBody"></p>
+            <p style="margin-top:-1em">📧 <a href='mailto:collectivemindslab@csh.ac.at'>collectivemindslab@csh.ac.at</a></p>
 
             {% comment %} <p data-i18n="ethicsReview"></p> {% endcomment %}
 {% comment %} 
             <div class="instructions">
                 <p data-i18n="consentDisclaimer"></p>
             </div> {% endcomment %}
-            
+              </div>
+
             <div class="yellow-instructions">
                 <p data-i18n="consentDecl"></p>
             </div>
@@ -141,7 +138,6 @@
 <script>
 const translations = {
     en: {
-        welcomeTitle: "Welcome to our survey on the perception of political opinions!",
         selectLanguage: "Please select your preferred language:",
         consentTitle: "Participant Consent Form",
         dearParticipant: "Dear participant,",
@@ -155,19 +151,18 @@ const translations = {
         eligibility: "Eligibility", 
         eligibilityBody: "You are eligible to take part in this study if you are at least 18 years old and currently reside in Germany.",
         procedureTitle: "Study Procedure",
-        procedureBody: "The study will take approximately 20-25 minutes and consists of the following steps:", 
+        procedureBody: "The study consists of the following steps:", 
         procedureBody1: "Answer a few questions about your own political views and your political identity.", 
         procedureBody2: "Name ten people you know well and whose opinions are familiar to you, and estimate their political views.", 
         procedureBody3: "Estimate the political views of typical voters of the major political parties in Germany.", 
-        procedureBody4: "Place the individuals on a political map based on how you perceive their political closeness.", 
-        procedureBody5: "For a few randomly selected individuals, indicate how politically similar or different you think they are.",
-        procedureBody6: "Complete a few brief questions about your perceptions of political polarisation, the closeness of the relationship to the ten referenced individuals, and some background questions about yourself.",
+        procedureBody4: "Place the individuals on a political map.", 
+        procedureBody5: "For a few randomly selected pairs of individuals, indicate how politically similar or different you think they are.",
+        procedureBody6: "Complete a few brief questions about the previous tasks and yourself.",
         paymentTitle: "Compensation",
-        paymentBody: "You will be compensated for the duration of the study through Prolific according to standard hourly rates (9 GBP/Stunde):",
-        paymentMoney: "4 GBP for 20-25 minutes.",
+        paymentBody: "This study will take 25-30 minutes. You will be compensated with 5 GBP for your participation.",
+        refuseOption: "You may refuse or redraw your consent at any time.",
         withdrawal: "Voluntary Participation and Withdrawal",
-        withdrawalInfo: "Your participation in this research study is voluntary. You may refuse to participate or stop at any time without penalty. If you complete the study but later wish to have your data removed, please contact us within 30 days at:",
-        studyCoordinators: "(Study coordinators: Mirta Galesic and Peter Steiglechner)",
+        withdrawalInfo: "Your participation in this research study is voluntary. You may refuse to participate or stop at any time without penalty. If you complete the study but later wish to have your data removed, please contact the study coordinators Mirta Galesic and Peter Steiglechner within 30 days at:",
         dataUsageTitle: "Data Privacy and Usage",
         dataUsage1: "Any identifying information (e.g., your Prolific ID) will be kept strictly confidential and never shared without your explicit permission.",
         dataUsage2: "Identifying data is stored separately from your survey responses.",
@@ -181,10 +176,11 @@ const translations = {
         consentYes: "I give consent.",
         consentNo: "I do not give consent.",
         nextBtn: "Next",
+        readmore: "Read more",
+        hideDetails: "Hide details"
         {% comment %} pageText: "Page 1" {% endcomment %}
     },
     de: {
-  "welcomeTitle": "Willkommen zu unserer Umfrage über Wahrnehmungen von politischen Meinungen!",
   "selectLanguage": "Bitte wählen Sie Ihre bevorzugte Sprache:",
   "consentTitle": "Einverständniserklärung",
   "dearParticipant": "Liebe Teilnehmerin, lieber Teilnehmer,",
@@ -193,24 +189,23 @@ const translations = {
   "purposeTitle": "Zweck der Studie",
   "purposeBody": "Diese Studie untersucht, wie Menschen politische Unterschiede und Gemeinsamkeiten wahrnehmen und interpretieren.",
   "purposeBody2": "Es gibt keine richtigen oder falschen Antworten – wir interessieren uns für Ihre persönliche Wahrnehmung und Einschätzung.",
-  "purposeBody3": "Unser Ziel ist es zu verstehen, ob Menschen politische Meinungen und Polarisierung auf eine ähnlich Weise wahrnehmen oder ob es systematische Unterschiede in der Wahrnehmung gibt.",
+  "purposeBody3": "Unser Ziel ist es zu verstehen, ob Menschen politische Meinungen und Polarisierung auf eine ähnliche Weise wahrnehmen oder ob es systematische Unterschiede in der Wahrnehmung gibt.",
   "benefitsBody1": "Die Ergebnisse dieses Projekts sollen aufzeigen, ob Menschen politische Meinungen und gesellschaftliche Polarisierung ähnlich oder unterschiedlich wahrnehmen.",
   "eligibility": "Teilnahmeberechtigung",
   "eligibilityBody": "Sie können an dieser Studie teilnehmen, wenn Sie mindestens 18 Jahre alt sind und derzeit in Deutschland leben.",
   "procedureTitle": "Ablauf der Studie",
-  "procedureBody": "Die Teilnahme dauert etwa 20-25 Minuten und beinhaltet folgende Schritte:",
+  "procedureBody": "Die Studie und beinhaltet folgende Schritte:",
 "procedureBody1": "Sie beantworten zunächst einige Fragen zu Ihren eigenen politischen Einstellungen und Ihrer politischen Identität.",
 "procedureBody2": "Dann nennen Sie zehn Personen, die Sie gut kennen und deren Meinungen Ihnen vertraut sind, und schätzen deren politische Ansichten ein.",
 "procedureBody3": "Anschließend schätzen Sie ein, wie typische Wähler oder Wählerinnen der Parteien in Deutschland politisch eingestellt sind.",
-"procedureBody4": "Sie verorten alle genannten Personen auf einer politischen Karte abhängig davon wie Sie deren politische Nähe wahrnehmen.",
-"procedureBody5": "Für ein paar zufällig ausgewählte Personen, geben Sie an wie ähnlich oder unterschiedlich Sie deren politischen Ansichten zueinander einschätzen.",
-  "procedureBody6": "Zum Schluss beantworten Sie einige kurze Fragen zu Ihrer Wahrnehmung von Polarisierung, zu der sozialen Nähe zu Ihren zehn angegebenen Personen, sowie zu Ihrer eigenen Person.",
+"procedureBody4": "Sie verorten alle genannten Personen auf einer politischen Karte.",
+"procedureBody5": "Für ein paar zufällig ausgewählte Personen, geben Sie an, wie ähnlich oder unterschiedlich Sie ihre politischen Ansichten zueinander einschätzen.",
+  "procedureBody6": "Zum Schluss beantworten Sie einige kurze Fragen zu den vorherigen Aufgaben und zu Ihrer Person.",
   "paymentTitle": "Vergütung",
-  "paymentBody": "Sie erhalten für Ihre Teilnahme eine Vergütung über Prolific gemäß den üblichen Stundensätzen (9 GBP/Stunde):",
-  "paymentMoney": "4 GBP für 25 Minuten.",
+  "paymentBody": "Die Umfrage dauert etwa 25-30 Minuten. Die Vergütung für Ihre Teilnahme beträgt 5 GBP.",
+  "refuseOption": "Sie können Ihr Einverständnis jederzeit verweigern oder zurückziehen.",
   "withdrawal": "Freiwillige Teilnahme und Rücktritt",
-  "withdrawalInfo": "Die Teilnahme an dieser Studie ist freiwillig. Sie können die Teilnahme jederzeit ohne Angabe von Gründen und ohne Nachteile abbrechen. Wenn Sie die Studie abgeschlossen haben, Ihre Daten aber später löschen lassen möchten, kontaktieren Sie uns bitte innerhalb von 30 Tagen unter:",
-  "studyCoordinators": "(Studienleitung: Mirta Galesic und Peter Steiglechner)",
+  "withdrawalInfo": "Die Teilnahme an dieser Studie ist freiwillig. Sie können die Teilnahme jederzeit ohne Angabe von Gründen und ohne Nachteile abbrechen. Wenn Sie die Studie abgeschlossen haben, Ihre Daten aber später löschen lassen möchten, kontaktieren Sie bitte die Studienkoordinator:innen Mirta Galesic und Peter Steiglechner innerhalb von 30 Tagen unter:",
   "dataUsageTitle": "Datenschutz und Verwendung der Daten",
   "dataUsage1": "Alle identifizierenden Informationen (z.B. Ihre Prolific-ID) werden streng vertraulich behandelt und nur mit Ihrer ausdrücklichen Zustimmung weitergegeben.",
   "dataUsage2": "Identifizierende Daten werden getrennt von Ihren Umfrageantworten gespeichert.",
@@ -224,15 +219,12 @@ const translations = {
   "consentYes": "Ich gebe mein Einverständnis.",
   "consentNo": "Ich gebe mein Einverständnis nicht.",
   "nextBtn": "Weiter",
+  "readmore": "Weitere Informationen",
+  "hideDetails": "Weniger Informationen"
   {% comment %} "pageText": "Seite 1" {% endcomment %}
 }
 };
-document.addEventListener("DOMContentLoaded", function () {
-    // Hide oTree's next button completely
-    const nextButton = document.querySelector('button[type="submit"]');
-    if (nextButton) nextButton.style.display = 'none';
-
-    function updateLanguage(lang) {
+function updateLanguage(lang) {
         const elements = document.querySelectorAll('[data-i18n]');
         elements.forEach(el => {
             const key = el.getAttribute('data-i18n');
@@ -244,6 +236,12 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('pagedispl').textContent = translations[lang].pageText;
         }
     }
+document.addEventListener("DOMContentLoaded", function () {
+    // Hide oTree's next button completely
+    const nextButton = document.querySelector('button[type="submit"]');
+    if (nextButton) nextButton.style.display = 'none';
+
+    
 
     // Option card selection handling
     document.querySelectorAll('.option-cards').forEach(group => {
@@ -269,4 +267,20 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
+<script>
+
+  const btn = document.getElementById('toggle-btn');
+  const moreText = document.getElementById('more-text');
+  const textElement = btn.querySelector('[data-i18n="readmore"]');
+  let expanded = false;
+
+  btn.addEventListener('click', () => {
+    expanded = !expanded;
+    moreText.style.display = expanded ? 'block' : 'none';
+    textElement.setAttribute('data-i18n', expanded ? 'hideDetails' : 'readmore');
+    updateLanguage(document.querySelector('input[name="language"]:checked')?.value || 'en');
+  });
+</script>
+
+
 {% endblock %}

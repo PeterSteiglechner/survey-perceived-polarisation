@@ -28,12 +28,12 @@
       {% for item in field_question_pairs %}
       <tr>
         <!-- Question text cell (30%) -->
-        <td style="width: 55%; vertical-align: center; padding: 8px">
+        <td style="width: 40%; vertical-align: center; padding: 8px">
           <label class="form-label">{{ item.question_text }}</label>
         </td>
 
         <!-- Slider cell (70%) -->
-        <td style="width: 45%; padding: 8px">
+        <td style="width: 58%; padding: 8px">
           <div
             style="
               display: flex;
@@ -63,7 +63,7 @@
             style="width: 100%"
           />
 
-          <div style="text-align: center; margin-top: 5px">
+          <div style="text-align: center; margin-top: -15px">
             {% if lan_en %}
             <span id="sliderValue{{ forloop.counter }}" style="color: #999"
               ><p style="font-size: 10pt">Please move the slider</p></span
@@ -87,7 +87,8 @@
 
 <!-- Comment Card -->
 <div class="card" style="margin-bottom: 1em">
-  {{explain_text}} {{ formfield "importance_comments" }} {{ formfield_errors
+  <p style="margin-bottom: -10px">{{explain_text}}</p>
+  {{ formfield "importance_comments" }} {{ formfield_errors
   "importance_comments" }}
 </div>
 
@@ -116,11 +117,11 @@
 
       {% if lan_en %}
       document.getElementById('sliderValue{{ forloop.counter }}').innerHTML =
-        `<p style="font-size:10pt;">Selected: ${value}</p>`;
+        `<p style="font-size:10pt;">Selected: <b>${value}</b> / 100</p>`;
 
       {% else %}
       document.getElementById('sliderValue{{ forloop.counter }}').innerHTML =
-        `<p style="font-size:10pt;">Ausgewählt: ${value}</p>`;
+        `<p style="font-size:10pt;">Ausgewählt: <b>${value}</b> / 100</p>`;
       {% endif %}
 
       document.getElementById('sliderValue{{ forloop.counter }}').style.color = 'black';

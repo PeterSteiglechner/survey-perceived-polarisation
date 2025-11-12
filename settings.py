@@ -17,8 +17,8 @@ SESSION_CONFIGS = [
 
 ROOMS = [
     dict(
-        name=f"{time.strftime("%Y%m%d", time.gmtime())}_pilot",
-        display_name=f"{time.strftime("%Y%m%d", time.gmtime())}_pilot",
+        name=f"pilot2",
+        display_name=f"pilot2",
     )
 ]
 

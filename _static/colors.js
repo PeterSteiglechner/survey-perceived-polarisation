@@ -1,5 +1,5 @@
 const COLORS = {
-    "self": "#808080",
+    "self": "#9B7EBD",
     "Green Party": "#7cbb15",
     "Bündnis 90/Die Grünen": "#7cbb15",
     "AfD": "#009de0",
@@ -9,7 +9,7 @@ const COLORS = {
     "CDU/CSU": "#121212",
     "SPD": "#d71f1f",
     "BSW": "#691940",
-    "reference": "#ff6600",
+    "reference": "#FF8C42",
     "P": "#00e6b8",
     'No party': "#c7c7c7",
     'Keiner Partei': "#c7c7c7",

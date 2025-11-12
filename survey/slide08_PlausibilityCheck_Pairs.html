@@ -4,11 +4,17 @@
 <script src="{% static 'colors.js' %}"></script>
 <script src="{{ static 'global.js' }}"></script>
 
-{{ block title }}{{ page_title }}{{ endblock }} {{ instru1 }}
+<style>
+  .li {
+    margin-bottom: 5px;
+  }
+</style>
+
+{{ block title }}{{ page_title }}{{ endblock }}
 <div>
   <div class="card-section">
     <div class="card">
-      {{instru2}}
+      {{ instru1 }} {{instru2}}
       <label class="form-label">{{ question }}</label>
       <input
         type="range"

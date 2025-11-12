@@ -12,15 +12,17 @@
 <div class="card-section">
   <!-- Demographic Card -->
   <div class="card">
-    <label class="form-label"> {{qu_age}} </label>
+    <label class="form-label" style="margin-bottom:-15px"> {{qu_age}} </label>
     <div class="form-group">
       {% formfield player.age %} {{ formfield_errors "age" }}
     </div>
+    <label class="form-label" style="margin-bottom:-15px"> {{qu_gender}} </label>
+          {% formfield player.gender %} {{ formfield_errors "age" }}
   </div>
 
-  <!-- Interest Card -->
+  <!-- Discussion Card -->
   <div class="card">
-      <label class="form-label"> {{qu_interest}} </label>
+      <label class="form-label"> {{qu_discussion}} </label>
       <div
         style="
           display: flex;
@@ -29,30 +31,30 @@
           margin-bottom: -3px;
         "
       >
-        <span style="font-size: 10pt; color: #999"
-          >{{ interest_min_label }}</span
+        <span style="font-size: 10pt; color: #000000ff"
+          >{{ discussion_min_label }}</span
         >
-        <span style="font-size: 10pt; color: #999"
-          >{{ interest_max_label }}</span
+        <span style="font-size: 10pt; color: #000000ff"
+          >{{ discussion_max_label }}</span
         >
       </div>
       <input
         type="range"
         class="likert-slider"
-        name="political_interest"
-        id="slider_political_interest"
-        min="{{interest_min}}"
-        max="{{interest_max}}"
+        name="political_discussion"
+        id="slider_political_discussion"
+        min="{{discussion_min}}"
+        max="{{discussion_max}}"
         step="1"
         required
-        oninput="handleSliderInput('political_interest', this.value)"
+        oninput="handleSliderInput('political_discussion', this.value)"
       />
       <div
-        class="slider-label"
+        class="slider-label" style="margin-bottom:3em"
         >
-        <p style="color: #999; font-size: 10pt">
+        <p style="color: #999; font-size: 10pt;">
           {% if lan_en %} Selected: {% else %} Ausgewählt: {%endif%}
-          <span id="sliderValuepolitical_interest" style="color: #999; font-size: 10pt">
+          <span id="sliderValuepolitical_discussion" style="color: #999; font-size: 10pt; ">
             <strong>
               {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
               den Schieberegler{% endif %}
@@ -61,57 +63,59 @@
         </p>
       </div>
 
-      {{ formfield_errors "political_interest" }}
+      {{ formfield_errors "political_discussion" }}
+      
+    {% comment %} </div>  
+
+    <!-- Interest Card -->
+    <div class="card"> {% endcomment %}
+        <label class="form-label"> {{qu_interest}} </label>
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0px;
+            margin-bottom: -3px;
+          "
+        >
+          <span style="font-size: 10pt; color: #000000ff"
+            >{{ interest_min_label }}</span
+          >
+          <span style="font-size: 10pt; color: #000000ff"
+            >{{ interest_max_label }}</span
+          >
+        </div>
+        <input
+          type="range"
+          class="likert-slider"
+          name="political_interest"
+          id="slider_political_interest"
+          min="{{interest_min}}"
+          max="{{interest_max}}"
+          step="1"
+          required
+          oninput="handleSliderInput('political_interest', this.value)"
+        />
+        <div
+          class="slider-label"
+          >
+          <p style="color: #999; font-size: 10pt">
+            {% if lan_en %} Selected: {% else %} Ausgewählt: {%endif%}
+            <span id="sliderValuepolitical_interest" style="color: #999; font-size: 10pt;margin-bottom:3em">
+              <strong>
+                {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
+                den Schieberegler{% endif %}
+              </strong>
+            </span>
+          </p>
+        </div>
+
+        {{ formfield_errors "political_interest" }}
     </div>
   </div>
-<!-- Interest Card -->
-  <div class="card">
-      <label class="form-label"> {{qu_polarization}} </label>
-      <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          margin-top: 0px;
-          margin-bottom: -3px;
-        "
-      >
-        <span style="font-size: 10pt; color: #999"
-          >{{ polarised_min_label }}</span
-        >
-        <span style="font-size: 10pt; color: #999"
-          >{{ polarised_max_label }}</span
-        >
-      </div>
-      <input
-        type="range"
-        class="likert-slider"
-        name="how_polarised"
-        id="slider_how_polarised"
-        min="{{polarised_min}}"
-        max="{{polarised_max}}"
-        step="1"
-        required
-        oninput="handleSliderInput('how_polarised', this.value)"
-      />
-      <div
-        class="slider-label"
-        style="text-align: center; margin-top: 0pt; margin-bottom: 0pt"
-      >
-        <p style="color: #999; font-size: 10pt">
-          {% if lan_en %} Selected: {% else %} Ausgewählt: {%endif%}
-          <span id="sliderValuehow_polarised" style="color: #999; font-size: 10pt">
-            <strong>
-              {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
-              den Schieberegler{% endif %}
-            </strong>
-          </span>
-        </p>
-      </div>
+  
 
-      {{ formfield_errors "how_polarised" }}
-    </div>
   </div>
-
 </div>
 
 <br>
