@@ -106,10 +106,10 @@ class C(BaseConstants):
             zip(
                 QUS,
                 [
-                    "about climate change",
-                    "about same-sex marriage",
-                    "about equal rights for migrants",  # "Opinion about whether equal rights for migrants should be given regardless of their integration efforts",
-                    "about economic inequality",
+                    "on climate change concerns",
+                    "on same-sex marriage",
+                    "on migrants' rights",  # "Opinion about whether equal rights for migrants should be given regardless of their integration efforts",
+                    "on economic inequalities",
                 ],
             )
         ),
@@ -117,16 +117,17 @@ class C(BaseConstants):
             zip(
                 QUS,
                 [
-                    "zum Klimawandel",
-                    "zu gleichgeschlechtlicher Ehe",
-                    "zu gleichen Rechten für Migranten und Migrantinnen",  # "Die Meinung der Person ob Migranten oder Migrantinnen unabhängig von Integrationsbemühungen die gleichen Rechte wie Einheimische bekommen sollten",
-                    "zu ökonomischer Ungleichheit",
+                    "beim Thema Besorgnis über den Klimawandel",
+                    "beim Thema gleichgeschlechtliche Ehen",
+                    "beim Thema Rechte für Migranten und Migrantinnen",  # "Die Meinung der Person ob Migranten oder Migrantinnen unabhängig von Integrationsbemühungen die gleichen Rechte wie Einheimische bekommen sollten",
+                    "beim Thema ökonomische Ungleichheiten",
                 ],
             )
         ),
     }
 
     N_PERSONS = 10
+    MIN_REFERENCES = 7
 
     # N_BATCHES = 2
     REFPERSONCOLOR = "#FF8C42"
@@ -225,16 +226,17 @@ class Group(BaseGroup):
     pass
 
 
-def slider(min, max, label=""):
+def slider(min, max, label="", blank=False):
     return models.IntegerField(
-        choices=range(min, max + 1),
+        choices=list(range(min, max + 1)),  # + [-999],
         label=label,
         widget=widgets.RadioSelect,
+        blank=blank,
     )
 
 
-def define_reference(label, n):
-    return models.LongStringField(label=label, blank=False, max_length=20)
+def define_reference(label, n, blank=False):
+    return models.LongStringField(label=label, blank=blank, max_length=20)
 
 
 class Player(BasePlayer):
@@ -277,6 +279,8 @@ class Player(BasePlayer):
     importance_comments = models.LongStringField(
         blank=True, label="", initial="", null=True
     )
+
+    n_references = models.IntegerField(blank=True)
 
     #################################
     #####  TIME   #####
@@ -369,10 +373,20 @@ for q in C.QUS:
 #####  PERSONS & PERSONS' POLITICAL OPINIONS   #####
 #################################
 for n in range(1, C.N_PERSONS + 1):
-    setattr(Player, f"reference{n}", define_reference(f"Person {n}: ", n))
-    setattr(Player, f"reference{n}_socialCloseness", slider(0, 100))
+    setattr(
+        Player,
+        f"reference{n}",
+        define_reference(f"Person {n}: ", n, blank=(n > C.MIN_REFERENCES)),
+    )
+    setattr(
+        Player,
+        f"reference{n}_socialCloseness",
+        slider(0, 100, blank=(n > C.MIN_REFERENCES)),
+    )
     for q in C.QUS:
-        setattr(Player, f"reference{n}_{q}", slider(-100, 100))
+        setattr(
+            Player, f"reference{n}_{q}", slider(-100, 100, blank=(n > C.MIN_REFERENCES))
+        )
 
 #################################
 #####  LABELLED INDIVIDS' POLITICAL OPINIONS   #####
@@ -454,28 +468,29 @@ class slide00_toc(Page):
         ]
         hls = ["" if not hl_li else " class='upcoming'" for hl_li in hl]
         if lan == "en":
-            items = f"<ul><li{hls[0]}>{checks[0]}Your own political opinions and identity</li><li{hls[1]}>{checks[1]}Opinions of others (people in your social circle and typical voters)</li><li{hls[3]}>{checks[3]}Creating your own political map <em>(with two short practice examples)</em></li><li{hls[4]}>{checks[4]}Evaluating political similarity of pairs</li><li{hls[5]}>{checks[5]}Short final questions</li></ul>"
+            items = f"<ul><li{hls[0]}>{checks[0]}Your own political opinions</li><li{hls[1]}>{checks[1]}Political opinions of other people</li><li{hls[3]}>{checks[3]}Creating your own political map <em>(with two short practice tasks)</em></li><li{hls[4]}>{checks[4]}Evaluating the similarity of the political views of individuals</li><li{hls[5]}>{checks[5]}Short general questions about the tasks and yourself</li></ul>"
             if player.visited_toc == 0:
                 i1 = "Thank you very much for your responses so far!<br>Below you can find an overview of the remaining tasks in this survey. On the next pages, we will continute with the ones highlighted in <span class='upcoming'>yellow</span>."
                 i2 = ""
             if player.visited_toc == 1:
                 i1 = "Thank you very much for your evaluations of the political views of other individuals!"  # ➡️ In the following part, we will ask you to place people on a political map based on how similar or different you perceive their political views to be."
-                i2 = "➡️ To prepare for the main task, in which we ask you to place people on your own personal political map, we will begin with <strong>two short practice rounds</strong>."
+                i2 = "➡️ In the following, we ask you to place people on a self-created, political map. To prepare for this task, we ask you to work through <strong>two short practice tasks</strong>."
             if player.visited_toc == 2:
                 i1 = "Thank you very much for creating your own personal political map!"
                 i2 = "➡️ To help us better understand your political map, we ask you to again evaluate the political similarity between a few (randomly selected) pairs of individuals. Then, we will close this survey with a few short general questions."
         else:
-            items = f"<ul><li{hls[0]}>{checks[0]}Ihre eigenen politischen Ansichten und Identität</li><li{hls[1]}>{checks[1]}Die politischen Ansichten anderer Personen (Menschen in Ihrem sozialen Umfeld und typische Wählerinnen und Wähler)</li><li{hls[3]}>{checks[3]}Ihre persönliche politische Karte <em>(plus zwei kurze Übungsaufgaben)</em></li> <li{hls[4]}>{checks[4]}Politische Ähnlichkeit einzelner Personen zueinander</li><li{hls[5]}>{checks[5]}Kurze Abschlussfragen</li></ul>"
+            items = f"<ul><li{hls[0]}>{checks[0]}Ihre eigenen politischen Ansichten</li><li{hls[1]}>{checks[1]}Die politischen Ansichten anderer Personen</li><li{hls[3]}>{checks[3]}Ihre persönliche politische Karte <em>(plus zwei kurze Übungsaufgaben)</em></li> <li{hls[4]}>{checks[4]}Ähnlichkeit der politischen Ansichten von einzelnen Personen</li><li{hls[5]}>{checks[5]}Kurze Abschlussfragen über die vorherigen Aufgaben und Sie selbst</li></ul>"
+            # (Menschen in Ihrem sozialen Umfeld und typische Wählerinnen und Wähler)
             # items = f"<ul><li{hls[0]}>{checks[0]}Ihre eigenen politischen Ansichten und Identität</li><li{hls[1]}>{checks[1]}Ihre Einschätzungen über die politischen Ansichten von Personen oder Kontakten, die Sie gut kennen und deren Meinungen Ihnen vertraut sind.</li> <li{hls[2]}>{checks[2]}Ihre Einschätzungen über die politischen Ansichten typischer Wählerinnen und Wähler der politischen Parteien in Deutschland</li>  <li{hls[3]}>{checks[3]}Die genannten Personen auf einer persönlichen politischen Karte verorten<br>(inklusive zwei kurzer Übungsaufgaben)</li> <li{hls[4]}>{checks[4]}Ihre Einschätzungen über die politische Ähnlichkeit einzelner Personen zueinander</li>  <li{hls[5]}>{checks[5]}Abschlussfragen zur Umfrage, über Ihre sozialen Beziehungen zu den genannten Personen oder Kontakten und über Ihre Person</li></ul>"
             if player.visited_toc == 0:
                 i1 = "Vielen Dank für Ihre Antworten bisher!<br>Unten finden Sie eine Übersicht der noch anstehenden Aufgaben. Auf den nächsten Seiten werden wir mit den <span class='upcoming'>gelb</span> markierten beginnen."  # ➡️ In den folgenden Seiten geht es um Ihre Einschätzungen zu den politischen Ansichten von Ihren sozialen Kontakten und von typischen Wählern oder Wählerinnen."
                 i2 = ""
             if player.visited_toc == 1:
                 i1 = "Vielen Dank für Ihre Einschätzungen über die politischen Ansichten von anderen Personen!"  # ➡️ Im folgenden Teil werden wir Sie bitten, Personen auf einer politischen Karte zu platzieren, je nachdem, wie ähnlich oder unterschiedlich Sie deren politische Ansichten wahrnehmen."
-                i2 = "➡️ Zur Vorbereitung auf die eigentliche Aufgabe, in der wir Sie bitten werden, die vorherigen Personen auf einer persönlichen politischen Karte zu platzieren, beginnen wir mit <strong>zwei kurzen Übungsaufgaben</strong>."
+                i2 = "➡️ Im Folgenden werden wir Sie bitten, die vorherigen Personen auf einer von Ihnen erstellten, politischen Karte zu platzieren. Zur Vorbereitung auf diese Aufgabe, bitten wir Sie <strong>zwei kurze Übungsaufgaben</strong> zu bearbeiten."
             if player.visited_toc == 2:
                 i1 = "Vielen Dank für das Erstellen Ihrer persönlichen politischen Karte!"
-                i2 = "➡️ Um uns dabei zu helfen, Ihre Antworten besser zu verstehen, bitten wir Sie zunächst nochmals die politische Ähnlichkeit einiger (zufällig ausgewählter) Paare einzuschätzen. Danach beenden wir die Umfrage mit ein paar kurzen allgemeineren Fragen."
+                i2 = "➡️ Um uns dabei zu helfen, Ihre Antworten besser zu verstehen, bitten wir Sie zunächst nochmals die Ähnlichkeit der politischen Ansichten einiger (zufällig ausgewählter) Paare einzuschätzen. Danach beenden wir die Umfrage mit ein paar kurzen allgemeineren Fragen."
         return {
             "lan_en": lan == "en",
             "maxslides": C.MAXSLIDES,
@@ -568,17 +583,6 @@ class slide02_Opinions(Page):
     @staticmethod
     def before_next_page(player, timeout_happened):
         player.current_page += 1
-        valid_pairs = list(
-            combinations(
-                ["self"]
-                + [f"reference{c}" for c in range(1, C.N_PERSONS + 1)]
-                + C.LABELLED,
-                2,
-            )
-        )
-        valid_pairs = [tuple(v) for v in valid_pairs if not v in C.FORCED_PAIRS]
-        player.valid_pairs = json.dumps(valid_pairs)
-        player.n_checks = 1 + C.N_PERSONS + len(C.LABELLED)
         player.t_on_identity = int(time.time())
 
 
@@ -688,14 +692,19 @@ class slide03_References(Page):
                 else "Wir sind außerdem an den politischen Meinungen in Ihrem sozialen Umfeld interessiert."
             ),
             "instruction_text1": (
-                f"Now think about <strong>{C.N_PERSONS} people</strong> who you would count to your social circle — for example, because the person's opinions matter to you, because you sometimes have deep talks about politics or the world, or because the person has a substantial influence on you."
+                f"Now think about <strong>{C.N_PERSONS} people</strong> who you would count to your social circle — for example, because the person's opinions matter to you, because you regularly talk about politics or world events, or because the person has a substantial influence on you."
                 if lan == "en"
-                else f"Denken Sie nun an <strong>{C.N_PERSONS} Personen</strong>, die Sie zu Ihrem sozialen Umfeld zählen würden – sei es, weil Ihnen die Meinungen dieser Person wichtig sind, weil Sie mit der Person manchmal tiefe Gespräche über Politik oder die Welt führen, oder weil die Person einen erheblichen Einfluss auf Sie selbst hat."
+                else f"Denken Sie nun an <strong>{C.N_PERSONS} Personen</strong>, die Sie zu Ihrem sozialen Umfeld zählen würden – sei es, weil Ihnen die Meinungen dieser Person wichtig sind, weil Sie mit der Person gelegentlich Gespräche über Politik oder das Weltgeschehen führen, oder weil die Person einen erheblichen Einfluss auf Sie selbst hat."
             ),
             "instruction_text2": (
-                "They could be friends, family members, colleagues (who you value), or others who you would include in your social circle and with whom you interact with either face-to-face or otherwise."
+                "They could be friends, family members, colleagues (who you value), or others who you would include in your social circle and with whom you interact with either face-to-face or otherwise. "
                 if lan == "en"
                 else "Diese Personen können Freunde, Familienmitglieder, Kolleginnen (die Sie wertschätzen), oder andere Personen sein, die Sie zu Ihrem sozialen Umfeld zählen und mit denen Sie persönlich oder anderweitig Kontakt haben."
+            ),
+            "disclaimer2": (
+                f"Some people struggle to come up with {C.N_PERSONS} contacts. Since this is a critical part of our study, we require <em>at least {C.MIN_REFERENCES}</em> contacts. You may leave the last three fields empty, however, we would highly appreciate it if you can think of {C.N_PERSONS} people."
+                if lan == "en"
+                else f"Manchen Menschen fällt es schwer {C.N_PERSONS} Kontakte zu nennen. Da dies ein wichtiger Teil unserer Umfrage ist, benötigen wir <em>zumindest {C.MIN_REFERENCES}</em> Kontakte. Sie können die letzten drei Felder leer lassen; wir würden es allerdings sehr wertschätzen, wenn Sie tatsächlich {C.N_PERSONS} Kontakte nennen."
             ),
             "instruction_text3": (
                 "Please write down their names or initials below so you can recognize them later (we will not use or store this information)."
@@ -717,7 +726,7 @@ class slide03_References(Page):
     @staticmethod
     def error_message(player: Player, values):
         references = [v.strip() for v in values.values() if v.strip()]
-        if len(references) < C.N_PERSONS:
+        if len(references) < C.MIN_REFERENCES:  # C.N_PERSONS:
             return (
                 "Please fill in all fields!"
                 if player.language == "en"
@@ -732,6 +741,26 @@ class slide03_References(Page):
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
+        player.n_references = int(
+            np.sum(
+                [
+                    len(getattr(player, f"reference{n}")) > 0
+                    for n in range(1, C.N_PERSONS + 1)
+                ]
+            )
+        )
+        valid_pairs = list(
+            combinations(
+                ["self"]
+                + [f"reference{c}" for c in range(1, player.n_references + 1)]
+                + C.LABELLED,
+                2,
+            )
+        )
+        valid_pairs = [tuple(v) for v in valid_pairs if not v in C.FORCED_PAIRS]
+        player.valid_pairs = json.dumps(valid_pairs)
+        player.n_checks = 1 + player.n_references + len(C.LABELLED)
+
         player.t_on_referencesOpinions = int(time.time())
         player.current_page += 1
 
@@ -763,7 +792,7 @@ class slide04_ReferencesOpinions(Page):
                     else f"{pillname(getattr(player, f'reference{i}'))} würde am ehesten so antworten:"
                 ),
             }
-            for i in range(1, C.N_PERSONS + 1)
+            for i in range(1, player.n_references + 1)
         ]
 
         questions = []
@@ -795,9 +824,9 @@ class slide04_ReferencesOpinions(Page):
                 else "Wir wissen, dass es nicht immer leicht ist, die Antworten anderer einzuschätzen. Bitte geben Sie für jede der Aussagen diejenige Option an, von der <em>Sie</em> am ehesten glauben, dass die jeweilige Person sie auswählen würde."
             ),
             instruction_text=(
-                f"How do you think each of the {C.N_PERSONS} people you selected would answer the political questions?"
+                f"How do you think each of the {player.n_references} people you selected would answer the political questions?"
                 if lan == "en"
-                else f"Wie würden Ihrer Meinung die {C.N_PERSONS} von Ihnen genannten Personen die politischen Fragen beantworten?"
+                else f"Wie würden Ihrer Meinung die {player.n_references} von Ihnen genannten Personen die politischen Fragen beantworten?"
             ),
             references=references,
             questions=questions,
@@ -824,7 +853,7 @@ class slide04_ReferencesOpinions(Page):
 
         fields = []
         for q in [C.QUS[i] for i in json.loads(player.question_sorting)]:
-            for i in range(1, C.N_PERSONS + 1):
+            for i in range(1, player.n_references + 1):
                 fields.append(f"reference{i}_{q}")
         return fields
 
@@ -1060,7 +1089,7 @@ class slide05a_MapGame(Page):
             "page_title": (
                 "Political Mapping – Warm-up (Practice)"
                 if lan == "en"
-                else "Politische Karte – Aufwärmen (Übungsrunde)"
+                else "Politische Karte – Aufwärmen (Übung)"
             ),
             "lan": lan,
             "instruction_text2": (
@@ -1079,14 +1108,14 @@ class slide05a_MapGame(Page):
                 else "<details><summary>Technische Anleitung (falls benötigt, hier klicken)</summary><ul><li>Sie beginnen mit mehreren Punkten auf der rechten Seite.</li><li>Ziehen Sie diese nacheinander in das Rechteck und ordnen Sie die Punkte wie oben beschrieben an.</li><li>Sie können jeden Punkt verschieben, bis Sie mit der Anordnung zufrieden sind.</li></ul></details>"
             ),
             "tomato": (
-                "<em>Example:</em> A participant, who dislikes tomatoes, might arrange the dishes in quite a different way compared to a person, who dislikes meat."
+                "<em>Example:</em> A participant, who dislikes tomatoes, might arrange the dishes quite differently compared to a participant, who does not eat meat."
                 if lan == "en"
-                else "<em>Beispiel:</em> Eine Person, die keine Tomaten mag, würde die Gerichte vermutlich auf eine ganz andere Weise anordnen als jemand, der kein Fleisch isst."
+                else "<em>Beispiel:</em> Eine Teilnehmerin, die Tomaten nicht mag, platziert die Gerichte vermutlich ganz anders als ein Teilnehmer, der kein Fleisch isst."
             ),
             "no_wrong_answers": (
-                f"We are interested solely in <strong>your personal perceptions</strong>."
+                f"This arrangement – as the ones in the following tasks – is of course very subjective:"
                 if lan == "en"
-                else "Wir sind ausschließlich an <strong>Ihrer persönlichen Einschätzung</strong> interessiert."
+                else "Diese Anordnung – wie auch die in den folgenden Aufgaben – ist natürlich sehr individuell:"
             ),
             "all_dots_instr": (
                 "All dots must be within the square boundary to proceed."
@@ -1173,15 +1202,15 @@ class slide05a_MapTest(Page):
             "lan_en": lan == "en",
             "dots": init_dots,
             "page_title": (
-                "Political Mapping – Practice Round 2"
+                "Political Mapping – Practice 2"
                 if lan == "en"
-                else "Politische Karte – Übungsrunde 2"
+                else "Politische Karte – Übung 2"
             ),
             "lan": lan,
             "instruction_text1": (
-                "In the <strong>second practice round</strong> we now focus on perception of political differences."
+                "In the <strong>second Practice</strong> we now focus on perception of political differences."
                 if lan == "en"
-                else "In der <strong>zweiten Übungsrunde</strong> geht es nun um Wahrnehmungen von politischer Unterschiede."
+                else "In der <strong>zweiten Übung</strong> geht es nun um Wahrnehmungen von politischer Unterschiede."
             ),
             "instruction_text2": (
                 "Imagine you, a friend, a co-worker, and a relative of yours are in a room together (the rectangle below)."
@@ -1194,14 +1223,14 @@ class slide05a_MapTest(Page):
                 else "Ordnen Sie die Personen im Raum so an, wie <em>Sie</em> deren politische Ansichten wahrnehmen:<ul> <li>Platzieren Sie Personen <strong>näher beieinander</strong>, wenn Sie diese als <strong><em>politisch</em> ähnlich</strong> wahrnehmen.</li><li>Platzieren Sie Personen <strong>weiter auseinander</strong>, wenn Sie diese als <strong><em>politisch</em> unterschiedlich</strong> wahrnehmen.</li></ul>"
             ),
             "disclaimer": (
-                "<p>This is a practice round – some arrangements match the instructions below, others do not. When you click <em>Next</em>, we will show you whether your arrangement meets all the instructions. You have 5 attempts.</p>"
+                "<p>This is a practice task! Some arrangements match the instructions below, others do not. When you click <em>Next</em>, we will show you whether your arrangement meets all the instructions. You have 5 attempts.</p>"
                 if lan == "en"
-                else "<p>Dies ist eine Übungsrunde – einige Anordnungen entsprechen den untenstehenden Anweisungen, andere nicht. Wenn Sie auf <em>Weiter</em> klicken, erfahren Sie, ob Ihre Anordnung alle Vorgaben erfüllt. Sie haben 5 Versuche.</p>"
+                else "<p>Dies ist eine Übung! Einige Anordnungen entsprechen den untenstehenden Anweisungen, andere nicht. Wenn Sie auf <em>Weiter</em> klicken, erfahren Sie, ob Ihre Anordnung alle Vorgaben erfüllt. Sie haben 5 Versuche.</p>"
             ),  # In the main task on the next slide, there will be NO right or wrong answers — only your personal perception will matter.</p> #  Im Hauptteil auf der nächsten Seite wird es dagegegen KEINE richtigen oder falschen Antworten geben – nur Ihre persönliche Wahrnehmung wird relevant sein.
             "detailed_instructions_1": (
-                "<h3>Practice Round Step-by-Step Instructions</h4><p>Arrange the dots as described in the following instructions:</p>"
+                "<h3>Practice Step-by-Step Instructions</h4><p>Arrange the dots as described in the following instructions:</p>"
                 if lan == "en"
-                else "<h3>Übungsrunde Schritt-für-Schritt Anleitung</h4> <p>Ordnen Sie die Punkte wie in der folgenden Anleitung beschrieben an:</p>"
+                else "<h3>Übung Schritt-für-Schritt Anleitung</h4> <p>Ordnen Sie die Punkte wie in der folgenden Anleitung beschrieben an:</p>"
             ),
             "detailed_instructions_2": (
                 (
@@ -1331,7 +1360,7 @@ class slide05b_MapTestResult(Page):
                     else (
                         "Continue Anyway"
                         if player.attemptPractice == C.N_MAX_PRACTICE_RUNS
-                        else "Repeat Practice Round"
+                        else "Repeat Practice"
                     )
                 )
                 if lan == "en"
@@ -1341,7 +1370,7 @@ class slide05b_MapTestResult(Page):
                     else (
                         "Trotzdem weiter"
                         if player.attemptPractice == C.N_MAX_PRACTICE_RUNS
-                        else "Wiederhole Übungsrunde"
+                        else "Wiederhole Übung"
                     )
                 )
             ),
@@ -1351,9 +1380,9 @@ class slide05b_MapTestResult(Page):
                 else f"Versuch {player.attemptPractice} von {C.N_MAX_PRACTICE_RUNS}"
             ),
             "page_title": (
-                "Political Mapping – Practice Round 2 – Results"
+                "Political Mapping – Practice 2 – Results"
                 if lan == "en"
-                else "Politische Karte – Übungsrunde 2 – Ergebnisse"
+                else "Politische Karte – Übung 2 – Ergebnisse"
             ),
             "success_msg": (
                 "<strong>Well done!</strong> Your arrangement fulfills all aspects of the instructions."
@@ -1361,9 +1390,9 @@ class slide05b_MapTestResult(Page):
                 else "<strong>Sehr gut!</strong> Ihre Anordnung erfüllt alle Aspekte der Anleitung."
             ),
             "error_msg": (
-                f"<strong>Your arrangement does not meet all aspects of the instructions:</strong></p><p style='white-space: pre-line;'>{errors}</p><p>Please repeat the practice round and try to arrange the dots such that all criteria are met.</p>"
+                f"<strong>Your arrangement does not meet all aspects of the instructions:</strong></p><p style='white-space: pre-line;'>{errors}</p><p>Please repeat the practice task and try to arrange the dots such that all criteria are met.</p>"
                 if lan == "en"
-                else f"<strong>Ihre Anordnung stimmt nicht mit allen Aspekte der Anleitung überein:</strong></p><p style='white-space: pre-line;'>{errors}</p><p>Bitte wiederholen Sie die Übungsrunde und versuchen Sie, die Punkte so anzuordnen, dass alle Kriterien erfüllt sind.</p>"
+                else f"<strong>Ihre Anordnung stimmt nicht mit allen Aspekte der Anleitung überein:</strong></p><p style='white-space: pre-line;'>{errors}</p><p>Bitte wiederholen Sie die Übungsaufgabe und versuchen Sie, die Punkte so anzuordnen, dass alle Kriterien erfüllt sind.</p>"
             ),
             "img_help": not (player.attemptPractice <= 1 or player.isTrainingPassed),
             "img_help_text": "<p>"
@@ -1427,7 +1456,10 @@ class slide06_SPaM(Page):
         fixedPairs.extend(C.FORCED_PAIRS)
         random.shuffle(valid_pairs)
         pairSequence = (
-            fixedPairs + valid_pairs[: (C.NR_PAIRWISE_CHECKS - len(fixedPairs))]
+            fixedPairs
+            + valid_pairs[
+                : (1 + player.n_references + len(C.LABELLED) - len(fixedPairs))
+            ]
         )
         random.shuffle(pairSequence)
         player.pairSequence = json.dumps(pairSequence)
@@ -1446,7 +1478,10 @@ class slide06_SPaM(Page):
         lan = player.language
         displ_names = (
             ["Self" if lan == "en" else "Ich"]
-            + [getattr(player, f"reference{f}") for f in range(1, C.N_PERSONS + 1)]
+            + [
+                getattr(player, f"reference{f}")
+                for f in range(1, player.n_references + 1)
+            ]
             + [
                 f"{v+' voter' if lan=='en' else C.LABELLED_de[v]+' Wähler/Wählerin'}"
                 for v in C.LABELLED
@@ -1454,12 +1489,12 @@ class slide06_SPaM(Page):
         )
         types = (
             ["self"]
-            + ["reference"] * C.N_PERSONS
+            + ["reference"] * player.n_references
             + ["labelledPerson"] * len(C.LABELLED)
         )
         varnames = (
             ["self"]
-            + [f"reference{f}" for f in range(1, C.N_PERSONS + 1)]
+            + [f"reference{f}" for f in range(1, player.n_references + 1)]
             + [f"{v}" for v in C.LABELLED]
         )
         init_dots = [
@@ -1469,7 +1504,8 @@ class slide06_SPaM(Page):
                 "name_disp": name,
                 "x": 576 + 80 * (dottype == "labelledPerson"),
                 "y": 32
-                + (i - (dottype == "labelledPerson") * (C.N_PERSONS + 0.45)) * 42,
+                + (i - (dottype == "labelledPerson") * (player.n_references + 0.45))
+                * 42,
                 "descr": "",
                 "t_first_moved": -1,
                 "t_last_moved": -1,
@@ -1496,9 +1532,9 @@ class slide06_SPaM(Page):
                 else "Wir beginnen nun mit der Hauptaufgabe dieser Umfrage."
             ),
             "instruRoom": (
-                f"Imagine you, the {C.N_PERSONS} people representing your social circle, and typical voters of the German parties are in a room (the rectangle below)."
+                f"Imagine you, the {player.n_references} people representing your social circle, and typical voters of the German parties are in a room (the rectangle below)."
                 if lan == "en"
-                else f"Stellen Sie sich vor, Sie sind zusammen mit den {C.N_PERSONS} Personen, die Ihr soziales Umfeld repräsentieren, und mit den typischen Wählern oder Wählerinnen der vorher genannten Parteien in einem Raum (das Rechteck unten)."
+                else f"Stellen Sie sich vor, Sie sind zusammen mit den {player.n_references} Personen, die Ihr soziales Umfeld repräsentieren, und mit den typischen Wählern oder Wählerinnen der vorher genannten Parteien in einem Raum (das Rechteck unten)."
             ),
             "instru_main": (
                 "<p>Arrange the people in the room based on how <em>you</em> see their political views about the questions regarding climate change, migration, inequality and diversity:</p><ul><li><strong>Place individuals closer together if you perceive them as politically similar.</strong></li><li><strong>Place individuals farther apart if you perceive them as politically different.</strong></li></ul>"
@@ -1686,14 +1722,14 @@ class slide09_Importance(Page):
                 else "Wichtigkeit der politischen Themen für Sie"
             ),
             "question": (
-                "Please rate how <b>important</b> the four issues were to you when you evaluated the political similarity of two individuals to each other or when you arranged the dots in the square!"
+                "Please rate how <b>important</b> each of the four issues were to you in the last two tasks (evaluating pairs and creating the political map)!"
                 if lan == "en"
-                else "Bitte schätzen Sie, wie <b>wichtig</b> die vier politischen Themen jeweils für Sie waren, als Sie die politische Ähnlichkeit von zwei Personen bewertet bzw. als Sie die jeweiligen Punkte im Rechteck platziert haben!"
+                else "Bitte schätzen Sie ein, wie <b>wichtig</b> die vier politischen Themen jeweils für Sie in den letzten beiden Aufgaben waren (Bewerten einzelner Paare bzw. Erstellen der politischen Karte)!"
             ),
             "explain_text": (
-                "If you want, you can write some comments about the importance of the topics to you personally or give further explanations of your thought process while doing the previous tasks <em>(optional)</em>:"
+                "If you want, you can explain here in more detail which topics have influenced you in the previous tasks and in what way <em>(optional)</em>:"
                 if lan == "en"
-                else "Wenn Sie wollen, können Sie unten ein paar Kommentare zu der Wichtigkeit dieser Themen für Sie persönlich schreiben oder Ihren Gedankengang bei den vorherigen Aufgaben näher erklären <em>(optional)</em>:"
+                else "Wenn Sie wollen, können Sie hier näher erklären, was Ihre Antworten in den letzten Aufgaben beeinflusst haben und wie <em>(optional)</em>:"
             ),
         }
 
@@ -1720,7 +1756,7 @@ class slide10_PolarisationTopics(Page):
         questions = [C.QUS[i] for i in json.loads(player.question_sorting)]
         fields = [f"how_polarised_{q}" for q in questions]
         questions = [
-            ("...in their opinions " if lan == "en" else "...in ihren Meinungen ")
+            ("..." if lan == "en" else "...")
             + C.QUESTIONNAMES[player.language][q]
             + "?"
             for q in questions
@@ -1745,9 +1781,9 @@ class slide10_PolarisationTopics(Page):
             "lan_en": lan == "en",
             "field_question_pairs": field_question_pairs,
             "how_polarised_question_text": (
-                "...in their political opinions in general?"
+                "...on political issues in general?"
                 if lan == "en"
-                else "...in ihren Meinungen insgesamt?"
+                else "...bei politischen Themen insgesamt?"
             ),
             "first_label": first_label,
             "last_label": last_label,
@@ -1759,12 +1795,12 @@ class slide10_PolarisationTopics(Page):
             "question": (
                 "Please rate below how <b>politically divided</b> you perceive the opinions in Germany to be these days, first for the opinions on each of the four political topics separately and then for political opinions in general."
                 if lan == "en"
-                else "Bitte schätzen Sie unten, wie <b>politisch gespalten</b> Sie die Meinungen heutzutage in Deutschland wahrnehmen, zuerst die Meinungen zu den vier politischen Themen separat und dann politische Meinungen generell."
+                else "Bitte schätzen Sie unten, wie <b>gespalten</b> Sie die politischen Meinungen heutzutage in Deutschland wahrnehmen, zuerst zu den vier politischen Themen separat und dann generell."
             ),
             "qu_polarization": (
-                "What do you think: How politically divided are the people in Germany these days..."
+                "What do you think: How divided are the opinions of people in Germany..."
                 if lan == "en"
-                else "Was denken Sie: Wie politisch gespalten sind die Menschen in Deutschland..."
+                else "Was denken Sie: Wie gespalten sind die Meinungen der Menschen in Deutschland..."
             ),
             # "question2": (
             #     "Please rate how <b>polarised</b> you perceive the political opinions <b>in general</b>."
@@ -1777,9 +1813,9 @@ class slide10_PolarisationTopics(Page):
             #     else "Was denken Sie: Wie politisch gespalten sind die Menschen in Deutschland generell?"
             # ),
             "explain_text": (
-                "If you want, you can write some comments about how you perceive division and polarisation of political issues or give further explanations of your answers <em>(optional)</em>:"
+                "If you want, you can describe how you perceive political division and polarisation in more detail <em>(optional)</em>:"
                 if lan == "en"
-                else "Wenn Sie wollen, können Sie unten ein paar Kommentare zu Ihrer Wahrnehmung von Spaltung und Polarisierung schreiben oder Ihre Antworten näher erklären <em>(optional)</em>:"
+                else "Wenn Sie wollen, können Sie hier Ihre Wahrnehmung von Spaltung und Polarisierung näher beschreiben <em>(optional)</em>:"
             ),
         }
 
@@ -1825,7 +1861,7 @@ class slide10_Satisfaction(Page):
                 lan,
             )
         }
-        for f in range(1, C.N_PERSONS + 1):
+        for f in range(1, player.n_references + 1):
             dot_descrs[f"reference{f}"] = format_ops(
                 get_ops(f"reference{f}_", questions), lan
             )
@@ -1862,9 +1898,9 @@ class slide10_Satisfaction(Page):
                 else "Unten finden Sie die von Ihnen erstellte persönliche politische Karte."
             ),
             "instru2": (
-                "Note: If you click on one of the dots in the square, a popup will appear showing your responses for that particular person."
+                "Tipp: If you click on one of the dots in the square, a popup will appear showing your responses for that particular person."
                 if lan == "en"
-                else "Hinweis: Wenn Sie auf einen der Punkte im Rechteck klicken, erscheint ein Fenster, das Ihre Antworten zu der jeweiligen Person zeigt."
+                else "Tipp: Wenn Sie auf einen der Punkte im Rechteck klicken, erscheint ein Fenster, das Ihre Antworten zu der jeweiligen Person zeigt."
             ),
             "question": (
                 "<p>How satisfied are you with your arrangement of the dots? Does this arrangement reflect generally how you perceive political similarities or differences between the individuals?</p>"
@@ -1872,16 +1908,16 @@ class slide10_Satisfaction(Page):
                 else "<p>Wie zufrieden sind Sie mit Ihrer Anordnung der Punkte? Spiegelt diese Anordnung generell wider, wie Sie die politische Ähnlichkeiten oder Unterschiede zwischen den Personen wahrnehmen?</p>"
             ),
             "questioneasierMapping": (
-                "<p>Which task did you find <b>easier</b> to provide your view on the political similarity/differences between people? Arranging the 18 dots on the square <em>or</em> or evaluating the similarity of 18 pairs of individuals?</p>"
+                "<p>Which task did you find <b>easier</b> to provide your view on the political similarity/differences between people?</p>"  #  Arranging the 18 dots on the square <em>or</em> or evaluating the similarity of 18 pairs of individuals?
                 if lan == "en"
-                else "<p>Welche Aufgabe ist Ihnen <b>leichter gefallen</b>, um Ihre Wahrnehmung von politischen Unterschieden oder Gemeinsamkeiten auszudrücken? Die 18 Punkte auf der Karte anzuordnen <em>oder</em> Die politische Ähnlichkeit von 18 Paaren zu bewerten?</p>"
+                else "<p>Welche Aufgabe ist Ihnen <b>leichter gefallen</b>, um Ihre Wahrnehmung von politischen Unterschieden oder Gemeinsamkeiten auszudrücken? </p>"  # Die 18 Punkte auf der Karte anzuordnen <em>oder</em> Die politische Ähnlichkeit von 18 Paaren zu bewerten?
             ),
             "easier_min": -50,
             "easier_max": 50,
             "easier_min_label": (
-                "Evaluating 18 pairs was much easier <em>(-5)</em>"
+                f"Evaluating {player.n_checks} pairs was much easier <em>(-5)</em>"
                 if lan == "en"
-                else "18 Paare bewerten war viel einfacher <em>(-5)</em>"
+                else f"Die {player.n_checks} Paare zu bewerten war viel einfacher <em>(-5)</em>"
             ),
             "easier_neutral_label": (
                 "Similarly easy or hard <em>(0)</em>"
@@ -1889,21 +1925,21 @@ class slide10_Satisfaction(Page):
                 else "Ähnlich einfach bzw. schwer <em>(0)</em>"
             ),
             "easier_max_label": (
-                "Arranging 18 dots was much easier <em>(5)</em>"
+                f"Arranging {player.n_checks} dots was much easier <em>(5)</em>"
                 if lan == "en"
-                else "18 Punkte anordnen war viel einfacher <em>(5)</em>"
+                else f"Die {player.n_checks} Punkte anzuordnen war viel einfacher <em>(5)</em>"
             ),
             "questionenjoyMapping": (
-                "<p>Which task did you find <em>more enjoyable</em>? Arranging 18 dots in the square <em>or</em> Evaluating the similarity of 18 pairs?</p>"
+                "<p>Which task did you find <em>more enjoyable</em>? </p>"  # Arranging 18 dots in the square <em>or</em> Evaluating the similarity of 18 pairs?
                 if lan == "en"
-                else "<p>Welche Aufgabe hat Ihnen <b>besser gefallen</b>? Die 18 Punkte auf der Karte anzuordnen <em>oder</em> Die politische Ähnlichkeit von 18 Paaren zu bewerten?</p>"
+                else "<p>Welche Aufgabe hat Ihnen <b>besser gefallen</b>? </p>"  # Die 18 Punkte auf der Karte anzuordnen <em>oder</em> Die politische Ähnlichkeit von 18 Paaren zu bewerten?
             ),
             "enjoy_min": -50,
             "enjoy_max": 50,
             "enjoy_min_label": (
-                "I enjoyed much more to evaluate 18 pairs <em>(-5)</em>"
+                f"I enjoyed much more to evaluate {player.n_checks} pairs <em>(-5)</em>"
                 if lan == "en"
-                else "Mir hat es viel besser gefallen, 18 Paare zu bewerten <em>(-5)</em>"
+                else f"Mir hat es viel besser gefallen, {player.n_checks} Paare zu bewerten <em>(-5)</em>"
             ),
             "enjoy_neutral_label": (
                 "Similarly enjoyable <em>(0)</em>"
@@ -1911,9 +1947,9 @@ class slide10_Satisfaction(Page):
                 else "Ähnlich gut <em>(0)</em>"
             ),
             "enjoy_max_label": (
-                "I enjoyed much more to arrange 18 dots <em>(5)</em>"
+                f"I enjoyed much more to arrange {player.n_checks} dots <em>(5)</em>"
                 if lan == "en"
-                else "Mir hat es viel besser gefallen, 18 Punkte anzuordnen <em>(5)</em>"
+                else f"Mir hat es viel besser gefallen, {player.n_checks} Punkte anzuordnen <em>(5)</em>"
             ),
             "explain_text": (
                 "If you would like, you can add further comments or explanations here <em>(optional)</em>:"
@@ -1957,7 +1993,7 @@ class slide11_Relationships(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
-        # fields = [f"reference{n}_socialCloseness" for n in range(1, C.N_PERSONS + 1)]
+        # fields = [f"reference{n}_socialCloseness" for n in range(1, player.n_references + 1)]
         references = [
             {
                 "id": f"reference{i}",
@@ -1967,7 +2003,7 @@ class slide11_Relationships(Page):
                     else f"Ihre Beziehung zu <span class='pill' style='background-color: {C.REFPERSONCOLOR}; color: white;'><strong>{getattr(player, f'reference{i}')}</strong></span>"
                 ),
             }
-            for i in range(1, C.N_PERSONS + 1)
+            for i in range(1, player.n_references + 1)
         ]
 
         return {
@@ -2134,4 +2170,4 @@ page_sequence = (
     ]
 )
 
-# print("Total slides: ", len(page_sequence), 3+C.N_PERSONS+len(C.LABELLED)+2+1+1+1+1+4)
+# print("Total slides: ", len(page_sequence), 3+player.n_references+len(C.LABELLED)+2+1+1+1+1+4)

@@ -12,20 +12,19 @@
 
   <div class="yellow-instructions">{{instruction_text3}}</div>
 
-  <p>{{ disclaimer }}</p>
-
   <br> 
   
   {% if show_error_msg %}
     {% else %}
     <button id="continue-btn" type="button" class="btn btn-primary big-button">
-      {% if lan_en %} Continue to practice round {% else %} Weiter zur
-      Übungsrunde {% endif %}
+      {% if lan_en %} Continue to practice task {% else %} Weiter zur
+      Übungsaufgabe {% endif %}
     </button>
     <div id="hidden-content" style="display: none; margin-top: 20px">
       {% endif %}
 
       <p>{{detailed_instructions_1}}</p>
+
 
       <div
         style="
@@ -55,6 +54,8 @@
 
       <input type="hidden" id="positionsTest" name="positionsTest" />
 
+      <p>{{ disclaimer }}</p>
+      
       {% if show_error_msg %}
       <div class="red-instructions">{{latest_error_msg}}</div>
       {% endif %}

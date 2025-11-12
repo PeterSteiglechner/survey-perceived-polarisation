@@ -16,39 +16,41 @@
     <div class="card">
       {{ instru1 }} {{instru2}}
       <label class="form-label">{{ question }}</label>
-      <input
-        type="range"
-        class="likert-slider"
-        name="{{ current_check }}"
-        id="similaritySlider"
-        min="{{ similarity_min }}"
-        max="{{ similarity_max }}"
-        step="1"
-        style="color: #aaaaaa; background: #ccc"
-        oninput="handleSliderInput(this.value)"
-        required
-      />
-      <div style="display: flex; justify-content: space-between">
-        <span style="font-size: 10pt; color: #777"
-          >{{ similarity_min_label }}</span
-        >
-        {% comment %}
-        <span style="font-size: 10pt; color: #777"
-          >{{ similarity_neutral_label }}</span
-        >
-        {% endcomment %}
-        <span style="font-size: 10pt; color: #777"
-          >{{ similarity_max_label }}</span
-        >
-      </div>
-
-      <div class="slider-label-container" id="sliderValue">
-        <div class="slider-label-text" style="color: gray">
-          {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den
-          Schieberegler{% endif %}
+      <div style="width: 80%; margin-left: 10%; margin-right: 10%">
+        <input
+          type="range"
+          class="likert-slider"
+          name="{{ current_check }}"
+          id="similaritySlider"
+          min="{{ similarity_min }}"
+          max="{{ similarity_max }}"
+          step="1"
+          style="color: #aaaaaa; background: #ccc"
+          oninput="handleSliderInput(this.value)"
+          required
+        />
+        <div style="display: flex; justify-content: space-between">
+          <span style="font-size: 11pt; color: #777"
+            >{{ similarity_min_label }}</span
+          >
+          {% comment %}
+          <span style="font-size: 10pt; color: #777"
+            >{{ similarity_neutral_label }}</span
+          >
+          {% endcomment %}
+          <span style="font-size: 11pt; color: #777"
+            >{{ similarity_max_label }}</span
+          >
         </div>
+
+        <div class="slider-label-container" id="sliderValue">
+          <div class="slider-label-text" style="color: gray">
+            {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den
+            Schieberegler{% endif %}
+          </div>
+        </div>
+        {{ formfield_errors current_check }}
       </div>
-      {{ formfield_errors current_check }}
     </div>
   </div>
 

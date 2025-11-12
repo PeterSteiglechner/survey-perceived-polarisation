@@ -81,36 +81,40 @@
   <div class="card">
     <label class="form-label">{{ lr_question }}</label>
 
-    <div style="display: flex; justify-content: space-between; margin-top: 5px">
-      <span style="font-size: 12pt; color: #777">{{ lr_first_label }}</span>
-      <span style="font-size: 12pt; color: #777">{{ lr_last_label }}</span>
-    </div>
-    <input
-      type="range"
-      class="likert-slider"
-      name="lrscale"
-      id="sliderlr"
-      min="-50"
-      max="50"
-      step="1"
-      style="color: #aaaaaa; background: #ccc"
-      oninput="handleSliderInput(this.value)"
-      required
-    />
-
-    <div style="text-align: center; margin-top: 0px">
-      {% if lan_en %}
-      <span id="sliderValue" style="color: #999; font-size: 10pt"
-        >Please move the slider</span
+    <div style="margin-left: 10%; margin-right: 10%">
+      <div
+        style="display: flex; justify-content: space-between; margin-top: 5px"
       >
-      {% else %}
-      <span id="sliderValue" style="color: #999; font-size: 10pt">
-        Bitte bewegen Sie den Schieberegler
-      </span>
-      {% endif %}
-    </div>
+        <span style="font-size: 12pt; color: #777">{{ lr_first_label }}</span>
+        <span style="font-size: 12pt; color: #777">{{ lr_last_label }}</span>
+      </div>
+      <input
+        type="range"
+        class="likert-slider"
+        name="lrscale"
+        id="sliderlr"
+        min="-50"
+        max="50"
+        step="1"
+        style="color: #aaaaaa; background: #ccc"
+        oninput="handleSliderInput(this.value)"
+        required
+      />
 
-    {{ formfield_errors "lrscale" }}
+      <div style="text-align: center; margin-top: 0px">
+        {% if lan_en %}
+        <span id="sliderValue" style="color: #999; font-size: 10pt"
+          >Please move the slider</span
+        >
+        {% else %}
+        <span id="sliderValue" style="color: #999; font-size: 10pt">
+          Bitte bewegen Sie den Schieberegler
+        </span>
+        {% endif %}
+      </div>
+
+      {{ formfield_errors "lrscale" }}
+    </div>
   </div>
 </div>
 

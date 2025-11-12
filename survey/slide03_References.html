@@ -12,6 +12,7 @@
   <p>{{instruction_text3}}</p>
 
   <div class="red-instructions" style="margin-bottom: 2em">{{reminder}}</div>
+  <p>{{disclaimer2}}</p>
 
   <div class="contact-form-grid">
     {% for field_info in references_fields %}
@@ -22,7 +23,13 @@
         name="{{ field_info.name }}"
         id="id_{{ field_info.name }}"
         class="form-control"
+        {%
+        comment
+        %}
         required
+        {%
+        endcomment
+        %}
       />
     </div>
     {% endfor %}
