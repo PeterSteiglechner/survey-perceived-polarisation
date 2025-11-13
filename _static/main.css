@@ -586,3 +586,13 @@ margin-left: auto;
   .contact-form-grid input {
     width: 100%;
   }
+
+  .lab {
+    font-size: 10pt;
+    color: #777;
+    margin-top: -3pt;
+    width: 22%;
+    word-wrap: break-word;
+    text-align: center;
+    white-space: normal;
+  }

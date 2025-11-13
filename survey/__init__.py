@@ -92,10 +92,10 @@ class C(BaseConstants):
             zip(
                 QUS,
                 [
-                    "Sehr besorgt über Klimawandel",
-                    "Unterstützung für gleichgeschlechtliche Ehe",
-                    "Gleiche Rechte für Migranten/-innen unabhängig von Integration",
-                    "Einkommens- und Vermögensunterschiede zu groß",
+                    "Extreme Besorgnis wegen des Klimawandels",
+                    "Unterstützung für gleichgeschlechtliche Ehen",
+                    "Gleiche Rechte für Migranten/-innen, unabhängig von Integration",
+                    "Einkommens- und Vermögens-unterschiede sind zu groß",
                 ],
             )
         ),
@@ -117,10 +117,9 @@ class C(BaseConstants):
             zip(
                 QUS,
                 [
-                    "Die Besorgnis über den Klimawandel",  # "beim Thema Besorgnis über den Klimawandel",
-                    "Die Meinung zu gleichgeschlechtlichen Ehen",
-                    "beim Thema gleichgeschlechtliche Ehen",
-                    "Die Unterstützung für gleiche Rechte für Migrant/Migrantinnen unabhängig von deren Integration",  # "beim Thema Rechte für Migranten und Migrantinnen",  # "Die Meinung der Person ob Migranten oder Migrantinnen unabhängig von Integrationsbemühungen die gleichen Rechte wie Einheimische bekommen sollten",
+                    "Die Besorgnis wegen des Klimawandels",  # "beim Thema Besorgnis über den Klimawandel",
+                    "Die Meinung zu gleichgeschlechtlichen Ehen",  # "beim Thema gleichgeschlechtliche Ehen",
+                    "Die Unterstützung für gleiche Rechte für Migrantinnen und Migranten, unabhängig von deren Integration",  # "beim Thema Rechte für Migranten und Migrantinnen",  # "Die Meinung der Person ob Migranten oder Migrantinnen unabhängig von Integrationsbemühungen die gleichen Rechte wie Einheimische bekommen sollten",
                     "Die Bewertung ökonomischer Ungleichheiten",  # "beim Thema ökonomische Ungleichheiten",
                 ],
             )
@@ -143,10 +142,9 @@ class C(BaseConstants):
             zip(
                 QUS,
                 [
-                    "zur Besorgnis über den Klimawandel",  # "beim Thema Besorgnis über den Klimawandel",
-                    "zu gleichgeschlechtlichen Ehen",
-                    "beim Thema gleichgeschlechtliche Ehen",
-                    "zur Unterstützung für gleiche Rechte für Migranten/Migrantinnen unabhängig von deren Integration",  # "beim Thema Rechte für Migranten und Migrantinnen",  # "Die Meinung der Person ob Migranten oder Migrantinnen unabhängig von Integrationsbemühungen die gleichen Rechte wie Einheimische bekommen sollten",
+                    "über die Besorgnis wegen des Klimawandels",  # "beim Thema Besorgnis über den Klimawandel",
+                    "zu gleichgeschlechtlichen Ehen",  # "beim Thema gleichgeschlechtliche Ehen",
+                    "über gleiche Rechte für Migrantinnen und Migranten, unabhängig von deren Integration",  # "beim Thema Rechte für Migranten und Migrantinnen",  # "Die Meinung der Person ob Migranten oder Migrantinnen unabhängig von Integrationsbemühungen die gleichen Rechte wie Einheimische bekommen sollten",
                     "bei der Bewertung ökonomischer Ungleichheiten",  # "beim Thema ökonomische Ungleichheiten",
                 ],
             )
@@ -495,7 +493,7 @@ class slide00_toc(Page):
             0: [0, 0, 0, 0, 0, 0],
             1: [0, 0, 0, 0, 0, 0],
             2: [0, 0, 0, 0, 0, 0],
-            3: [0] * 5,
+            3: [0] * 6,
         }[player.visited_toc]
         hls = ["" if not hl_li else " class='upcoming'" for hl_li in hl]
         if lan == "en":
@@ -1926,9 +1924,9 @@ class slide10_Satisfaction(Page):
             "lan_en": lan == "en",
             "dots": init_dots,
             "page_title": (
-                "Overall satisfaction with your map"
+                "Your opinions about the political mapping task"
                 if lan == "en"
-                else "Zufriedenheit mit Ihrer Anordnung"
+                else "Ihre Meinung zum Erstellen der politischen Karte"
             ),
             "instru1": (
                 "Below we show the political map you created."
@@ -1938,12 +1936,12 @@ class slide10_Satisfaction(Page):
             "instru2": (
                 "Tipp: If you click on one of the dots in the square, a popup will appear showing your responses for that particular person."
                 if lan == "en"
-                else "Tipp: Wenn Sie auf einen der Punkte im Rechteck klicken, erscheint ein Fenster, das Ihre Antworten zu der jeweiligen Person zeigt."
+                else "Tipp: Wenn Sie auf einen der Punkte im Rechteck klicken, erscheint ein Fenster, das Ihre Antworten für die jeweilige Person zeigt."
             ),
             "question": (
-                "<p>How satisfied are you with your arrangement of the dots? Does this arrangement reflect generally how you perceive political similarities or differences between the individuals?</p>"
+                "<p>How satisfied are you with your political map? Does this arrangement of dots reflect generally how you perceive political similarities or differences between the individuals?</p>"
                 if lan == "en"
-                else "<p>Wie zufrieden sind Sie mit Ihrer Anordnung der Punkte? Spiegelt diese Anordnung generell wider, wie Sie die politische Ähnlichkeiten oder Unterschiede zwischen den Personen wahrnehmen?</p>"
+                else "<p>Wie zufrieden sind Sie mit Ihrer politischen Karte? Spiegelt diese Anordnung der Punkte generell wider, wie Sie die politische Ähnlichkeiten oder Unterschiede zwischen den Personen wahrnehmen?</p>"
             ),
             "questioneasierMapping": (
                 "<p>Which task did you find <b>easier</b> to provide your view on the political similarity/differences between people?</p>"  #  Arranging the 18 dots on the square <em>or</em> or evaluating the similarity of 18 pairs of individuals?
@@ -1953,9 +1951,9 @@ class slide10_Satisfaction(Page):
             "easier_min": -50,
             "easier_max": 50,
             "easier_min_label": (
-                f"Evaluating {player.n_checks} pairs was much easier <em>(-5)</em>"
+                f"Evaluation of {player.n_checks} pairs was much easier <em>(-5)</em>"
                 if lan == "en"
-                else f"Die {player.n_checks} Paare zu bewerten war viel einfacher <em>(-5)</em>"
+                else f"Bewerten der {player.n_checks} Paare war viel einfacher <em>(-5)</em>"
             ),
             "easier_neutral_label": (
                 "Similarly easy or hard <em>(0)</em>"
@@ -1965,7 +1963,7 @@ class slide10_Satisfaction(Page):
             "easier_max_label": (
                 f"Arranging {player.n_checks} dots was much easier <em>(5)</em>"
                 if lan == "en"
-                else f"Die {player.n_checks} Punkte anzuordnen war viel einfacher <em>(5)</em>"
+                else f"Anordnen der {player.n_checks} Punkte war viel einfacher <em>(5)</em>"
             ),
             "questionenjoyMapping": (
                 "<p>Which task did you find <em>more enjoyable</em>? </p>"  # Arranging 18 dots in the square <em>or</em> Evaluating the similarity of 18 pairs?
@@ -1982,7 +1980,7 @@ class slide10_Satisfaction(Page):
             "enjoy_neutral_label": (
                 "Similarly enjoyable <em>(0)</em>"
                 if lan == "en"
-                else "Ähnlich gut <em>(0)</em>"
+                else "Ähnlich gut bzw. schlecht <em>(0)</em>"
             ),
             "enjoy_max_label": (
                 f"I enjoyed much more to arrange {player.n_checks} dots <em>(5)</em>"
@@ -2000,14 +1998,14 @@ class slide10_Satisfaction(Page):
             "satisfaction_min": 0,
             "satisfaction_max": 100,
             "satisfaction_min_label": (
-                "Not satisfied at all <em>(0)</em>"
+                "Not satisfied at all / Not accurate at all <em>(0)</em>"
                 if lan == "en"
-                else "Gar nicht zufrieden <em>(0)</em>"
+                else "Gar nicht zufrieden / Gar nicht akkurat <em>(0)</em>"
             ),
             "satisfaction_max_label": (
-                "Very satisfied <em>(10)</em>"
+                "Very satisfied / Very accurate <em>(10)</em>"
                 if lan == "en"
-                else "Sehr zufrieden <em>(10)</em>"
+                else "Sehr zufrieden / Sehr akkurat <em>(10)</em>"
             ),
         }
 

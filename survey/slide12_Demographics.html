@@ -23,6 +23,7 @@
   <!-- Discussion Card -->
   <div class="card">
       <label class="form-label"> {{qu_discussion}} </label>
+      <div style="margin-left: 10%; margin-right: 10%;">
       <div
         style="
           display: flex;
@@ -31,10 +32,10 @@
           margin-bottom: -3px;
         "
       >
-        <span style="font-size: 10pt; color: #000000ff"
+        <span class="lab" style="width: 35%; text-align: left;"
           >{{ discussion_min_label }}</span
         >
-        <span style="font-size: 10pt; color: #000000ff"
+        <span class="lab" style="width: 35%; text-align: right;"
           >{{ discussion_max_label }}</span
         >
       </div>
@@ -64,12 +65,13 @@
       </div>
 
       {{ formfield_errors "political_discussion" }}
-      
+    </div>
     {% comment %} </div>  
 
     <!-- Interest Card -->
     <div class="card"> {% endcomment %}
         <label class="form-label"> {{qu_interest}} </label>
+        <div style="margin-left: 10%; margin-right: 10%;">
         <div
           style="
             display: flex;
@@ -78,10 +80,10 @@
             margin-bottom: -3px;
           "
         >
-          <span style="font-size: 10pt; color: #000000ff"
+          <span class="lab" style="width: 35%; text-align: left;"
             >{{ interest_min_label }}</span
           >
-          <span style="font-size: 10pt; color: #000000ff"
+          <span class="lab" style="width: 35%; text-align: right;"
             >{{ interest_max_label }}</span
           >
         </div>
@@ -111,6 +113,7 @@
         </div>
 
         {{ formfield_errors "political_interest" }}
+      </div>
     </div>
   </div>
   
