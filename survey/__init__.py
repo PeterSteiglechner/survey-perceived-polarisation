@@ -59,8 +59,8 @@ class C(BaseConstants):
                 [
                     "I am very concerned about climate change.",
                     "It is good that same-sex marriages are allowed.",  # between two women or two men
-                    "Migrants should be given the same rights as natives, regardless of whether they make an effort and integrate.",  # Only migrants who make an effort and integrate should be given the same rights as natives.
-                    "Income and wealth differences in Germany are too large.",
+                    "Migrants should have the same rights as natives – regardless of whether they make an effort and integrate.",  # Only migrants who make an effort and integrate should be given the same rights as natives.
+                    "Income and wealth inequality in Germany is too high.",
                 ],
             )
         ),
@@ -70,7 +70,8 @@ class C(BaseConstants):
                 [
                     "Ich bin sehr besorgt über den Klimawandel.",
                     "Es ist gut, dass gleichgeschlechtliche Ehen erlaubt sind.",  #  zwei Frauen bzw. zwischen zwei Männern
-                    "Migranten und Migrantinnen sollten die gleichen Rechte bekommen wie Einheimische unabhängig davon, ob sie sich anstrengen und integrieren.",
+                    "Migranten und Migrantinnen sollten die gleichen Rechte wie Einheimische haben – unabhängig davon, ob sie sich anstrengen und integrieren.",
+                    # Nur Migranten, die sich anstrengen und integrieren, sollten die gleichen Rechte bekommen wie Einheimische.
                     "Die Einkommens- und Vermögensunterschiede in Deutschland sind zu groß.",
                 ],
             )
@@ -81,10 +82,10 @@ class C(BaseConstants):
             zip(
                 QUS,
                 [
-                    "very concerned about climate change",
-                    "support same-sex marriage",
-                    "equal rights for migrants regardless of integration",
-                    "income and wealth differences too high",
+                    "Extreme concern about climate change",
+                    "Strong same-sex marriage support",
+                    "Equal rights for migrants, independent of integration efforts",
+                    "Income and wealth inequalities too high",
                 ],
             )
         ),
@@ -94,8 +95,8 @@ class C(BaseConstants):
                 [
                     "Extreme Besorgnis wegen des Klimawandels",
                     "Unterstützung für gleichgeschlechtliche Ehen",
-                    "Gleiche Rechte für Migranten/-innen, unabhängig von Integration",
-                    "Einkommens- und Vermögens-unterschiede sind zu groß",
+                    "Gleiche Rechte für Migranten/-innen, unabhängig vom Integrationsgrad",
+                    "Einkommens- und Vermögens-unterschiede zu groß",
                 ],
             )
         ),
@@ -106,10 +107,10 @@ class C(BaseConstants):
             zip(
                 QUS,
                 [
-                    "Concern about climate change",  # "on climate change concerns",
-                    "Opinion on same-sex marriage",  # "on same-sex marriage",
-                    "Support for equal rights for migrants independent of their integration",  # "on migrants' rights",  # "Opinion about whether equal rights for migrants should be given regardless of their integration efforts",
-                    "Evaluation of economic inequalities",  # "on economic inequalities",
+                    "The question about how concerned the person is about climate change",  # "on climate change concerns",
+                    "The question about to what extent the person approves that same-sex marriages are allowed",  # "on same-sex marriage",
+                    "The question about to what extent the person believes that migrant rights should be independent of integration",  # "on migrants' rights",  # "Opinion about whether equal rights for migrants should be given regardless of their integration efforts",
+                    "The question about to what extent the person thinks that economic inequalities are too high",  # "on economic inequalities",
                 ],
             )
         ),
@@ -117,10 +118,10 @@ class C(BaseConstants):
             zip(
                 QUS,
                 [
-                    "Die Besorgnis wegen des Klimawandels",  # "beim Thema Besorgnis über den Klimawandel",
-                    "Die Meinung zu gleichgeschlechtlichen Ehen",  # "beim Thema gleichgeschlechtliche Ehen",
-                    "Die Unterstützung für gleiche Rechte für Migrantinnen und Migranten, unabhängig von deren Integration",  # "beim Thema Rechte für Migranten und Migrantinnen",  # "Die Meinung der Person ob Migranten oder Migrantinnen unabhängig von Integrationsbemühungen die gleichen Rechte wie Einheimische bekommen sollten",
-                    "Die Bewertung ökonomischer Ungleichheiten",  # "beim Thema ökonomische Ungleichheiten",
+                    "Die Frage wie besorgt die Person wegen des Klimawandels ist",  # "beim Thema Besorgnis über den Klimawandel",
+                    "Die Frage inwieweit die Person es gut findet, dass gleichgeschlechtliche Ehen erlaubt sind",  # "beim Thema gleichgeschlechtliche Ehen",
+                    "Die Frage inwieweit die Person findet, dass Migrantinnen und Migranten gleiche Rechte haben sollten, unabhängig von deren Integration",  # "beim Thema Rechte für Migranten und Migrantinnen",  # "Die Meinung der Person ob Migranten oder Migrantinnen unabhängig von Integrationsbemühungen die gleichen Rechte wie Einheimische bekommen sollten",
+                    "Die Frage inwieweit die Person denkt, dass ökonomische Ungleichheiten zu groß sind",  # "beim Thema ökonomische Ungleichheiten",
                 ],
             )
         ),
@@ -131,10 +132,10 @@ class C(BaseConstants):
             zip(
                 QUS,
                 [
-                    "on concerns about climate change",  # "on climate change concerns",
-                    "on same-sex marriages",  # "on same-sex marriage",
-                    "on supporting equal rights for migrants independent of their integration",  # "on migrants' rights",  # "Opinion about whether equal rights for migrants should be given regardless of their integration efforts",
-                    "on evaluating economic inequalities",  # "on economic inequalities",
+                    "on concern about climate change",  # "on climate change concerns",
+                    "on same-sex marriage support",  # "on same-sex marriage",
+                    "on whether equal rights for migrants should depend on integration",  # "on migrants' rights",  # "Opinion about whether equal rights for migrants should be given regardless of their integration efforts",
+                    "on the evaluation economic inequalities",  # "on economic inequalities",
                 ],
             )
         ),
@@ -143,15 +144,16 @@ class C(BaseConstants):
                 QUS,
                 [
                     "über die Besorgnis wegen des Klimawandels",  # "beim Thema Besorgnis über den Klimawandel",
-                    "zu gleichgeschlechtlichen Ehen",  # "beim Thema gleichgeschlechtliche Ehen",
-                    "über gleiche Rechte für Migrantinnen und Migranten, unabhängig von deren Integration",  # "beim Thema Rechte für Migranten und Migrantinnen",  # "Die Meinung der Person ob Migranten oder Migrantinnen unabhängig von Integrationsbemühungen die gleichen Rechte wie Einheimische bekommen sollten",
-                    "bei der Bewertung ökonomischer Ungleichheiten",  # "beim Thema ökonomische Ungleichheiten",
+                    "zum Thema gleichgeschlechtliche Ehen",  # "beim Thema gleichgeschlechtliche Ehen",
+                    "darüber ob gleiche Rechte für Migrantinnen und Migranten von deren Integration abhängen sollten",  # "beim Thema Rechte für Migranten und Migrantinnen",  # "Die Meinung der Person ob Migranten oder Migrantinnen unabhängig von Integrationsbemühungen die gleichen Rechte wie Einheimische bekommen sollten",
+                    "über die Bewertung von ökonomischen Ungleichheiten",  # "beim Thema ökonomische Ungleichheiten",
                 ],
             )
         ),
     }
 
     N_PERSONS = 10
+    N_PAIRWISE_FIX = True
     MIN_REFERENCES = 7
 
     # N_BATCHES = 2
@@ -206,8 +208,6 @@ class C(BaseConstants):
     # Satis
     # rela
     # demo
-
-    NR_PAIRWISE_CHECKS = 1 + 10 + 7
 
     FORCED_PAIRS = (
         []
@@ -358,6 +358,7 @@ class Player(BasePlayer):
 
     n_check = models.IntegerField(initial=1)
     n_checks = models.IntegerField(initial=0)
+    n_dots = models.IntegerField(initial=0)
 
     satisfaction = slider(0, 100)
     # accurateMapping = slider(0, 100)
@@ -425,7 +426,7 @@ for name in C.LABELLED:
 #################################
 #####  PAIRWISE SIMILARITY RATING   #####
 #################################
-for n in range(1, C.NR_PAIRWISE_CHECKS + 1):
+for n in range(1, 1 + C.N_PERSONS + len(C.LABELLED) + 1):
     # setattr(Player, f"checkPair{n}_dot1", models.LongStringField(blank=True))
     # setattr(Player, f"checkPair{n}_dot2", models.LongStringField(blank=True))
     setattr(Player, f"similarityPair{n}", slider(0, 100))
@@ -515,7 +516,7 @@ class slide00_toc(Page):
             # (Menschen in Ihrem sozialen Umfeld und typische Wählerinnen und Wähler)
             # items = f"<ul><li{hls[0]}>{checks[0]}Ihre eigenen politischen Ansichten und Identität</li><li{hls[1]}>{checks[1]}Ihre Einschätzungen über die politischen Ansichten von Personen oder Kontakten, die Sie gut kennen und deren Meinungen Ihnen vertraut sind.</li> <li{hls[2]}>{checks[2]}Ihre Einschätzungen über die politischen Ansichten typischer Wählerinnen und Wähler der politischen Parteien in Deutschland</li>  <li{hls[3]}>{checks[3]}Die genannten Personen auf einer persönlichen politischen Karte verorten<br>(inklusive zwei kurzer Übungsaufgaben)</li> <li{hls[4]}>{checks[4]}Ihre Einschätzungen über die politische Ähnlichkeit einzelner Personen zueinander</li>  <li{hls[5]}>{checks[5]}Abschlussfragen zur Umfrage, über Ihre sozialen Beziehungen zu den genannten Personen oder Kontakten und über Ihre Person</li></ul>"
             if player.visited_toc == 0:
-                i1 = "Vielen Dank für Ihre Antworten bisher!<br>Unten finden Sie eine Übersicht der noch anstehenden Aufgaben. Auf den nächsten Seiten werden wir mit den <span class='upcoming'>gelb</span> markierten beginnen."  # ➡️ In den folgenden Seiten geht es um Ihre Einschätzungen zu den politischen Ansichten von Ihren sozialen Kontakten und von typischen Wählern oder Wählerinnen."
+                i1 = "Vielen Dank für Ihre Antworten bisher!<br>Unten finden Sie eine Übersicht der noch anstehenden Aufgaben."  # Auf den nächsten Seiten werden wir mit den <span class='upcoming'>gelb</span> markierten beginnen.# ➡️ In den folgenden Seiten geht es um Ihre Einschätzungen zu den politischen Ansichten von Ihren sozialen Kontakten und von typischen Wählern oder Wählerinnen."
                 i2 = ""
             if player.visited_toc == 1:
                 i1 = "Vielen Dank für Ihre Einschätzungen über die politischen Ansichten von anderen Personen!"  # ➡️ Im folgenden Teil werden wir Sie bitten, Personen auf einer politischen Karte zu platzieren, je nachdem, wie ähnlich oder unterschiedlich Sie deren politische Ansichten wahrnehmen."
@@ -734,9 +735,9 @@ class slide03_References(Page):
                 else f"Denken Sie bitte an <strong>{C.N_PERSONS} Personen</strong>, die Sie zu Ihrem sozialen Umfeld zählen würden. Diese Personen können Freunde, Familienmitglieder, Kolleginnen (die Sie wertschätzen), oder jede andere Personen sein, die Sie zu Ihrem sozialen Umfeld zählen und mit denen Sie sich regelmäßig persönlich oder anderweitig austauschen."
             ),
             "instruction_text2": (
-                "We are especially interested in those social contacts whose opinions matter to you, who have a substantial influence on you, or with whom you regularly talk about politics or world events. "
+                "We are especially interested in those social contacts whose opinions matter to you personally, who have a substantial influence on you, or with whom you regularly talk about politics or world events. "
                 if lan == "en"
-                else "Wir sind besonders interessiert an den Kontakten, deren Meinungen für sie wichtig sind, die einen erheblichen Einfluss auf Sie haben, oder mit denen sie regelmäßig Politik oder das Weltgeschehen sprechen."
+                else "Wir sind besonders interessiert an Kontakten, deren Meinungen für Sie persönlich wichtig sind, die einen erheblichen Einfluss auf Sie haben, oder mit denen Sie regelmäßig Politik oder das Weltgeschehen sprechen."
             ),
             "disclaimer2": (
                 f"It can be difficult to come up with {C.N_PERSONS} such contacts. Since this is a critical part of our study, we ask you to name <em>at least {C.MIN_REFERENCES}</em> contacts. You may leave the last three fields empty, but we would highly appreciate if you can fill all {C.N_PERSONS} fields."
@@ -796,7 +797,12 @@ class slide03_References(Page):
         )
         valid_pairs = [tuple(v) for v in valid_pairs if not v in C.FORCED_PAIRS]
         player.valid_pairs = json.dumps(valid_pairs)
-        player.n_checks = 1 + player.n_references + len(C.LABELLED)
+        player.n_checks = (
+            (1 + C.N_PERSONS + len(C.LABELLED))
+            if C.N_PAIRWISE_FIX
+            else (1 + player.n_references + len(C.LABELLED))
+        )
+        player.n_dots = 1 + player.n_references + len(C.LABELLED)
 
         player.t_on_referencesOpinions = int(time.time())
         player.current_page += 1
@@ -856,9 +862,9 @@ class slide04_ReferencesOpinions(Page):
             #     else "Hinweis: Auf der nächsten Seite bitten wir Sie um Ihre Einschätzung der fünf weiteren Kontakte."
             # ),
             instruction_bestguess=(
-                "We know that it is not always easy to estimate others' responses. For each statement, please indicate the option that <em>you</em> think the respective person would most likely choose."
+                "“We know it can sometimes be hard to guess how others would respond. Please move the slider to where <em>you</em> think the other person would choose."
                 if lan == "en"
-                else "Wir wissen, dass es nicht immer leicht ist, die Antworten anderer einzuschätzen. Bitte geben Sie für jede der Aussagen diejenige Option an, von der <em>Sie</em> am ehesten glauben, dass die jeweilige Person sie auswählen würde."
+                else "Wir wissen, dass es manchmal schwer ist einzuschätzen, wie andere antworten würden. Bitte bewegen Sie den Schieberegler so, wie <em>Sie</em> glauben, dass die andere Person antworten würde.“"
             ),
             instruction_text=(
                 f"How do you think each of the {player.n_references} people you selected would answer the political questions?"
@@ -1492,12 +1498,7 @@ class slide06_SPaM(Page):
         player.max_pair = json.dumps(max_pair)
         fixedPairs.extend(C.FORCED_PAIRS)
         random.shuffle(valid_pairs)
-        pairSequence = (
-            fixedPairs
-            + valid_pairs[
-                : (1 + player.n_references + len(C.LABELLED) - len(fixedPairs))
-            ]
-        )
+        pairSequence = fixedPairs + valid_pairs[: (player.n_checks - len(fixedPairs))]
         random.shuffle(pairSequence)
         player.pairSequence = json.dumps(pairSequence)
 
@@ -1961,9 +1962,9 @@ class slide10_Satisfaction(Page):
                 else "Ähnlich einfach bzw. schwer <em>(0)</em>"
             ),
             "easier_max_label": (
-                f"Arranging {player.n_checks} dots was much easier <em>(5)</em>"
+                f"Arranging {player.n_dots} dots was much easier <em>(5)</em>"
                 if lan == "en"
-                else f"Anordnen der {player.n_checks} Punkte war viel einfacher <em>(5)</em>"
+                else f"Anordnen der {player.n_dots} Punkte war viel einfacher <em>(5)</em>"
             ),
             "questionenjoyMapping": (
                 "<p>Which task did you find <em>more enjoyable</em>? </p>"  # Arranging 18 dots in the square <em>or</em> Evaluating the similarity of 18 pairs?
@@ -1983,9 +1984,9 @@ class slide10_Satisfaction(Page):
                 else "Ähnlich gut bzw. schlecht <em>(0)</em>"
             ),
             "enjoy_max_label": (
-                f"I enjoyed much more to arrange {player.n_checks} dots <em>(5)</em>"
+                f"I enjoyed much more to arrange {player.n_dots} dots <em>(5)</em>"
                 if lan == "en"
-                else f"Mir hat es viel besser gefallen, {player.n_checks} Punkte anzuordnen <em>(5)</em>"
+                else f"Mir hat es viel besser gefallen, {player.n_dots} Punkte anzuordnen <em>(5)</em>"
             ),
             "explain_text": (
                 "If you would like, you can add further comments or explanations here <em>(optional)</em>:"
@@ -2194,7 +2195,7 @@ page_sequence = (
     + [slide05a_MapTest, slide05b_MapTestResult] * C.N_MAX_PRACTICE_RUNS
     + [slide06_SPaM]
     + [slide00_toc]
-    + [slide08_PlausibilityCheck_Pairs] * C.NR_PAIRWISE_CHECKS
+    + [slide08_PlausibilityCheck_Pairs] * (1 + C.N_PERSONS + len(C.LABELLED))
     + [slide00_toc]
     + [
         slide09_Importance,
