@@ -25,7 +25,7 @@
       <tbody>
         <tr>
           <td>
-            <label class="form-label"> {{label}} </label>
+            <label class="form-label"> {{overallquestion}} </label>
           </td>
           <td>
             <div
@@ -50,7 +50,7 @@
             <input
               type="range"
               class="likert-slider"
-              name="own2_{{ q.prefix }}"
+              name="own2__{{ q.prefix }}"
               id="slider_{{ q.prefix }}"
               min="-100"
               max="100"
@@ -70,7 +70,9 @@
       </tbody>
     </table>
   </div>
-  {% endfor %} {% comment %}
+  {% endfor %} 
+  
+  {% comment %}
   <p>{{instruction_text_batch}}</p>
   {% endcomment %}
 

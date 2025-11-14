@@ -1,8 +1,8 @@
 {% load static %} {% block styles %}
-<link rel="stylesheet" href="{{ static 'main.css' }}" />
+<link rel="stylesheet" href="{% static 'main.css' %}" />
 {% endblock %} {% block content %}
 <script src="{% static 'colors.js' %}"></script>
-<script src="{{ static 'global.js' }}"></script>
+<script src="{% static 'global.js' %}"></script>
 <h2>{{ page_title }}</h2>
 
 {{ instruction_text }}
@@ -11,7 +11,7 @@
   {% for q in questions %}
   <div class="question-block" style="margin-bottom:2em;">
     <table class="survey-table-clean">
-      <thead style="background: {{color}}; color: #ffffffff">
+      <thead style="background: {{color}}; color: #fff">
         <tr>
           <td></td>
           <th style="width: 67%">
@@ -22,7 +22,7 @@
       <tbody>
         <tr>
           <td>
-            <label class="form-label"> {{label}} </label>
+            <label class="form-label"> {{overallquestion}} </label>
           </td>
           <td>
             <div
@@ -47,7 +47,7 @@
             <input
               type="range"
               class="likert-slider"
-              name="own_{{ q.prefix }}"
+              name="own__{{ q.prefix }}"
               id="slider_{{ q.prefix }}"
               min="-100"
               max="100"
@@ -61,7 +61,7 @@
               <div class="slider-label-container"><div class="slider-label-text" style="color:gray;">
               {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
                 den Schieberegler{% endif %}
-            <div class="slider-num-infor"></div></div>
+            <div class="slider-num-info"></div></div>
             </div>
           </td>
         </tr>
@@ -74,12 +74,12 @@
 
   <div class="nav-container">
     {% if lan_en %}
-    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+    <button type="submit" class="otree-btn-next btn btn-primary big-button" disabled>
       Continue
     </button>
     <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
     {% else %}
-    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+    <button type="submit" class="otree-btn-next btn btn-primary big-button" disabled>
       Weiter
     </button>
     <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>

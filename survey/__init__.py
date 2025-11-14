@@ -155,6 +155,7 @@ class C(BaseConstants):
     N_PERSONS = 10
     N_PAIRWISE_FIX = True
     MIN_REFERENCES = 7
+    MAX_REFERENCE_LEN = 10  # characters
 
     # N_BATCHES = 2
     REFPERSONCOLOR = "#FF8C42"
@@ -194,7 +195,7 @@ class C(BaseConstants):
     )
 
     NLABELLED = 7  # len(LABELLED)
-    MAXSLIDES = 15
+    MAXSLIDES = 16
     # op
     # id + toc
     # references
@@ -203,9 +204,11 @@ class C(BaseConstants):
     # MapGame
     # MapTest
     # Map + toc
-    # 10 Pairiwse + toc
-    # Importance
     # Satis
+    # 10 Pairiwse
+    # + toc
+    # compare Task
+    # importance
     # rela
     # demo
 
@@ -318,25 +321,29 @@ class Player(BasePlayer):
     t_on_toc1 = models.IntegerField(blank=True)
     t_on_nameRefPeople = models.IntegerField(blank=True)
     t_on_referencesOpinions = models.IntegerField(blank=True)
+    t_on_voterOpinions = models.IntegerField(blank=True)
     t_on_ownOpinion2 = models.IntegerField(blank=True)
-    t_on_voterOpinion = models.IntegerField(blank=True)
     t_on_toc2 = models.IntegerField(blank=True)
     t_on_practiceGame_page = models.IntegerField(blank=True)
     t_on_practice_page = models.IntegerField(blank=True)
-    t_on_practiceResult_page = models.LongStringField(blank=True, initial="{}")
+    t_practicesSubmitted = models.LongStringField(blank=True, initial="{}")
+    t_on_practiceResult_page_first = models.IntegerField(blank=True)
     t_on_map_page = models.IntegerField(blank=True)
     t_firstDotMoved = models.IntegerField(blank=True)
+    t_on_satisfaction = models.IntegerField(blank=True)
     # t_on_mapP_page = models.IntegerField(blank=True)
     t_on_toc3 = models.IntegerField(blank=True)
-    t_on_pairwiseCheck = models.IntegerField(blank=True)
-    t_after_first_check = models.IntegerField(blank=True)
+    t_on_pairwise = models.IntegerField(blank=True)
+    t_after_first_pair = models.IntegerField(blank=True)
+    t_submittedPairs = models.LongStringField(blank=True, initial="{}")
     t_on_toc4 = models.IntegerField(blank=True)
+    t_on_taskCompare = models.IntegerField(blank=True)
     t_on_importance = models.IntegerField(blank=True)
-    t_on_topicPolarisation = models.IntegerField(blank=True)
-    t_on_satisfaction = models.IntegerField(blank=True)
+    t_on_polarisation = models.IntegerField(blank=True)
     t_on_relationships = models.IntegerField(blank=True)
     t_on_demographics = models.IntegerField(blank=True)
     t_on_success = models.IntegerField(blank=True)
+    t_on_fail = models.IntegerField(blank=True)
 
     #################################
     #####  MAP POSITIONS   #####
@@ -365,16 +372,17 @@ class Player(BasePlayer):
     mappingEnjoy = slider(-50, 50)
     mappingEasier = slider(-50, 50)
     satisfaction_text = models.LongStringField(label="", blank=True)
+    task_text = models.LongStringField(label="", blank=True)
 
     #################################
     #####  PRACTICE RUN   #####
     #################################
 
     isTrainingPassed = models.BooleanField(initial=False)  #
-    isTrainingCondFvC = models.BooleanField(initial=False)  #
-    isTrainingCondSelfvFC = models.BooleanField(initial=False)  #
-    isTrainingCondRvFC = models.BooleanField(initial=False)  #
-    isTrainingCondRvF = models.BooleanField(initial=False)  #
+    is_distS2F_gt_distS2C = models.BooleanField(initial=False)  #
+    is_distF2C_gt_distS2C = models.BooleanField(initial=False)  #
+    is_distS2R_gt_distS2F = models.BooleanField(initial=False)  #
+    is_distS2R_gt_distF2RanddistC2R = models.BooleanField(initial=False)  #
     attemptPractice = models.IntegerField(initial=0)
     latest_error_msg = models.LongStringField(blank=True, initial="")
 
@@ -392,8 +400,8 @@ class Player(BasePlayer):
 #####  OWN POLITICAL OPINIONS   #####
 #################################
 for q in C.QUS:
-    setattr(Player, f"own_{q}", slider(-100, 100))
-    setattr(Player, f"own2_{q}", slider(-100, 100))
+    setattr(Player, f"own__{q}", slider(-100, 100))
+    setattr(Player, f"own2__{q}", slider(-100, 100))
     setattr(Player, f"how_polarised_{q}", slider(0, 100))
 
 #################################
@@ -403,7 +411,7 @@ for n in range(1, C.N_PERSONS + 1):
     setattr(
         Player,
         f"reference{n}",
-        define_reference(f"Person {n}: ", n, blank=(n > C.MIN_REFERENCES)),
+        define_reference(f"Person {n}: ", n, blank=True),  # (n > C.MIN_REFERENCES)),
     )
     setattr(
         Player,
@@ -412,7 +420,9 @@ for n in range(1, C.N_PERSONS + 1):
     )
     for q in C.QUS:
         setattr(
-            Player, f"reference{n}_{q}", slider(-100, 100, blank=(n > C.MIN_REFERENCES))
+            Player,
+            f"reference{n}__{q}",
+            slider(-100, 100, blank=(n > C.MIN_REFERENCES)),
         )
 
 #################################
@@ -420,7 +430,7 @@ for n in range(1, C.N_PERSONS + 1):
 #################################
 for name in C.LABELLED:
     for q in C.QUS:
-        setattr(Player, f"{name.replace(' ', '')}_{q}", slider(-100, 100))
+        setattr(Player, f"{name.replace(' ', '')}__{q}", slider(-100, 100))
 
 
 #################################
@@ -459,7 +469,8 @@ class slide01_Introduction(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
-        player.t_on_consent = int(time.time())
+        if player.field_maybe_none(f"t_on_consent") is None:
+            player.t_on_consent = int(time.time())
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
@@ -468,7 +479,6 @@ class slide01_Introduction(Page):
         )
         voters = list(np.random.choice(C.LABELLED, replace=False, size=len(C.LABELLED)))
         player.voter_sorting = json.dumps(voters)
-        player.t_on_ownOpinion = int(time.time())
         player.current_page += 1
 
 
@@ -486,6 +496,15 @@ class slide00_toc(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
+        if player.visited_toc == 0 and player.field_maybe_none(f"t_on_toc1") is None:
+            player.t_on_toc1 = int(time.time())
+        elif player.visited_toc == 1 and player.field_maybe_none(f"t_on_toc2") is None:
+            player.t_on_toc2 = int(time.time())
+        if player.visited_toc == 2 and player.field_maybe_none(f"t_on_toc3") is None:
+            player.t_on_toc3 = int(time.time())
+        if player.visited_toc == 3 and player.field_maybe_none(f"t_on_toc4") is None:
+            player.t_on_toc4 = int(time.time())
+
         n_checks = {0: 1, 1: 3, 2: 4, 3: 5}[player.visited_toc]
         checks = ["<span saclass='checkmark'>✅</span>  "] * n_checks + [
             "<span saclass='checkmark upcoming'>⬜</span>  "
@@ -498,7 +517,7 @@ class slide00_toc(Page):
         }[player.visited_toc]
         hls = ["" if not hl_li else " class='upcoming'" for hl_li in hl]
         if lan == "en":
-            items = f"<ul><li{hls[0]}>{checks[0]}Your own political opinions</li><li{hls[1]}>{checks[1]}Political opinions of other people</li><li{hls[3]}>{checks[3]}Creating your own political map <em>(with two short practice tasks)</em></li><li{hls[4]}>{checks[4]}Evaluating the similarity of the political views of individuals</li><li{hls[5]}>{checks[5]}Short general questions about the tasks and yourself</li></ul>"
+            items = f"<ul><li{hls[0]}>{checks[0]}Your own political opinions</li><li{hls[1]}>{checks[1]}Political opinions of other people</li><li{hls[3]}>{checks[3]}Creating your own political map <em>(with two short practice tasks)</em></li><li{hls[4]}>{checks[4]}Pairwise comparison of the political views of individuals</li><li{hls[5]}>{checks[5]}Short concluding questions</li></ul>"
             if player.visited_toc == 0:
                 i1 = "Thank you very much for your responses so far!<br>Below you can find an overview of the remaining tasks."  # in this survey. On the next pages, we will continute with the ones highlighted in <span class='upcoming'>yellow</span>."
                 i2 = ""
@@ -510,9 +529,9 @@ class slide00_toc(Page):
                 i2 = "➡️ To help us better understand your political map, we ask you to again evaluate the political similarity between a few (randomly selected) pairs of individuals."
             if player.visited_toc == 3:
                 i1 = "Thank you! This was the main part of the survey."
-                i2 = "➡️ We will close this survey with a few short general questions."
+                i2 = "➡️ We will close the survey with a few short questions about the previous tasks and about yourself."
         else:
-            items = f"<ul><li{hls[0]}>{checks[0]}Ihre eigenen politischen Ansichten</li><li{hls[1]}>{checks[1]}Die politischen Ansichten anderer Personen</li><li{hls[3]}>{checks[3]}Ihre persönliche politische Karte <em>(plus zwei kurze Übungsaufgaben)</em></li> <li{hls[4]}>{checks[4]}Ähnlichkeit der politischen Ansichten von einzelnen Personen</li><li{hls[5]}>{checks[5]}Kurze Abschlussfragen über die vorherigen Aufgaben und Sie selbst</li></ul>"
+            items = f"<ul><li{hls[0]}>{checks[0]}Ihre eigenen politischen Ansichten</li><li{hls[1]}>{checks[1]}Die politischen Ansichten anderer Personen</li><li{hls[3]}>{checks[3]}Ihre persönliche politische Karte <em>(plus zwei kurze Übungsaufgaben)</em></li> <li{hls[4]}>{checks[4]}Paarweiser Vergleich der politischen Ansichten von einzelnen Personen</li><li{hls[5]}>{checks[5]}Kurze Abschlussfragen </li></ul>"
             # (Menschen in Ihrem sozialen Umfeld und typische Wählerinnen und Wähler)
             # items = f"<ul><li{hls[0]}>{checks[0]}Ihre eigenen politischen Ansichten und Identität</li><li{hls[1]}>{checks[1]}Ihre Einschätzungen über die politischen Ansichten von Personen oder Kontakten, die Sie gut kennen und deren Meinungen Ihnen vertraut sind.</li> <li{hls[2]}>{checks[2]}Ihre Einschätzungen über die politischen Ansichten typischer Wählerinnen und Wähler der politischen Parteien in Deutschland</li>  <li{hls[3]}>{checks[3]}Die genannten Personen auf einer persönlichen politischen Karte verorten<br>(inklusive zwei kurzer Übungsaufgaben)</li> <li{hls[4]}>{checks[4]}Ihre Einschätzungen über die politische Ähnlichkeit einzelner Personen zueinander</li>  <li{hls[5]}>{checks[5]}Abschlussfragen zur Umfrage, über Ihre sozialen Beziehungen zu den genannten Personen oder Kontakten und über Ihre Person</li></ul>"
             if player.visited_toc == 0:
@@ -520,13 +539,13 @@ class slide00_toc(Page):
                 i2 = ""
             if player.visited_toc == 1:
                 i1 = "Vielen Dank für Ihre Einschätzungen über die politischen Ansichten von anderen Personen!"  # ➡️ Im folgenden Teil werden wir Sie bitten, Personen auf einer politischen Karte zu platzieren, je nachdem, wie ähnlich oder unterschiedlich Sie deren politische Ansichten wahrnehmen."
-                i2 = "➡️ Im Folgenden werden wir Sie bitten, die vorherigen Personen auf einer von Ihnen erstellten, politischen Karte zu platzieren. Zur Vorbereitung auf diese Aufgabe, bitten wir Sie <strong>zwei kurze Übungsaufgaben</strong> zu bearbeiten."
+                i2 = "➡️ Im Folgenden werden wir Sie bitten, die Personen auf einer von Ihnen erstellten politischen Karte zu platzieren. Zur Vorbereitung auf diese Aufgabe, bitten wir Sie <strong>zwei kurze Übungsaufgaben</strong> zu bearbeiten."
             if player.visited_toc == 2:
                 i1 = "Vielen Dank für das Erstellen Ihrer persönlichen politischen Karte!"
                 i2 = "➡️ Um uns dabei zu helfen, Ihre Antworten besser zu verstehen, bitten wir Sie zunächst nochmals die Ähnlichkeit der politischen Ansichten einiger (zufällig ausgewählter) Paare einzuschätzen."
             if player.visited_toc == 3:
-                i1 = "Vielen Dank! Dies war der Hauptteil der Umfrage."
-                i2 = "➡️ Wir beenden die Umfrage nun mit ein paar kurzen allgemeineren Fragen."
+                i1 = "Vielen Dank! Das Erstellen der politischen Karte und die paarweisen Vergleiche waren der Hauptteil dieser Umfrage."
+                i2 = "➡️ Wir werden die Umfrage nun mit einigen kurzen Fragen zu den vorangegangenen Aufgaben und zu Ihrer Person abschließen."
         return {
             "lan_en": lan == "en",
             "maxslides": C.MAXSLIDES,
@@ -545,14 +564,6 @@ class slide00_toc(Page):
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         player.visited_toc += 1
-        if player.visited_toc == 1:
-            player.t_on_nameRefPeople = int(time.time())
-        if player.visited_toc == 2:
-            player.t_on_practiceGame_page = int(time.time())
-        if player.visited_toc == 3:
-            player.t_on_pairwiseCheck = int(time.time())
-        if player.visited_toc == 4:
-            player.t_on_importance = int(time.time())
 
 
 #################################
@@ -560,7 +571,7 @@ class slide00_toc(Page):
 #################################
 class slide02_Opinions(Page):
     form_model = "player"
-    form_fields = [f"own_{q}" for q in C.QUS]
+    form_fields = [f"own__{q}" for q in C.QUS]
 
     @staticmethod
     def is_displayed(player: Player):
@@ -569,9 +580,11 @@ class slide02_Opinions(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
+        if player.field_maybe_none(f"t_on_ownOpinion") is None:
+            player.t_on_ownOpinion = int(time.time())
         questions = [C.QUS[i] for i in json.loads(player.question_sorting)]
 
-        fields = [f"own_{q}" for q in questions]
+        fields = [f"own__{q}" for q in questions]
         questions = []
         for q in [C.QUS[i] for i in json.loads(player.question_sorting)]:
             questions.append(
@@ -611,7 +624,7 @@ class slide02_Opinions(Page):
                 if player.language == "en"
                 else "<p>Wir interessieren uns in dieser Umfrage unter Anderem für Ihre eigenen politischen Ansichten.</p><p> Bitte geben Sie an, inwieweit Sie den folgenden Aussagen zustimmen oder nicht zustimmen.</p><p>Es gibt keine richtigen oder falschen Antworten! Wählen Sie bitte die Antwortmöglichkeit, die am ehesten Ihren Ansichten entspricht.</p>"
             ),
-            "label": (
+            "overallquestion": (
                 f"To what extent do {pillname('you')} agree with the statement?"
                 if player.language == "en"
                 else f"Inwieweit stimmen {pillname('Sie')} der Aussage oben zu?"
@@ -621,7 +634,6 @@ class slide02_Opinions(Page):
     @staticmethod
     def before_next_page(player, timeout_happened):
         player.current_page += 1
-        player.t_on_identity = int(time.time())
 
 
 #################################
@@ -642,6 +654,8 @@ class slide02a_Identity(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
+        if player.field_maybe_none(f"t_on_identity") is None:
+            player.t_on_identity = int(time.time())
         question = (
             "In politics, people sometimes talk of 'left' and 'right'. Where would you place yourself on this scale, if -5 means 'left' and 5 means 'right'?"
             if lan == "en"
@@ -689,7 +703,6 @@ class slide02a_Identity(Page):
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        player.t_on_toc1 = int(time.time())
         player.current_page += 1
 
 
@@ -707,12 +720,17 @@ class slide03_References(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
+        if player.field_maybe_none(f"t_on_nameRefPeople") is None:
+            player.t_on_nameRefPeople = int(time.time())
         references_fields = []
         for n in range(1, C.N_PERSONS + 1):
+            field_value = player.field_maybe_none(f"reference{n}")
             references_fields.append(
                 {
                     "name": f"reference{n}",
                     "label": f"Person {n}:" if lan == "en" else f"Person {n}:",
+                    "value": field_value if field_value is not None else "",
+                    "max_length": C.MAX_REFERENCE_LEN,
                 }
             )
         return {
@@ -763,13 +781,20 @@ class slide03_References(Page):
 
     @staticmethod
     def error_message(player: Player, values):
-        references = [v.strip() for v in values.values() if v.strip()]
-        if len(references) < C.MIN_REFERENCES:  # C.N_PERSONS:
+        for field_name, value in values.items():
+            if field_name.startswith("reference"):
+                setattr(player, field_name, value)
+
+        # Then check for minimum references
+        references = [v.strip() for v in values.values() if v and v.strip()]
+        if len(references) < C.MIN_REFERENCES:
             return (
-                "Please fill in all fields!"
+                f"Please fill in at least the first {C.MIN_REFERENCES} fields!"
                 if player.language == "en"
-                else "Bitte füllen Sie alle Felder aus!"
+                else f"Bitte füllen Sie zumindest die ersten {C.MIN_REFERENCES} Felder aus!"
             )
+
+        # Finally check for duplicates
         if len(set(references)) < len(references):
             return (
                 "Each person must have a unique name. Please correct duplicates. You can use nicknames, initials, or anything that will later allow you to recognise the people."
@@ -803,8 +828,6 @@ class slide03_References(Page):
             else (1 + player.n_references + len(C.LABELLED))
         )
         player.n_dots = 1 + player.n_references + len(C.LABELLED)
-
-        player.t_on_referencesOpinions = int(time.time())
         player.current_page += 1
 
 
@@ -819,7 +842,8 @@ class slide04_ReferencesOpinions(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
-
+        if player.field_maybe_none(f"t_on_referencesOpinions") is None:
+            player.t_on_referencesOpinions = int(time.time())
         # start = 1 if player.current_batch == 1 else 6
         # end = 5 if player.current_batch == 1 else 10
 
@@ -897,14 +921,11 @@ class slide04_ReferencesOpinions(Page):
         fields = []
         for q in [C.QUS[i] for i in json.loads(player.question_sorting)]:
             for i in range(1, player.n_references + 1):
-                fields.append(f"reference{i}_{q}")
+                fields.append(f"reference{i}__{q}")
         return fields
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        # player.current_batch += 1
-        player.t_on_voterOpinion = int(time.time())
-        # if player.current_batch == C.N_BATCHES + 1:
         player.current_page += 1
 
     @staticmethod
@@ -918,7 +939,8 @@ class slide04b_VotersOpinions(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
-
+        if player.field_maybe_none(f"t_on_voterOpinions") is None:
+            player.t_on_voterOpinions = int(time.time())
         pillname = (
             lambda x, color: f"<span class='pill' style='background-color: {color}; color: {'#424949' if x=='FDP' or color==C.LABELLEDCOLORS['FDP'] or color=="#dddddd" else 'white'};'><strong>{x}</strong></span>"
         )
@@ -988,12 +1010,11 @@ class slide04b_VotersOpinions(Page):
         fields = []
         for q in [C.QUS[i] for i in json.loads(player.question_sorting)]:
             for p in json.loads(player.voter_sorting):
-                fields.append(f"{p.replace(' ', '')}_{q}")
+                fields.append(f"{p.replace(' ', '')}__{q}")
         return fields
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        player.t_on_ownOpinion2 = int(time.time())
         player.current_page += 1
 
     @staticmethod
@@ -1003,7 +1024,7 @@ class slide04b_VotersOpinions(Page):
 
 class slide02_OpinionsRevisited(Page):
     form_model = "player"
-    form_fields = [f"own2_{q}" for q in C.QUS]
+    form_fields = [f"own2__{q}" for q in C.QUS]
 
     @staticmethod
     def is_displayed(player: Player):
@@ -1012,12 +1033,14 @@ class slide02_OpinionsRevisited(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
+        if player.field_maybe_none(f"t_on_ownOpinion2") is None:
+            player.t_on_ownOpinion2 = int(time.time())
         questions = [C.QUS[i] for i in json.loads(player.question_sorting)]
         opinions = dict(
-            zip(questions, [getattr(player, f"own_{q}") for q in questions])
+            zip(questions, [getattr(player, f"own__{q}") for q in questions])
         )
 
-        fields = [f"own2_{q}" for q in questions]
+        fields = [f"own2__{q}" for q in questions]
         questions = []
         for q in [C.QUS[i] for i in json.loads(player.question_sorting)]:
             questions.append(
@@ -1063,7 +1086,7 @@ class slide02_OpinionsRevisited(Page):
                 if player.language == "en"
                 else "Wenn Ihre Antworten immer noch Ihre Ansichten gut widerspiegeln, klicken Sie einfach auf <em>Weiter</em>. Wenn nicht, können Sie Ihre Antworten hier anpassen."
             ),
-            "label": (
+            "overallquestion": (
                 f"To what extent do {pillname('you')} agree or disagree with the statement?"
                 if player.language == "en"
                 else f"Inwieweit stimmen {pillname('Sie')} der Aussage oben zu oder nicht zu?"
@@ -1073,7 +1096,6 @@ class slide02_OpinionsRevisited(Page):
     @staticmethod
     def before_next_page(player, timeout_happened):
         player.current_page += 1
-        player.t_on_toc2 = int(time.time())
 
 
 #################################
@@ -1086,7 +1108,6 @@ class slide05a_MapGame(Page):
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         player.positionsGame = player.positionsGame
-        player.t_on_practice_page = int(time.time())
         player.current_page += 1
 
     @staticmethod
@@ -1096,6 +1117,8 @@ class slide05a_MapGame(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
+        if player.field_maybe_none(f"t_on_practiceGame_page") is None:
+            player.t_on_practiceGame_page = int(time.time())
         init_dots = [
             {
                 "dottype": "food",
@@ -1156,9 +1179,9 @@ class slide05a_MapGame(Page):
                 else "<em>Beispiel:</em> Eine Teilnehmerin, die Tomaten nicht mag, platziert die Gerichte vermutlich ganz anders als ein Teilnehmer, der kein Fleisch isst."
             ),
             "no_wrong_answers": (
-                f"This arrangement – as the ones in the following tasks – is of course very subjective:"
+                f"This arrangement – as the ones in the following tasks – is of course subjective:"
                 if lan == "en"
-                else "Diese Anordnung – wie auch die in den folgenden Aufgaben – ist natürlich sehr individuell:"
+                else "Diese Anordnung – wie auch die in den folgenden Aufgaben – ist natürlich individuell:"
             ),
             "all_dots_instr": (
                 "All dots must be within the square boundary to proceed."
@@ -1179,10 +1202,10 @@ class slide05a_MapTest(Page):
     def before_next_page(player: Player, timeout_happened):
         player.positionsTest = player.positionsTest
 
-        t_on_results = json.loads(player.t_on_practiceResult_page)
-        assert type(t_on_results) == dict
-        t_on_results[player.attemptPractice] = int(time.time())
-        player.t_on_practiceResult_page = json.dumps(t_on_results)
+        t_submitted = json.loads(player.t_practicesSubmitted)
+        assert type(t_submitted) == dict
+        t_submitted[player.attemptPractice] = int(time.time())
+        player.t_practicesSubmitted = json.dumps(t_submitted)
 
         player.attemptPractice += 1
 
@@ -1193,6 +1216,8 @@ class slide05a_MapTest(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
+        if player.field_maybe_none(f"t_on_practice_page") is None:
+            player.t_on_practice_page = int(time.time())
         colors = {
             "self": C.SELFCOLOR,
             "friend": "#4DA8DA",
@@ -1313,7 +1338,8 @@ class slide05b_MapTestResult(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
-
+        if player.field_maybe_none(f"t_on_practiceResult_page_first") is None:
+            player.t_on_practiceResult_page_first = int(time.time())
         pos = json.loads(player.positionsTest)
         pos = {p["varname"]: [p["x"], p["y"]] for p in pos}
         # calculate distances
@@ -1324,15 +1350,21 @@ class slide05b_MapTestResult(Page):
         dFC = distance(pos["friend"], pos["coworker"])
         dCR = distance(pos["coworker"], pos["relative"])
         # check conditions
-        player.isTrainingCondFvC = bool(dF < dC)  # Rule 2
-        player.isTrainingCondSelfvFC = bool(dFC > dC)  # Rule 3
-        player.isTrainingCondRvF = bool(dR > dF)  # Rule 4
-        player.isTrainingCondRvFC = bool((dFR < dR) and (dCR < dR))  # Rule 6.
+        player.is_distS2F_gt_distS2C = bool(
+            dF < dC
+        )  # Rule: co-worker is quite different.
+        player.is_distF2C_gt_distS2C = bool(
+            dFC > dC
+        )  # Rule: colleague is closer to self than to friend.
+        player.is_distS2R_gt_distS2F = bool(dR > dF)  # Rule: relative is very different
+        player.is_distS2R_gt_distF2RanddistC2R = bool(
+            (dR > dFR) and (dR > dCR)
+        )  # Rule 6.
         isTrainingPassed = (
-            player.isTrainingCondFvC
-            & player.isTrainingCondSelfvFC
-            & player.isTrainingCondRvFC
-            & player.isTrainingCondRvF
+            player.is_distS2F_gt_distS2C
+            & player.is_distF2C_gt_distS2C
+            & player.is_distS2R_gt_distS2F
+            & player.is_distS2R_gt_distF2RanddistC2R
         )
         player.isTrainingPassed = isTrainingPassed
         colors = {
@@ -1348,43 +1380,43 @@ class slide05b_MapTestResult(Page):
         if lan == "en":
             errors += (
                 rf"<li>The distance between {pill('Self', 'self')} and {pill('Co-worker', 'coworker')} should be larger than the distance between {pill('Self', 'self')} and {pill('Friend', 'friend')}.</li>"
-                if player.isTrainingCondFvC == 0
+                if player.is_distS2F_gt_distS2C == 0
                 else ""
             )
             errors += (
                 rf"<li>The distance between {pill('Friend', 'friend')} and {pill('Co-worker', 'coworker')} should be larger than the distance between {pill('Self', 'self')} and {pill('Co-worker', 'coworker')}. </li>"
-                if player.isTrainingCondSelfvFC == 0
+                if player.is_distF2C_gt_distS2C == 0
                 else ""
             )
             errors += (
                 rf"<li>The distance between {pill('Self', 'self')} and {pill('Relative', 'relative')} should be larger than the distance between {pill('Self', 'self')} and {pill('Friend', 'friend')}. </li>"
-                if player.isTrainingCondRvF == 0
+                if player.is_distS2R_gt_distS2F == 0
                 else ""
             )
             errors += (
                 rf"<li>The distance between {pill('Self', 'self')} and {pill('Relative', 'relative')} should be larger than the distance between {pill('Friend', 'friend')} and {pill('Relative', 'relative')} and larger than the distance between {pill('Co-worker', 'coworker')} and {pill('Relative', 'relative')}. <br>"
-                if player.isTrainingCondRvFC == 0
+                if player.is_distS2R_gt_distF2RanddistC2R == 0
                 else ""
             )
         else:
             errors += (
                 rf"<li>Die Distanz zwischen {pill('Freund', 'friend')} und {pill('Kollegin', 'coworker')} sollte größer sein als die Distanz zwischen {pill('Ich', 'self')} und {pill('Friend', 'friend')}. </li>"
-                if player.isTrainingCondFvC == 0
+                if player.is_distS2F_gt_distS2C == 0
                 else ""
             )
             errors += (
-                rf"<li>Die Distanz zwischen {pill('Freund', 'friend')} und {pill('Kollegin', 'coworker')} sollte größer sein als die Distanz zwischen {pill('Freund', 'friend')} und {pill('Kollegin', 'coworker')}. </li>"
-                if player.isTrainingCondSelfvFC == 0
+                rf"<li>Die Distanz zwischen {pill('Freund', 'friend')} und {pill('Kollegin', 'coworker')} sollte größer sein als die Distanz zwischen {pill('Ich', 'self')} und {pill('Kollegin', 'coworker')}. </li>"
+                if player.is_distF2C_gt_distS2C == 0
                 else ""
             )
             errors += (
                 rf"<li>Die Distanz zwischen {pill('Ich', 'self')} und {pill('Verwandte', 'relative')} sollte größer sein als die Distanz zwischen {pill('Ich', 'self')} und {pill('Freund', 'friend')}. </li>"
-                if player.isTrainingCondRvF == 0
+                if player.is_distS2R_gt_distS2F == 0
                 else ""
             )
             errors += (
                 rf"<li>Die Distanz zwischen {pill('Ich', 'self')} und {pill('Verwandte', 'relative')} sollte größer sein als die Distanz zwischen {pill('Freund', 'friend')} und {pill('Verwandte', 'relative')} und größer als die Distanz zwischen {pill('Kollegin', 'coworker')} und {pill('Verwandte', 'relative')}. </li>"
-                if player.isTrainingCondRvFC == 0
+                if player.is_distS2R_gt_distF2RanddistC2R == 0
                 else ""
             )
         errors += "</ul>"
@@ -1461,7 +1493,6 @@ class slide05b_MapTestResult(Page):
 
     @staticmethod
     def before_next_page(player, timeout_happened):
-        player.t_on_map_page = int(time.time())
         if player.isTrainingPassed:
             player.current_page += 1
 
@@ -1475,7 +1506,6 @@ class slide06_SPaM(Page):
 
     @staticmethod
     def before_next_page(player, timeout_happened):
-
         valid_pairs = json.loads(player.valid_pairs)
         valid_pairs = [tuple(v) for v in valid_pairs]
         dots = json.loads(player.positions)
@@ -1504,7 +1534,6 @@ class slide06_SPaM(Page):
 
         dots_t_first_moved = [d["t_first_moved"] for d in dots]
         player.t_firstDotMoved = min(dots_t_first_moved)
-        player.t_on_toc3 = int(time.time())
         player.current_page += 1
 
     @staticmethod
@@ -1514,6 +1543,8 @@ class slide06_SPaM(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
+        if player.field_maybe_none(f"t_on_map_page") is None:
+            player.t_on_map_page = int(time.time())
         displ_names = (
             ["Self" if lan == "en" else "Ich"]
             + [
@@ -1521,7 +1552,7 @@ class slide06_SPaM(Page):
                 for f in range(1, player.n_references + 1)
             ]
             + [
-                f"{v+' voter' if lan=='en' else C.LABELLED_de[v]+' Wähler/Wählerin'}"
+                f"{v+' voter' if lan=='en' else C.LABELLED_de[v]+' W.'}"  # Wähler/Wählerin
                 for v in C.LABELLED
             ]
         )
@@ -1584,6 +1615,9 @@ class slide06_SPaM(Page):
                 if lan == "en"
                 else "<p>Es gibt weder falsche noch richtige Antworten – wir sind an Ihren persönlichen Einschätzungen interessiert.</p>"
             ),
+            "gender": (
+                "" if lan == "en" else "<b>W.</b> steht für Wählerinnen und Wähler."
+            ),
             # "instru_click": (
             #     "<summary style='white-space: nowrap;'><strong>Helping lines</strong></summary>If you want you can activate helping lines. When you click on one of the dots, circles will appear that might help you evaluate how well your arrangement reflects your sense of political similarity. You can scale the circles by moving the small arrows <strong><></strong>."
             #     if lan == 'en'
@@ -1600,6 +1634,124 @@ class slide06_SPaM(Page):
             #     "Show helping lines" if lan == 'en' else "Hilfslinien anzeigen"
             # ),
         }
+
+
+#################################
+#####  SATISFACTION   #####
+#################################
+class slide07_Satisfaction(Page):
+    form_model = "player"
+    form_fields = [
+        "satisfaction_text",
+        "satisfaction",
+    ]
+
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.consent and player.isTrainingPassed
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        lan = player.language
+        if player.field_maybe_none(f"t_on_satisfaction") is None:
+            player.t_on_satisfaction = int(time.time())
+        questions = [C.QUS[i] for i in json.loads(player.question_sorting)]
+
+        def get_ops(prefix, questions):
+            return {q: getattr(player, f"{prefix}{q}", "NA") or "NA" for q in questions}
+
+        def format_ops(ops_dict, lan):
+            return "; ".join(
+                f"{C.QUESTIONSHORTTEXT[lan][q]}: {val if lan=='en' else val }"
+                for q, val in ops_dict.items()
+            )
+
+        pos = json.loads(player.positions) if player.positions else []
+
+        dot_descrs = {
+            "self": format_ops(
+                get_ops(
+                    "own2__", [C.QUS[i] for i in json.loads(player.question_sorting)]
+                ),
+                lan,
+            )
+        }
+        for f in range(1, player.n_references + 1):
+            dot_descrs[f"reference{f}"] = format_ops(
+                get_ops(f"reference{f}__", questions), lan
+            )
+        for v in C.LABELLED:
+            dot_descrs[f"{v}"] = format_ops(
+                get_ops(f"{v.replace(' ','')}__", questions), lan
+            )
+
+        # Prepare initial dot data
+        init_dots = [
+            {
+                "varname": p["varname"],
+                "name_disp": p["name_disp"],
+                "x": p["x"],
+                "y": p["y"],
+                "dottype": p["dottype"],
+                "descr": dot_descrs.get(p["varname"], ""),
+            }
+            for p in pos
+        ]
+        return {
+            "maxslides": C.MAXSLIDES,
+            "nslide": player.current_page,
+            "lan_en": lan == "en",
+            "dots": init_dots,
+            "page_title": (
+                "Satisfaction with your political map"
+                if lan == "en"
+                else "Zufriedenheit mit Ihrer politischen Karte"
+            ),
+            "instru1": (
+                "Below we show the political map you created."
+                if lan == "en"
+                else "Unten finden Sie die von Ihnen erstellte persönliche politische Karte."
+            ),
+            "instru2": (
+                "Tipp: If you click on one of the dots in the square, a popup will appear showing your responses for that particular person."
+                if lan == "en"
+                else "Tipp: Wenn Sie auf einen der Punkte im Rechteck klicken, erscheint ein Fenster, das Ihre Antworten für die jeweilige Person zeigt."
+            ),
+            "question": (
+                "<p>How <em>satisfied</em> are you with your political map? Does this arrangement of dots reflect more or less accurately how you perceive political similarities or differences between the individuals?</p>"
+                if lan == "en"
+                else "<p>Wie <em>zufrieden</em> sind Sie mit Ihrer politischen Karte? Spiegelt diese Anordnung der Punkte mehr oder weniger <em>akkurat</em> wider, wie Sie die politische Ähnlichkeiten oder Unterschiede zwischen den Personen wahrnehmen?</p>"
+            ),
+            "explain_text": (
+                "If you like, you can add any thoughts, comments, or explanations here <em>(optional)</em>:"
+                if lan == "en"
+                else "Wenn Sie möchten, können Sie hier Ihre Gedanken, Bemerkungen oder Erklärungen hinzufügen <em>(optional)</em>:"
+            ),
+            # "choices": list(range(0, 11)),
+            "satisfaction_canvas_width": 400,
+            "canvas_width": C.CANVAS_WIDTH,
+            "satisfaction_min": 0,
+            "satisfaction_max": 100,
+            "satisfaction_min_label": (
+                "Not satisfied at all / Not accurate at all <em>(0)</em>"
+                if lan == "en"
+                else "Gar nicht zufrieden / Gar nicht akkurat <em>(0)</em>"
+            ),
+            "satisfaction_max_label": (
+                "Very satisfied / Very accurate <em>(10)</em>"
+                if lan == "en"
+                else "Sehr zufrieden / Sehr akkurat <em>(10)</em>"
+            ),
+            "more_later": (
+                "Later, we will ask you a few additional short questions about this political mapping task and your approach to arranging the dots."
+                if lan == "en"
+                else "Wir werden Ihnen später noch ein paar zusätzliche Fragen zu dieser Aufgabe – der Erstellung Ihrer politische Karte — sowie zu Ihrem Vorgehen bei der Anordnung der Punkte stellen."
+            ),
+        }
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        player.current_page += 1
 
 
 #################################
@@ -1624,16 +1776,23 @@ class slide08_PlausibilityCheck_Pairs(Page):
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         if player.n_check == 1:
-            player.t_after_first_check = int(time.time())
+            player.t_after_first_pair = int(time.time())
         player.n_check += 1
         if player.n_check == player.n_checks:
-            # player.t_on_importance = int(time.time())
-            player.t_on_toc4 = int(time.time())
             player.current_page += 1
+
+        # x = player.field_maybe_none(f"t_submittedPairs")
+        # print(x)
+        # t_submitted = json.loads(player.t_submittedPairs)
+        # assert type(t_submitted) == dict
+        # t_submitted[player.n_check] = int(time.time())
+        # player.t_submittedPairs = json.dumps(t_submitted)
 
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
+        if player.field_maybe_none(f"t_on_pairwise") is None:
+            player.t_on_pairwise = int(time.time())
 
         def get_descr(p):
             if "reference" in p:
@@ -1705,13 +1864,100 @@ class slide08_PlausibilityCheck_Pairs(Page):
         }
 
 
-class slide09_Importance(Page):
+#################################
+#####  Tasks   #####
+#################################
+class slide09_Tasks(Page):
+    form_model = "player"
+    form_fields = [
+        "mappingEnjoy",
+        "mappingEasier",
+        "task_text",
+    ]
+
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.consent and player.isTrainingPassed
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        lan = player.language
+        if player.field_maybe_none(f"t_on_taskCompare") is None:
+            player.t_on_taskCompare = int(time.time())
+        return {
+            "maxslides": C.MAXSLIDES,
+            "nslide": player.current_page,
+            "lan_en": lan == "en",
+            "page_title": (
+                "Political mapping task vs. Pairwise comparison Task"
+                if lan == "en"
+                else "Politischen Karte vs. Paarweiser Vergleich"
+            ),
+            "questioneasierMapping": (
+                "<p>Which task did you find <b>easier</b> to provide your evaluation of the political similarity/differences between people?</p>"  #  Arranging the 18 dots on the square <em>or</em> or evaluating the similarity of 18 pairs of individuals?
+                if lan == "en"
+                else "<p>Welche Aufgabe hat sich <b>einfacher</b> angefühlt, um Ihre Wahrnehmung von politischen Unterschieden oder Gemeinsamkeiten auszudrücken? </p>"  # Die 18 Punkte auf der Karte anzuordnen <em>oder</em> Die politische Ähnlichkeit von 18 Paaren zu bewerten?
+            ),
+            "easier_min": -50,
+            "easier_max": 50,
+            "easier_min_label": (
+                f"Evaluation of {player.n_checks} <b>pairs</b> was much easier for me <em>(-5)</em>"
+                if lan == "en"
+                else f"Bewerten der {player.n_checks} <b>Paare</b> war viel einfacher für mich <em>(-5)</em>"
+            ),
+            "easier_neutral_label": (
+                "Similarly easy or hard <em>(0)</em>"
+                if lan == "en"
+                else "Ähnlich einfach bzw. schwer <em>(0)</em>"
+            ),
+            "easier_max_label": (
+                f"Arranging {player.n_dots} <b>dots</b> was much easier for me <em>(5)</em>"
+                if lan == "en"
+                else f"Anordnen der {player.n_dots} <b>Punkte</b> war viel einfacher für mich <em>(5)</em>"
+            ),
+            "questionenjoyMapping": (
+                "<p>Which task did you find <em>more enjoyable</em>? </p>"  # Arranging 18 dots in the square <em>or</em> Evaluating the similarity of 18 pairs?
+                if lan == "en"
+                else "<p>Welche Aufgabe hat Ihnen <b>besser gefallen</b>? </p>"  # Die 18 Punkte auf der Karte anzuordnen <em>oder</em> Die politische Ähnlichkeit von 18 Paaren zu bewerten?
+            ),
+            "enjoy_min": -50,
+            "enjoy_max": 50,
+            "enjoy_min_label": (
+                f"I enjoyed much more to evaluate {player.n_checks} <b>pairs</b> <em>(-5)</em>"
+                if lan == "en"
+                else f"Mir hat es viel besser gefallen, {player.n_checks} <b>Paare</b> zu bewerten <em>(-5)</em>"
+            ),
+            "enjoy_neutral_label": (
+                "Similarly enjoyable <em>(0)</em>"
+                if lan == "en"
+                else "Ähnlich gut bzw. schlecht <em>(0)</em>"
+            ),
+            "enjoy_max_label": (
+                f"I enjoyed much more to arrange {player.n_dots} <b>dots</b> <em>(5)</em>"
+                if lan == "en"
+                else f"Mir hat es viel besser gefallen, {player.n_dots} <b>Punkte</b> anzuordnen <em>(5)</em>"
+            ),
+            "explain_text": (
+                "If you would like, you can add further thoughts, comments, or explanations here <em>(optional)</em>:"
+                if lan == "en"
+                else "Falls Sie möchten, können Sie hier weitere Gedanken, Anmerkungen oder Erklärungen hinzufügen <em>(optional)</em>:"
+            ),
+        }
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        player.current_page += 1
+
+
+#################################
+#####  IMPORTANCE   #####
+#################################
+class slide10_Importance(Page):
     form_model = "player"
     form_fields = [f"importance_{q}" for q in C.QUS] + ["importance_comments"]
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        player.t_on_topicPolarisation = int(time.time())
         player.current_page += 1
 
     @staticmethod
@@ -1721,6 +1967,8 @@ class slide09_Importance(Page):
     @staticmethod
     def vars_for_template(player):
         lan = player.language
+        if player.field_maybe_none(f"t_on_importance") is None:
+            player.t_on_importance = int(time.time())
         questions = [C.QUS[i] for i in json.loads(player.question_sorting)]
         fields = [f"importance_{q}" for q in questions]
         questions = [
@@ -1771,7 +2019,10 @@ class slide09_Importance(Page):
         }
 
 
-class slide10_PolarisationTopics(Page):
+#################################
+#####  POLARISATION   #####
+#################################
+class slide11_PolarisationTopics(Page):
     form_model = "player"
     form_fields = [f"how_polarised_{q}" for q in C.QUS] + [
         "how_polarised",
@@ -1780,7 +2031,6 @@ class slide10_PolarisationTopics(Page):
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        player.t_on_satisfaction = int(time.time())
         player.current_page += 1
 
     @staticmethod
@@ -1790,6 +2040,8 @@ class slide10_PolarisationTopics(Page):
     @staticmethod
     def vars_for_template(player):
         lan = player.language
+        if player.field_maybe_none(f"t_on_polarisation") is None:
+            player.t_on_polarisation = int(time.time())
         questions = [C.QUS[i] for i in json.loads(player.question_sorting)]
         fields = [f"how_polarised_{q}" for q in questions]
         questions = [
@@ -1839,16 +2091,6 @@ class slide10_PolarisationTopics(Page):
                 if lan == "en"
                 else "Was denken Sie: Wie gespalten sind die Meinungen der Menschen in Deutschland..."
             ),
-            # "question2": (
-            #     "Please rate how <b>polarised</b> you perceive the political opinions <b>in general</b>."
-            #     if lan == "en"
-            #     else "Wie <b>polarisiert</b> empfinden Sie die Meinungen zu jedem der vier politischen Themen?"
-            # ),
-            # "qu_polarization2": (
-            #     "What do you think: How politically divided are the people in Germany these days <b>in general</b>?"
-            #     if lan == "en"
-            #     else "Was denken Sie: Wie politisch gespalten sind die Menschen in Deutschland generell?"
-            # ),
             "explain_text": (
                 "If you want, you can describe how you perceive political division and polarisation in more detail <em>(optional)</em>:"
                 if lan == "en"
@@ -1858,168 +2100,9 @@ class slide10_PolarisationTopics(Page):
 
 
 #################################
-#####  Overall Satisfaction with Map   #####
-#################################
-class slide10_Satisfaction(Page):
-    form_model = "player"
-    form_fields = [
-        "satisfaction_text",
-        "satisfaction",
-        # "accurateMapping",
-        "mappingEnjoy",
-        "mappingEasier",
-    ]
-
-    @staticmethod
-    def is_displayed(player: Player):
-        return player.consent and player.isTrainingPassed
-
-    @staticmethod
-    def vars_for_template(player: Player):
-        lan = player.language
-        questions = [C.QUS[i] for i in json.loads(player.question_sorting)]
-
-        def get_ops(prefix, questions):
-            return {q: getattr(player, f"{prefix}{q}", "NA") or "NA" for q in questions}
-
-        def format_ops(ops_dict, lan):
-            return "; ".join(
-                f"{C.QUESTIONSHORTTEXT[lan][q]}: {val if lan=='en' else val }"
-                for q, val in ops_dict.items()
-            )
-
-        pos = json.loads(player.positions) if player.positions else []
-
-        dot_descrs = {
-            "self": format_ops(
-                get_ops(
-                    "own2_", [C.QUS[i] for i in json.loads(player.question_sorting)]
-                ),
-                lan,
-            )
-        }
-        for f in range(1, player.n_references + 1):
-            dot_descrs[f"reference{f}"] = format_ops(
-                get_ops(f"reference{f}_", questions), lan
-            )
-        for v in C.LABELLED:
-            dot_descrs[f"{v}"] = format_ops(
-                get_ops(f"{v.replace(' ','')}_", questions), lan
-            )
-
-        # Prepare initial dot data
-        init_dots = [
-            {
-                "varname": p["varname"],
-                "name_disp": p["name_disp"],
-                "x": p["x"],
-                "y": p["y"],
-                "dottype": p["dottype"],
-                "descr": dot_descrs.get(p["varname"], ""),
-            }
-            for p in pos
-        ]
-        return {
-            "maxslides": C.MAXSLIDES,
-            "nslide": player.current_page,
-            "lan_en": lan == "en",
-            "dots": init_dots,
-            "page_title": (
-                "Your opinions about the political mapping task"
-                if lan == "en"
-                else "Ihre Meinung zum Erstellen der politischen Karte"
-            ),
-            "instru1": (
-                "Below we show the political map you created."
-                if lan == "en"
-                else "Unten finden Sie die von Ihnen erstellte persönliche politische Karte."
-            ),
-            "instru2": (
-                "Tipp: If you click on one of the dots in the square, a popup will appear showing your responses for that particular person."
-                if lan == "en"
-                else "Tipp: Wenn Sie auf einen der Punkte im Rechteck klicken, erscheint ein Fenster, das Ihre Antworten für die jeweilige Person zeigt."
-            ),
-            "question": (
-                "<p>How satisfied are you with your political map? Does this arrangement of dots reflect generally how you perceive political similarities or differences between the individuals?</p>"
-                if lan == "en"
-                else "<p>Wie zufrieden sind Sie mit Ihrer politischen Karte? Spiegelt diese Anordnung der Punkte generell wider, wie Sie die politische Ähnlichkeiten oder Unterschiede zwischen den Personen wahrnehmen?</p>"
-            ),
-            "questioneasierMapping": (
-                "<p>Which task did you find <b>easier</b> to provide your view on the political similarity/differences between people?</p>"  #  Arranging the 18 dots on the square <em>or</em> or evaluating the similarity of 18 pairs of individuals?
-                if lan == "en"
-                else "<p>Welche Aufgabe ist Ihnen <b>leichter gefallen</b>, um Ihre Wahrnehmung von politischen Unterschieden oder Gemeinsamkeiten auszudrücken? </p>"  # Die 18 Punkte auf der Karte anzuordnen <em>oder</em> Die politische Ähnlichkeit von 18 Paaren zu bewerten?
-            ),
-            "easier_min": -50,
-            "easier_max": 50,
-            "easier_min_label": (
-                f"Evaluation of {player.n_checks} pairs was much easier <em>(-5)</em>"
-                if lan == "en"
-                else f"Bewerten der {player.n_checks} Paare war viel einfacher <em>(-5)</em>"
-            ),
-            "easier_neutral_label": (
-                "Similarly easy or hard <em>(0)</em>"
-                if lan == "en"
-                else "Ähnlich einfach bzw. schwer <em>(0)</em>"
-            ),
-            "easier_max_label": (
-                f"Arranging {player.n_dots} dots was much easier <em>(5)</em>"
-                if lan == "en"
-                else f"Anordnen der {player.n_dots} Punkte war viel einfacher <em>(5)</em>"
-            ),
-            "questionenjoyMapping": (
-                "<p>Which task did you find <em>more enjoyable</em>? </p>"  # Arranging 18 dots in the square <em>or</em> Evaluating the similarity of 18 pairs?
-                if lan == "en"
-                else "<p>Welche Aufgabe hat Ihnen <b>besser gefallen</b>? </p>"  # Die 18 Punkte auf der Karte anzuordnen <em>oder</em> Die politische Ähnlichkeit von 18 Paaren zu bewerten?
-            ),
-            "enjoy_min": -50,
-            "enjoy_max": 50,
-            "enjoy_min_label": (
-                f"I enjoyed much more to evaluate {player.n_checks} pairs <em>(-5)</em>"
-                if lan == "en"
-                else f"Mir hat es viel besser gefallen, {player.n_checks} Paare zu bewerten <em>(-5)</em>"
-            ),
-            "enjoy_neutral_label": (
-                "Similarly enjoyable <em>(0)</em>"
-                if lan == "en"
-                else "Ähnlich gut bzw. schlecht <em>(0)</em>"
-            ),
-            "enjoy_max_label": (
-                f"I enjoyed much more to arrange {player.n_dots} dots <em>(5)</em>"
-                if lan == "en"
-                else f"Mir hat es viel besser gefallen, {player.n_dots} Punkte anzuordnen <em>(5)</em>"
-            ),
-            "explain_text": (
-                "If you would like, you can add further comments or explanations here <em>(optional)</em>:"
-                if lan == "en"
-                else "Falls Sie möchten, können Sie hier weitere Anmerkungen oder Erklärungen hinzufügen <em>(optional)</em>:"
-            ),
-            # "choices": list(range(0, 11)),
-            "satisfaction_canvas_width": 400,
-            "canvas_width": C.CANVAS_WIDTH,
-            "satisfaction_min": 0,
-            "satisfaction_max": 100,
-            "satisfaction_min_label": (
-                "Not satisfied at all / Not accurate at all <em>(0)</em>"
-                if lan == "en"
-                else "Gar nicht zufrieden / Gar nicht akkurat <em>(0)</em>"
-            ),
-            "satisfaction_max_label": (
-                "Very satisfied / Very accurate <em>(10)</em>"
-                if lan == "en"
-                else "Sehr zufrieden / Sehr akkurat <em>(10)</em>"
-            ),
-        }
-
-    @staticmethod
-    def before_next_page(player: Player, timeout_happened):
-        player.t_on_relationships = int(time.time())
-        player.current_page += 1
-
-
-#################################
 #####  Social Relationships   #####
 #################################
-class slide11_Relationships(Page):
+class slide12_Relationships(Page):
     form_model = "player"
     form_fields = [f"reference{n}_socialCloseness" for n in range(1, C.N_PERSONS + 1)]
 
@@ -2030,7 +2113,8 @@ class slide11_Relationships(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
-        # fields = [f"reference{n}_socialCloseness" for n in range(1, player.n_references + 1)]
+        if player.field_maybe_none(f"t_on_relationships") is None:
+            player.t_on_relationships = int(time.time())
         references = [
             {
                 "id": f"reference{i}",
@@ -2074,21 +2158,19 @@ class slide11_Relationships(Page):
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        player.t_on_demographics = int(time.time())
         player.current_page += 1
 
 
 #################################
 #####  Demographics   #####
 #################################
-class slide12_Demographics(Page):
+class slide13_Demographics(Page):
     form_model = "player"
     form_fields = [
         "age",
         "gender",
         "political_interest",
         "political_discussion",
-        # "how_polarised",
     ]
 
     @staticmethod
@@ -2098,6 +2180,8 @@ class slide12_Demographics(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
+        if player.field_maybe_none(f"t_on_demographics") is None:
+            player.t_on_demographics = int(time.time())
         return {
             "maxslides": C.MAXSLIDES,
             "nslide": player.current_page,
@@ -2110,6 +2194,12 @@ class slide12_Demographics(Page):
                 "Which gender do you have?"
                 if lan == "en"
                 else "Welches Geschlecht haben Sie?"
+            ),
+            "choices_gender": dict(
+                zip(
+                    C.CHOICES_GENDER,
+                    (C.CHOICES_GENDER if lan == "en" else C.CHOICES_GENDER_DE),
+                )
             ),
             "qu_discussion": (
                 "How often, if ever, do you talk about politics or current events with your family, friends, or acquaintances?"
@@ -2139,7 +2229,6 @@ class slide12_Demographics(Page):
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        player.t_on_success = int(time.time())
         player.completed = True
         player.current_page += 1
 
@@ -2153,12 +2242,14 @@ class slideSuccess(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
+        if player.field_maybe_none(f"t_on_success") is None:
+            player.t_on_success = int(time.time())
         return {
             "lan_en": player.language == "en",
         }
 
     def is_displayed(player: Player):
-        return player.consent and player.isTrainingPassed
+        return player.consent and player.isTrainingPassed and player.completed
 
 
 #################################
@@ -2173,6 +2264,8 @@ class slideFail(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
+        if player.field_maybe_none(f"t_on_fail") is None:
+            player.t_on_fail = int(time.time())
         return {"lan_en": player.language == "en"}
 
 
@@ -2194,18 +2287,17 @@ page_sequence = (
     + [slide05a_MapGame]
     + [slide05a_MapTest, slide05b_MapTestResult] * C.N_MAX_PRACTICE_RUNS
     + [slide06_SPaM]
+    + [slide07_Satisfaction]
     + [slide00_toc]
     + [slide08_PlausibilityCheck_Pairs] * (1 + C.N_PERSONS + len(C.LABELLED))
     + [slide00_toc]
     + [
-        slide09_Importance,
-        slide10_PolarisationTopics,
-        slide10_Satisfaction,
-        slide11_Relationships,
-        slide12_Demographics,
+        slide09_Tasks,
+        slide10_Importance,
+        slide11_PolarisationTopics,
+        slide12_Relationships,
+        slide13_Demographics,
         slideSuccess,
         slideFail,
     ]
 )
-
-# print("Total slides: ", len(page_sequence), 3+player.n_references+len(C.LABELLED)+2+1+1+1+1+4)

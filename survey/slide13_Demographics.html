@@ -1,8 +1,8 @@
 {% load static %} {% block styles %}
-<link rel="stylesheet" href="{{ static 'main.css' }}" />
+<link rel="stylesheet" href="{% static 'main.css' %}" />
 {% endblock %} {% block content %}
 <script src="{% static 'colors.js' %}"></script>
-<script src="{{ static 'global.js' }}"></script>
+<script src="{% static 'global.js' %}"></script>
 
 <div class="container">
 <form method="post">
@@ -16,9 +16,28 @@
     <div class="form-group">
       {% formfield player.age %} {{ formfield_errors "age" }}
     </div>
-    <label class="form-label" style="margin-bottom:-15px"> {{qu_gender}} </label>
-          {% formfield player.gender %} {{ formfield_errors "age" }}
-  </div>
+
+        <label class="form-label"> {{qu_gender}} </label>
+        <div
+          class="option-cards"
+          data-field="gender"
+          style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 5px"
+        >
+          {% for choice, label in choices_gender.items %}
+          <label class="option-card">
+            <input
+              type="radio"
+              name="gender"
+              value="{{ choice }}"
+            />
+            {{ label }}
+          </label>
+          {% endfor %}
+        </div>
+       {{ formfield_errors "gender" }}
+      </div>
+
+
 
   <!-- Discussion Card -->
   <div class="card">

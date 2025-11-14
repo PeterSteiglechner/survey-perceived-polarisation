@@ -1,12 +1,13 @@
 {% load static %} {% block styles %}
-<link rel="stylesheet" href="{{ static 'main.css' }}" />
+<link rel="stylesheet" href="{% static 'main.css' %}" />
 {% endblock %} {% block content %}
 <script src="{% static 'colors.js' %}"></script>
-<script src="{{ static 'global.js' }}"></script>
+<script src="{% static 'global.js' %}"></script>
 
 <div class="container">
 <h2>{{page_title}}</h2>
 
+<form method="post">
 
     <p>{{instruction_text2}}</p>
 
@@ -41,14 +42,14 @@
         </div>
 
 
-  <div class="nav-container">
+   <div class="nav-container">
     {% if lan_en %}
-    <button  type="submit" class="otree-btn-next btn btn-primary big-button">
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
       Continue
     </button>
     <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
     {% else %}
-    <button  type="submit" class="otree-btn-next btn btn-primary big-button">
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
       Weiter
     </button>
     <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
@@ -58,7 +59,7 @@
 </div>
 </div>
 
-
+</form>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const canvas = document.getElementById("dragCanvas");
@@ -72,7 +73,9 @@
                 y: {{ dot.y }}, 
                 dottype: "{{ dot.dottype }}" ,
                 color:"{{ dot.color }}",
-                radius: 12
+                radius: 12,
+                t_first_moved: -1,
+                t_last_moved: -1
                 },    
             {% endfor %}
         ];
@@ -276,7 +279,6 @@
         // Initial draw
         drawCanvas();
         
-        // Handle form submission
         const form = document.querySelector("form");
         const nextButton = document.querySelector("button[type=submit], .otree-btn-next");
         
@@ -291,7 +293,17 @@
                     {% endif %};
                     return;
                 }
-                document.getElementById("positionsGame").value = JSON.stringify(points);
+                document.getElementById("positionsGame").value = JSON.stringify(
+                    points.map(p => ({
+                        name_disp: p.name_disp,
+                        varname: p.varname,
+                        x: p.x,
+                        y: p.y,
+                        dottype: p.dottype,
+                        color: p.color,
+                        radius: p.radius
+                    }))
+                );
                 form.submit();
             });
         }

@@ -1,8 +1,8 @@
 {% load static %} {% block styles %}
-<link rel="stylesheet" href="{{ static 'main.css' }}" />
+<link rel="stylesheet" href="{% static 'main.css' %}" />
 {% endblock %} {% block content %}
 <script src="{% static 'colors.js' %}"></script>
-<script src="{{ static 'global.js' }}"></script>
+<script src="{% static 'global.js' %}"></script>
 
 <h2>{{ page_title }}</h2>
 
@@ -61,13 +61,12 @@
             <input
               type="range"
               class="likert-slider"
-              name="{{ c.id }}_{{ q.prefix }}"
+              name="{{ c.id }}__{{ q.prefix }}"
               id="slider_{{ q.prefix }}{{ c.id }}"
               min="-100"
               max="100"
               step="1"
-              required
-              oninput="handleSliderInput('{{ q.prefix }}{{ c.id }}' , '{{c.color}}', '{{c.textcolor}}',  this.value)"
+              oninput="handleSliderInput('{{ q.prefix }}{{ c.id }}', '{{c.color}}', '{{c.textcolor}}',  this.value)"
             />
             <div id="sliderValue{{ q.prefix }}{{ c.id }}" class="slider-label">
               {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
@@ -103,16 +102,12 @@
   function handleSliderInput(field, color, textcolor, value) {
       slidersTouched[field] = true;
       const numVal = parseInt(value, 10);
-
-
-      // Likert label
-      let label = getLikertLabel(value, "{{lan_en}}");
-
+      let label = getLikertLabel(value, {% if lan_en %}true{% else %}false{% endif %});
       // update text under slider
-      const div = document.getElementById('sliderValue' + field);
+      const div = document.getElementById("sliderValue" + field);
       if (div) {
           div.innerHTML = `<span class='pill' style='background-color: ${color}; color: ${textcolor};'>${label}</span>`;
-          div.style.color =  color ;
+          div.style.color = color;
       }
 
       // update slider gradient
@@ -123,8 +118,10 @@
           const mid = (min + max) / 2;
           const sliderColor = color;
 
-          const l = val < mid ? Math.max(0, 50 + ((val - mid) / (mid - min)) * 50) : 50;
-          const r = val < mid ? 50 : Math.min(100, 50 + ((val - mid) / (max - mid)) * 50);
+          const l =
+            val < mid ? Math.max(0, 50 + ((val - mid) / (mid - min)) * 50) : 50;
+          const r =
+            val < mid ? 50 : Math.min(100, 50 + ((val - mid) / (max - mid)) * 50);
 
           slider.style.background = `linear-gradient(to right,
             #e0e0e0 0%, #e0e0e0 ${l}%,
@@ -134,33 +131,41 @@
 
       // enable next button if all touched
       if (Object.keys(slidersTouched).length === totalSliders) {
-          const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
+        const nextButton =
+          document.getElementById("nextButton") ||
+          document.querySelector(".otree-btn-next");
           if (nextButton) {
               nextButton.disabled = false;
-              nextButton.style.opacity = '1';
+              nextButton.style.opacity = "1";
           }
       }
   }
 
-  document.addEventListener('DOMContentLoaded', function() {
-      totalSliders = document.querySelectorAll('.likert-slider').length;
+    document.addEventListener("DOMContentLoaded", function () {
+    totalSliders = document.querySelectorAll(".likert-slider").length;
 
-      const form = document.querySelector('form');
-      if (form) {
-          form.addEventListener('submit', function(e) {
-              if (Object.keys(slidersTouched).length < totalSliders) {
-                  e.preventDefault();
-                  alert({% if lan_en %}'Please move all sliders to select values.'{% else %}'Bitte bewegen Sie alle Schieberegler, um Werte auszuwählen.'{% endif %});
-                  return false;
-              }
-          });
-      }
+    // Localized alert message
+    const sliderAlertMsg =
+      "{% if lan_en %}Please move all sliders to select values.{% else %}Bitte bewegen Sie alle Schieberegler, um Werte auszuwählen.{% endif %}";
 
-      const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
-      if (nextButton) {
-          nextButton.disabled = true;
-          nextButton.style.opacity = '0.5';
-      }
+    const form = document.querySelector("form");
+    if (form) {
+      form.addEventListener("submit", function (e) {
+        if (Object.keys(slidersTouched).length < totalSliders) {
+          e.preventDefault();
+          alert(sliderAlertMsg);
+          return false;
+        }
+      });
+    }
+
+    const nextButton =
+      document.getElementById("nextButton") ||
+      document.querySelector(".otree-btn-next");
+    if (nextButton) {
+      nextButton.disabled = true;
+      nextButton.style.opacity = "0.5";
+    }
   });
 </script>
 

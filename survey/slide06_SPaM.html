@@ -1,54 +1,57 @@
 {% load static %} {% block styles %}
-<link rel="stylesheet" href="{{ static 'main.css' }}" />
+<link rel="stylesheet" href="{% static 'main.css' %}" />
 {% endblock %} {% block content %}
 <script src="{% static 'colors.js' %}"></script>
-<script src="{{ static 'global.js' }}"></script>
+<script src="{% static 'global.js' %}"></script>
 
-<div class="container">
-  <h2>{{page_title}}</h2>
+<form method="post">
+  <div class="container">
+    <h2>{{page_title}}</h2>
 
-  <p>{{instru1}}</p>
+    <p>{{instru1}}</p>
 
-  <p>{{instruRoom}}</p>
+    <p>{{instruRoom}}</p>
 
-  <div class="yellow-instructions">{{instru_main}}</div>
+    <div class="yellow-instructions">{{instru_main}}</div>
 
-  <p>{{no_wrong_answers}}</p>
+    <p>{{no_wrong_answers}}</p>
 
-  <canvas
-    id="dragCanvas"
-    width="{{ canvas_width_parkingLot }}"
-    height="{{ canvas_height }}"
-    style="
-      border: 0px solid #333;
-      background: #fafafa;
-      display: block;
-      margin: 0px 0;
-      cursor: grab;
-      touch-action: none;
-    "
-  ></canvas>
+    <canvas
+      id="dragCanvas"
+      width="{{ canvas_width_parkingLot }}"
+      height="{{ canvas_height }}"
+      style="
+        border: 0px solid #333;
+        background: #fafafa;
+        display: block;
+        margin: 0px 0;
+        cursor: grab;
+        touch-action: none;
+      "
+    ></canvas>
+    <p>{{gender}}</p>
 
-  <input type="hidden" name="positions" id="positions" />
-</div>
+    <input type="hidden" name="positions" id="positions" />
+  </div>
 
-<div class="red-instructions">
-  <p>{{all_dots_instr}}</p>
-</div>
+  <div class="red-instructions">
+    <p>{{all_dots_instr}}</p>
+  </div>
 
-<div class="nav-container">
-  {% if lan_en %}
-  <button type="submit" class="otree-btn-next btn btn-primary big-button">
-    Continue
-  </button>
-  <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
-  {% else %}
-  <button type="submit" class="otree-btn-next btn btn-primary big-button">
-    Weiter
-  </button>
-  <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
-  {% endif %}
-</div>
+  <div class="nav-container">
+    {% if lan_en %}
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+      Continue
+    </button>
+    <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+    {% else %}
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+      Weiter
+    </button>
+    <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+    {% endif %}
+  </div>
+</form>
 
 <script>
   // Run only after everything (DOM + CSS + fonts) is ready
@@ -222,7 +225,7 @@
 
     // Form handling
     const form = document.querySelector("form");
-    const nextButton = document.querySelector("button[type=submit], .otree-btn-next");
+    const nextButton = document.querySelector("button.otree-btn-next[type=submit]");
 
     if (nextButton) {
       nextButton.addEventListener("click", e => {
@@ -235,6 +238,12 @@
           {% endif %}
           return;
         }
+        // The serialized 'points' array contains objects with:
+        // {
+        //   name_disp: String, varname: String, x: Number, y: Number,
+        //   dottype: String, descr: String, radius: Number,
+        //   color: String, t_last_moved: Number, t_first_moved: Number
+        // }
         document.getElementById("positions").value = JSON.stringify(points);
         form.submit();
       });

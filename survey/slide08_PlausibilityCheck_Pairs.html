@@ -1,8 +1,8 @@
 {% load static %} {% block styles %}
-<link rel="stylesheet" href="{{ static 'main.css' }}" />
+<link rel="stylesheet" href="{% static 'main.css' %}" />
 {% endblock %} {% block content %}
 <script src="{% static 'colors.js' %}"></script>
-<script src="{{ static 'global.js' }}"></script>
+<script src="{% static 'global.js' %}"></script>
 
 <style>
   .li {
@@ -11,112 +11,127 @@
 </style>
 
 {{ block title }}{{ page_title }}{{ endblock }}
-<div>
-  <div class="card-section">
-    <div class="card">
-      {{ instru1 }} {{instru2}}
-      <label class="form-label">{{ question }}</label>
-      <div style="width: 80%; margin-left: 10%; margin-right: 10%">
-        <input
-          type="range"
-          class="likert-slider"
-          name="{{ current_check }}"
-          id="similaritySlider"
-          min="{{ similarity_min }}"
-          max="{{ similarity_max }}"
-          step="1"
-          style="color: #aaaaaa; background: #ccc"
-          oninput="handleSliderInput(this.value)"
-          required
-        />
-        <div style="display: flex; justify-content: space-between">
-          <span style="font-size: 11pt; color: #777"
-            >{{ similarity_min_label }}</span
-          >
-          {% comment %}
-          <span style="font-size: 10pt; color: #777"
-            >{{ similarity_neutral_label }}</span
-          >
-          {% endcomment %}
-          <span style="font-size: 11pt; color: #777"
-            >{{ similarity_max_label }}</span
-          >
-        </div>
+<form method="post">
+  <div>
+    <div class="card-section">
+      <div class="card">
+        {{ instru1 }} {{instru2}}
+        <label class="form-label">{{ question }}</label>
 
-        <div class="slider-label-container" id="sliderValue">
-          <div class="slider-label-text" style="color: gray">
-            {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den
-            Schieberegler{% endif %}
-          </div>
-        </div>
-        {{ formfield_errors current_check }}
-      </div>
-    </div>
-  </div>
-
-  <div id="progressContainer" style="margin-top: 2em; margin-bottom: 2em">
-    <table style="margin: 0 auto">
-      <tr>
-        <td style="width: 15%">
-          <div style="text-align: left; font-size: 10pt; margin-top: 2px">
-            {%if lan_en%}Your Progress {%else%}Ihr Fortschritt{%endif%}
-          </div>
-        </td>
-        <td style="width: 40%">
+        <div style="width: 80%; margin-left: 10%; margin-right: 10%">
           <div
             style="
-              background: #eee;
-              height: 15px;
-              width: 200px;
-              border-radius: 15px;
-              overflow: hidden;
+              display: flex;
+              justify-content: space-between;
+              margin-top: 20px;
+              margin-bottom: 2px;
             "
           >
-            <div
-              id="progressBar"
-              style="
-                background: linear-gradient(90deg, #4a90e2, #357abd);
-                width: 0%;
-                height: 100%;
-              "
-            ></div>
+            <span
+              style="font-size: 11pt; width: 30%; text-align: left"
+              class="lab"
+              >{{ similarity_min_label }}</span
+            >
+            {% comment %}
+            <span style="font-size: 10pt; color: #777"
+              >{{ similarity_neutral_label }}</span
+            >
+            {% endcomment %}
+            <span
+              style="font-size: 11pt; width: 30%; text-align: right"
+              class="lab"
+              >{{ similarity_max_label }}</span
+            >
           </div>
-        </td>
-        <td style="width: 15%">
-          <div style="text-align: left; font-size: 10pt; margin-top: 2px">
-            <span id="progressText">Progress</span>
-          </div>
-        </td>
-      </tr>
-    </table>
-  </div>
 
-  <div class="nav-container">
-    {% if lan_en %}
-    <button
-      type="submit"
-      class="otree-btn-next btn btn-primary big-button"
-      id="nextButton"
-      disabled
-      style="opacity: 0.5"
-    >
-      {% if final%} Continue {%else%} Next Pair {%endif%}
-    </button>
-    <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
-    {% else %}
-    <button
-      type="submit"
-      class="otree-btn-next btn btn-primary big-button"
-      id="nextButton"
-      disabled
-      style="opacity: 0.5"
-    >
-      {% if final%} Weiter {%else%} Nächstes Paar {%endif%}
-    </button>
-    <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
-    {% endif %}
+          <input
+            type="range"
+            class="likert-slider"
+            name="{{ current_check }}"
+            id="similaritySlider"
+            min="{{ similarity_min }}"
+            max="{{ similarity_max }}"
+            step="1"
+            style="color: #aaaaaa; background: #ccc"
+            oninput="handleSliderInput(this.value)"
+            required
+          />
+
+          <div class="slider-label-container" id="sliderValue">
+            <div class="slider-label-text" style="color: gray">
+              {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
+              den Schieberegler{% endif %}
+            </div>
+          </div>
+          {{ formfield_errors current_check }}
+        </div>
+      </div>
+    </div>
+
+    <div id="progressContainer" style="margin-top: 2em; margin-bottom: 2em">
+      <table style="margin: 0 auto">
+        <tr>
+          <td style="width: 15%">
+            <div style="text-align: left; font-size: 10pt; margin-top: 2px">
+              {%if lan_en%}Your Progress {%else%}Ihr Fortschritt{%endif%}
+            </div>
+          </td>
+          <td style="width: 40%">
+            <div
+              style="
+                background: #eee;
+                height: 15px;
+                width: 200px;
+                border-radius: 15px;
+                overflow: hidden;
+              "
+            >
+              <div
+                id="progressBar"
+                style="
+                  background: linear-gradient(90deg, #4a90e2, #357abd);
+                  width: 0%;
+                  height: 100%;
+                "
+              ></div>
+            </div>
+          </td>
+          <td style="width: 15%">
+            <div style="text-align: left; font-size: 10pt; margin-top: 2px">
+              <span id="progressText">Progress</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="nav-container">
+      {% if lan_en %}
+      <button
+        type="submit"
+        class="otree-btn-next btn btn-primary big-button"
+        id="nextButton"
+        disabled
+        style="opacity: 0.5"
+      >
+        {% if final%} Continue {%else%} Next Pair {%endif%}
+      </button>
+      <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+      {% else %}
+      <button
+        type="submit"
+        class="otree-btn-next btn btn-primary big-button"
+        id="nextButton"
+        disabled
+        style="opacity: 0.5"
+      >
+        {% if final%} Weiter {%else%} Nächstes Paar {%endif%}
+      </button>
+      <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+      {% endif %}
+    </div>
   </div>
-</div>
+</form>
 
 <script>
   let totalPairs = {{ pairs|length }};
