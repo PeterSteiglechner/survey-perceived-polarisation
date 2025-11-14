@@ -6,55 +6,57 @@
 
 <h2>{{ page_title }}</h2>
 
-<p style="margin-bottom: 1em; font-weight: bold; font-size: 1.1em">
-  {{ attempt_msg }}
-</p>
+<form method="post">
+  <p style="margin-bottom: 1em; font-weight: bold; font-size: 1.1em">
+    {{ attempt_msg }}
+  </p>
 
-{% if passed %}
-<div class="green-instructions">
-  <p>{{success_msg}}</p>
-</div>
-{% else %}
-<div class="red-instructions">
-  <p>{{error_msg}}</p>
-</div>
-{% if img_help %} {{ img_help_text }}
-<div style="text-align: center; margin: 1.5em 0">
-  <img
-    id="training-result-img"
-    src="{% static img_source %}"
-    alt="Training Result Example"
-    style="
-      max-width: 100%;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    "
-  />
-</div>
-{% endif %} {% endif %}
-
-<div class="nav-container">
-  <button
-    style="
-      background-color: #4caf50;
-      color: white;
-      padding: 0.6em 1.2em;
-      margin: 0 0.5em;
-      border: none;
-      border-radius: 6px;
-      font-size: 1em;
-      cursor: pointer;
-    "
-    name="next"
-  >
-    {{button_msg}}
-  </button>
-
-  {% if lan_en %}
-  <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+  {% if passed %}
+  <div class="green-instructions">
+    <p>{{success_msg}}</p>
+  </div>
   {% else %}
-  <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
-  {% endif %}
-</div>
+  <div class="red-instructions">
+    <p>{{error_msg}}</p>
+  </div>
+  {% if img_help %} {{ img_help_text }}
+  <div style="text-align: center; margin: 1.5em 0">
+    <img
+      id="training-result-img"
+      src="{% static img_source %}"
+      alt="Training Result Example"
+      style="
+        max-width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      "
+    />
+  </div>
+  {% endif %} {% endif %}
 
-{% endblock %}
+  <div class="nav-container">
+    <button
+      style="
+        background-color: #4caf50;
+        color: white;
+        padding: 0.6em 1.2em;
+        margin: 0 0.5em;
+        border: none;
+        border-radius: 6px;
+        font-size: 1em;
+        cursor: pointer;
+      "
+      name="next"
+    >
+      {{button_msg}}
+    </button>
+
+    {% if lan_en %}
+    <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+    {% else %}
+    <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+    {% endif %}
+  </div>
+
+  <form method="post">{% endblock %}</form>
+</form>
