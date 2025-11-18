@@ -3,284 +3,84 @@
 {% endblock %} {% block content %}
 <script src="{% static 'colors.js' %}"></script>
 <script src="{{ static 'global.js' }}"></script>
-            
-<h2 style="margin-bottom:0pt">Umfrage zu Wahrnehmung politischer Meinungen</h2>
-<p><em>Survey on Perceptions of Political Opinions</em><p>
-{% comment %} <p>Welcome to our survey! / Willkommen zu unserer Umfrage!
-</p> {% endcomment %}
+<script src="{% static 'consent_content.js' %}"></script>
 
-<!-- Language Selection -->
-<div class="language-section">
-    <div class="card">
-        <div class="form-group" >
-            <label class="form-label">Please select your preferred language / Bitte wählen Sie Ihre bevorzugte Sprache:</label>
-            <div class="option-cards" data-field="language"   style="margin-bottom:0pt">
-                <label class="option-card" style="width:28%;">
-                    <input type="radio" name="language" value="en"> English
-                </label>
-                <label class="option-card" style="width:28%;">
-                    <input type="radio" name="language" value="de"> Deutsch
-                </label>
-            </div>
-        </div>
-    </div>
-</div>
-
-<br>
-
-<!-- Consent Section -->
-<div class="consent-section" id="consent-section" style="display: none;">
-    <div class="card">
-        <div class="form-group">
-            <h3 data-i18n="consentTitle"></h3>
-            {% comment %} <p data-i18n="dearParticipant"></p> {% endcomment %}
-            {% comment %} <p data-i18n="consentText"></p>
-            <p data-i18n="consentText2"></p> {% endcomment %}
-
-            {% comment %} <strong data-i18n="purposeTitle"></strong> {% endcomment %}
-            <p data-i18n="purposeBody"></p>
-            <p data-i18n="purposeBody2"></p>
-            <p data-i18n="purposeBody3"></p>
-            
-            
-            <strong data-i18n="procedureTitle"></strong>
-            {% comment %} <p><strong data-i18n="procedureTitle"></strong></p> {% endcomment %}
-            <p data-i18n="procedureBody"></p>
-            <ol style="margin-bottom:0em;margin-top:0em;">
-                <li  data-i18n="procedureBody1">
-                </li>
-                <li data-i18n="procedureBody2">
-                </li>
-                <li data-i18n="procedureBody3">
-                </li>
-                <li data-i18n="procedureBody4">
-                </li>
-                <li data-i18n="procedureBody5">
-                </li>
-                <li data-i18n="procedureBody6">
-                </li>
-            </ol>
-
-        
-        <p>           
-            <strong data-i18n="paymentBody"> </strong>
-        </p>
-        <p data-i18n="refuseOption"></p>
-        
-
-            <!-- Toggle button -->
-            <style>
-  #toggle-btn:focus,
-  #toggle-btn:active {
-    box-shadow: none !important;
-    outline: none !important;
+<style>
+  p {
+    margin-bottom: 0.1em;
+    margin-top: 0.1em;
   }
 </style>
-            <button id="toggle-btn" class="btn btn-outline-secondary" type="button">
-            <div data-i18n="readmore"></div>
-            </button>
-            
-            <div id="more-text" style="display: none; margin-top:1em;">
-            <strong data-i18n="eligibility"></strong>
-            <p data-i18n="eligibilityBody"></p>
-            
-            <strong data-i18n="withdrawal"></strong>
-            <p data-i18n="withdrawalInfo"></p>
-            <p style="margin-top:-1em">📧 <a href='mailto:collectivemindslab@csh.ac.at'>collectivemindslab@csh.ac.at</a></p>
-         
-        
-        
-        <strong data-i18n="dataUsageTitle"></strong>
-            {% comment %} <p><strong data-i18n="dataUsageTitle"></strong></p> {% endcomment %}
-            <ul>
-                <li data-i18n="dataUsage1"></li>
-                <li data-i18n="dataUsage2"></li>
-                <li data-i18n="dataUsage3"></li>
-                <li data-i18n="dataUsage4"></li>
-            </ul>
-        
-        <strong data-i18n="ethicsTitle"></strong>
-            {% comment %} <p><strong data-i18n="dataUsageTitle"></strong></p> {% endcomment %}
-            <p data-i18n="ethicsReview"></p>
-      
-            <strong data-i18n="questionsTitle"></strong>
-            <p data-i18n="questionsBody"></p>
-            <p style="margin-top:-1em">📧 <a href='mailto:collectivemindslab@csh.ac.at'>collectivemindslab@csh.ac.at</a></p>
 
-            {% comment %} <p data-i18n="ethicsReview"></p> {% endcomment %}
-{% comment %} 
-            <div class="instructions">
-                <p data-i18n="consentDisclaimer"></p>
-            </div> {% endcomment %}
-              </div>
+<h2 style="margin-bottom: 0pt">Umfrage zu Wahrnehmung politischer Meinungen</h2>
+<p style="margin-bottom: 1em">
+  <em>Survey on Perceptions of Political Opinions</em>
+</p>
 
-            <div class="yellow-instructions">
-                <p data-i18n="consentDecl"></p>
-            </div>
-
-                <div class="option-cards" data-field="consent">
-                    <label class="option-card">
-                        <input type="radio" name="consent" value="1">
-                        <span data-i18n="consentYes"></span>
-                    </label>
-                    <label class="option-card">
-                        <input type="radio" name="consent" value="0">
-                        <span data-i18n="consentNo"></span>
-                    </label>
-                </div>
-            </div>
-        </div>
+<div class="language-section" style="margin-bottom: 1em">
+  <div class="card">
+    <div class="form-group">
+      <label class="form-label"
+        >Please select your preferred language / Bitte wählen Sie Ihre
+        bevorzugte Sprache:</label
+      >
+      <div class="option-cards" data-field="language">
+        <label class="option-card" style="width: 40%">
+          <input type="radio" name="language" value="en" /> English
+        </label>
+        <label class="option-card" style="width: 40%">
+          <input type="radio" name="language" value="de" /> Deutsch
+        </label>
+      </div>
     </div>
+  </div>
 </div>
 
-
+<!-- Content will be injected here -->
+<div id="consent-content"></div>
 
 <script>
-const translations = {
-    en: {
-        selectLanguage: "Please select your preferred language:",
-        consentTitle: "Participant Consent Form",
-        dearParticipant: "Dear participant,",
-        consentText: "Thank you for your interest in our survey. Your responses will help us better understand how people evaluate and perceive the political opinions of others.",
-        consentText2: "Please read the following information carefully before giving your consent.",
-        purposeTitle: "Purpose of the Study",
-        purposeBody: "This study explores how people perceive and interpret political differences and similarities.",
-        purposeBody2:"There are no right or wrong answers. We are interested in your personal perceptions and judgments.",
-        purposeBody3: "Our goal is to understand whether people perceive opinions and political polarisation in similar ways, or whether perceptions vary systematically across individuals.",
-        benefitsBody1: "The findings from this project will provide information on whether people perceive opinions and polarisation in society in a similar way or whether there are systematic differences in perception.",
-        eligibility: "Eligibility", 
-        eligibilityBody: "You are eligible to take part in this study if you are at least 18 years old and currently reside in Germany.",
-        procedureTitle: "Study Procedure",
-        procedureBody: "The study consists of the following steps:", 
-        procedureBody1: "Answer a few questions about your own political views and your political identity.", 
-        procedureBody2: "Name ten people you know well and whose opinions are familiar to you, and estimate their political views.", 
-        procedureBody3: "Estimate the political views of typical voters of the major political parties in Germany.", 
-        procedureBody4: "Place the individuals on a political map.", 
-        procedureBody5: "For a few randomly selected pairs of individuals, indicate how politically similar or different you think they are.",
-        procedureBody6: "Complete a few brief questions about the previous tasks and yourself.",
-        paymentTitle: "Compensation",
-        paymentBody: "This study will take 25-30 minutes. You will be compensated with 5 GBP for your participation.",
-        refuseOption: "You may refuse or redraw your consent at any time.",
-        withdrawal: "Voluntary Participation and Withdrawal",
-        withdrawalInfo: "Your participation in this research study is voluntary. You may refuse to participate or stop at any time without penalty. If you complete the study but later wish to have your data removed, please contact the study coordinators Mirta Galesic and Peter Steiglechner within 30 days at:",
-        dataUsageTitle: "Data Privacy and Usage",
-        dataUsage1: "Any identifying information (e.g., your Prolific ID) will be kept strictly confidential and never shared without your explicit permission.",
-        dataUsage2: "Identifying data is stored separately from your survey responses.",
-        dataUsage3: "Your anonymised data may be shared in an open-access scientific repository for non-commercial research purposes.",
-        dataUsage4: "Your data will never be used in ways incompatible with the aims of this study.",
-        questionsTitle: "Questions or Concerns?",
-        questionsBody: "If you have any questions, feel free to contact the study coordinators at:",
-        ethicsTitle: "Ethics",
-        ethicsReview: "This study has been reviewed by the University of New Mexico Institutional Review Board (IRB) IRB-ID 2501179238A001.",
-        consentDecl: "I have read the information provided above. By clicking 'I give consent' I indicate my voluntary agreement to participate in this research study.",
-        consentYes: "I give consent.",
-        consentNo: "I do not give consent.",
-        nextBtn: "Next",
-        readmore: "Read more",
-        hideDetails: "Hide details"
-        {% comment %} pageText: "Page 1" {% endcomment %}
-    },
-    de: {
-  "selectLanguage": "Bitte wählen Sie Ihre bevorzugte Sprache:",
-  "consentTitle": "Einverständniserklärung",
-  "dearParticipant": "Liebe Teilnehmerin, lieber Teilnehmer,",
-  "consentText": "Vielen Dank für Ihr Interesse an unserer Umfrage. Ihre Antworten werden uns dabei helfen, besser zu verstehen, wie Menschen die politischen Meinungen anderer bewerten und wahrnehmen.",
-  "consentText2": "Bitte lesen Sie die folgenden Informationen sorgfältig durch, bevor Sie Ihre Zustimmung zur Teilnahme an der Umfrage geben.",
-  "purposeTitle": "Zweck der Studie",
-  "purposeBody": "Diese Studie untersucht, wie Menschen politische Unterschiede und Gemeinsamkeiten wahrnehmen und interpretieren.",
-  "purposeBody2": "Es gibt keine richtigen oder falschen Antworten – wir interessieren uns für Ihre persönliche Wahrnehmung und Einschätzung.",
-  "purposeBody3": "Unser Ziel ist es zu verstehen, ob Menschen politische Meinungen und Polarisierung auf eine ähnliche Weise wahrnehmen oder ob es systematische Unterschiede in der Wahrnehmung gibt.",
-  "benefitsBody1": "Die Ergebnisse dieses Projekts sollen aufzeigen, ob Menschen politische Meinungen und gesellschaftliche Polarisierung ähnlich oder unterschiedlich wahrnehmen.",
-  "eligibility": "Teilnahmeberechtigung",
-  "eligibilityBody": "Sie können an dieser Studie teilnehmen, wenn Sie mindestens 18 Jahre alt sind und derzeit in Deutschland leben.",
-  "procedureTitle": "Ablauf der Studie",
-  "procedureBody": "Die Studie und beinhaltet folgende Schritte:",
-"procedureBody1": "Sie beantworten zunächst einige Fragen zu Ihren eigenen politischen Einstellungen und Ihrer politischen Identität.",
-"procedureBody2": "Dann nennen Sie zehn Personen, die Sie gut kennen und deren Meinungen Ihnen vertraut sind, und schätzen deren politische Ansichten ein.",
-"procedureBody3": "Anschließend schätzen Sie ein, wie typische Wähler oder Wählerinnen der Parteien in Deutschland politisch eingestellt sind.",
-"procedureBody4": "Sie verorten alle genannten Personen auf einer politischen Karte.",
-"procedureBody5": "Für ein paar zufällig ausgewählte Personen, geben Sie an, wie ähnlich oder unterschiedlich Sie ihre politischen Ansichten zueinander einschätzen.",
-  "procedureBody6": "Zum Schluss beantworten Sie einige kurze Fragen zu den vorherigen Aufgaben und zu Ihrer Person.",
-  "paymentTitle": "Vergütung",
-  "paymentBody": "Die Umfrage dauert etwa 25-30 Minuten. Die Vergütung für Ihre Teilnahme beträgt 5 GBP.",
-  "refuseOption": "Sie können Ihr Einverständnis jederzeit verweigern oder zurückziehen.",
-  "withdrawal": "Freiwillige Teilnahme und Rücktritt",
-  "withdrawalInfo": "Die Teilnahme an dieser Studie ist freiwillig. Sie können die Teilnahme jederzeit ohne Angabe von Gründen und ohne Nachteile abbrechen. Wenn Sie die Studie abgeschlossen haben, Ihre Daten aber später löschen lassen möchten, kontaktieren Sie bitte die Studienkoordinator:innen Mirta Galesic und Peter Steiglechner innerhalb von 30 Tagen unter:",
-  "dataUsageTitle": "Datenschutz und Verwendung der Daten",
-  "dataUsage1": "Alle identifizierenden Informationen (z.B. Ihre Prolific-ID) werden streng vertraulich behandelt und nur mit Ihrer ausdrücklichen Zustimmung weitergegeben.",
-  "dataUsage2": "Identifizierende Daten werden getrennt von Ihren Umfrageantworten gespeichert.",
-  "dataUsage3": "Ihre anonymisierten Daten können in einem frei zugänglichen wissenschaftlichen Repository für nicht-kommerzielle Forschungszwecke veröffentlicht werden.",
-  "dataUsage4": "Ihre Daten werden niemals für Zwecke verwendet, die nicht mit den Zielen dieser Studie vereinbar sind.",
-  "questionsTitle": "Fragen oder Bedenken?",
-  "questionsBody": "Wenn Sie Fragen haben, wenden Sie sich bitte an die Studienleitung unter:",
-  "ethicsTitle": "Genehmigung der Ethikkommission",
-  "ethicsReview": "Diese Studie wurde durch das Institutional Review Board (IRB) der University of New Mexico geprüft. IRB-ID: 2501179238A001.",
-  "consentDecl": "Ich habe die oben stehenden Informationen gelesen. Mit einem Klick auf 'Ich gebe mein Einverständnis' erkläre ich mein freiwilliges Einverständnis zur Teilnahme an dieser Umfrage.",
-  "consentYes": "Ich gebe mein Einverständnis.",
-  "consentNo": "Ich gebe mein Einverständnis nicht.",
-  "nextBtn": "Weiter",
-  "readmore": "Weitere Informationen",
-  "hideDetails": "Weniger Informationen"
-  {% comment %} "pageText": "Seite 1" {% endcomment %}
-}
-};
-function updateLanguage(lang) {
-        const elements = document.querySelectorAll('[data-i18n]');
-        elements.forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (translations[lang][key]) {
-                el.textContent = translations[lang][key];
-            }
-        });
-        if (translations[lang].pageText) {
-            document.getElementById('pagedispl').textContent = translations[lang].pageText;
-        }
-    }
-document.addEventListener("DOMContentLoaded", function () {
-    // Hide oTree's next button completely
-    const nextButton = document.querySelector('button[type="submit"]');
-    if (nextButton) nextButton.style.display = 'none';
-
-    
-
-    // Option card selection handling
-    document.querySelectorAll('.option-cards').forEach(group => {
-        const field = group.dataset.field;
-        group.querySelectorAll('input[type="radio"]').forEach(radio => {
-            radio.addEventListener('change', () => {
-                // Remove all selected
-                group.querySelectorAll('.option-card').forEach(card => card.classList.remove('selected'));
-                // Add selected class
-                radio.closest('.option-card').classList.add('selected');
-
-                if (field === 'language') {
-                    document.getElementById('consent-section').style.display = 'block';
-                    updateLanguage(radio.value);
-                }
-
-                // Automatically submit if user clicks "I consent"
-                if (field === 'consent' && radio.value === "1") {
-                    document.querySelector('form').submit();
-                }
-            });
-        });
+  document.querySelectorAll('input[name="language"]').forEach((radio) => {
+    radio.addEventListener("change", () => {
+      document.getElementById("consent-content").innerHTML =
+        translations[radio.value];
+      attachEventListeners();
     });
-});
-</script>
-<script>
-
-  const btn = document.getElementById('toggle-btn');
-  const moreText = document.getElementById('more-text');
-  const textElement = btn.querySelector('[data-i18n="readmore"]');
-  let expanded = false;
-
-  btn.addEventListener('click', () => {
-    expanded = !expanded;
-    moreText.style.display = expanded ? 'block' : 'none';
-    textElement.setAttribute('data-i18n', expanded ? 'hideDetails' : 'readmore');
-    updateLanguage(document.querySelector('input[name="language"]:checked')?.value || 'en');
   });
 </script>
+<script>
+  function attachEventListeners() {
+    // Hide oTree's next button
+    const nextButton = document.querySelector('button[type="submit"]');
+    if (nextButton) nextButton.style.display = "none";
 
+    // Handle consent selection
+    document
+      .querySelectorAll(
+        '.option-cards[data-field="consent"] input[type="radio"]'
+      )
+      .forEach((radio) => {
+        radio.addEventListener("change", () => {
+          // Remove all selected classes
+          document
+            .querySelectorAll(
+              '.option-cards[data-field="consent"] .option-card'
+            )
+            .forEach((card) => {
+              card.classList.remove("selected");
+            });
 
+          // Add selected class to clicked option
+          radio.closest(".option-card").classList.add("selected");
+
+          // Auto-submit if user clicks "I consent" (value="1")
+          if (radio.value === "1") {
+            document.querySelector("form").submit();
+          }
+        });
+      });
+
+    // Add any other event listeners you need (like for toggle buttons, etc.)
+  }
+</script>
 {% endblock %}

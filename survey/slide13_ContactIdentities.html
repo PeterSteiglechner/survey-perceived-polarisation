@@ -1,0 +1,183 @@
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'main.css' %}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{% static 'global.js' %}"></script>
+
+<style>
+  /* Make unselected cards look dimmer */
+  .option-card {
+    opacity: 0.3;
+    transition: all 0.2s ease;
+    border: 2px solid #ccc;
+  }
+
+  /* Selected card pops out */
+  .option-card.selected {
+    opacity: 1 !important;
+    border: 5px solid #000; /* thicker, darker border */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4); /* glow effect */
+    transform: scale(1.02); /* slight zoom */
+    z-index: 1; /* keep above others */
+  }
+</style>
+
+<h2>{{page_title}}</h2>
+
+<p>{{qu_identities}}</p>
+<p>{{disclaimerDontKnow}}</p>
+
+<form method="post">
+  <div class="question-block">
+    <table class="survey-table-clean">
+      <thead>
+        <tr>
+          <td></td>
+          <th style="width: 75%"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in references %}
+        <tr>
+          <td style="text-align: left">
+            <label class="form-label" style="margin-left: 10pt">
+              {{ c.name }}</label
+            >
+          </td>
+          <td>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-top: 7px;
+                margin-bottom: 7px;
+              "
+            >
+              <div
+                class="option-cards"
+                data-field="{{c.id}}_PartyFeelClosest"
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr 1fr 1fr;
+                  gap: 7px;
+                "
+              >
+                {% for choice, label in choices_identity.items %}
+                <label class="option-card">
+                  <input
+                    type="radio"
+                    name="{{c.id}}_PartyFeelClosest"
+                    value="{{ choice }}"
+                  />
+                  {{ label }}
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="nav-container">
+    {% if lan_en %}
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+      Continue
+    </button>
+    <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+    {% else %}
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+      Weiter
+    </button>
+    <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+    {% endif %}
+  </div>
+</form>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const cards = document.querySelectorAll(".option-card");
+
+    cards.forEach((card) => {
+      const label = card.textContent.trim();
+
+      if (COLORS[label]) {
+        card.style.backgroundColor = COLORS[label];
+        card.style.color =
+          label === "FDP"
+            ? "#424949"
+            : COLORS[label] === "#c7c7c7"
+            ? "black"
+            : "white";
+      }
+    });
+  });
+</script>
+
+<script>
+  document.querySelectorAll(".option-cards").forEach((group) => {
+    const name = group.dataset.field;
+    group.querySelectorAll('input[type="radio"]').forEach((radio) => {
+      radio.addEventListener("change", () => {
+        group.querySelectorAll(".option-card").forEach((card) => {
+          card.classList.remove("selected");
+        });
+        radio.closest(".option-card").classList.add("selected");
+      });
+    });
+  });
+</script>
+
+<script>
+  let answeredGroups = new Set();
+  let totalGroups = 0;
+
+  function checkAllAnswered() {
+      const nextButton = document.querySelector('.otree-btn-next');
+      if (nextButton) {
+          if (answeredGroups.size === totalGroups) {
+              nextButton.disabled = false;
+              nextButton.style.opacity = '1';
+          } else {
+              nextButton.disabled = true;
+              nextButton.style.opacity = '0.5';
+          }
+      }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+      // Count total radio button groups
+      const radioGroups = document.querySelectorAll('.option-cards[data-field]');
+      totalGroups = radioGroups.length;
+
+      // Add change listeners to all radio buttons
+      const allRadios = document.querySelectorAll('.option-cards input[type="radio"]');
+      allRadios.forEach(radio => {
+          radio.addEventListener('change', function() {
+              // Get the group name (field name)
+              const groupName = this.name;
+              answeredGroups.add(groupName);
+              checkAllAnswered();
+          });
+      });
+
+      // Handle form submission
+      const form = document.querySelector('form');
+      if (form) {
+          form.addEventListener('submit', function(e) {
+              if (answeredGroups.size < totalGroups) {
+                  e.preventDefault();
+                  alert({% if lan_en %}'Please answer all questions before continuing.'{% else %}'Bitte beantworten Sie alle Fragen, bevor Sie fortfahren.'{% endif %});
+                  return false;
+              }
+          });
+      }
+
+      // Initially disable the next button
+      checkAllAnswered();
+  });
+</script>
+
+{% endblock %}

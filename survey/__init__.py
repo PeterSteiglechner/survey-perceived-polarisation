@@ -152,6 +152,42 @@ class C(BaseConstants):
         ),
     }
 
+    QUS_OTHERS = [
+        "regulate_internet",
+        "monitor_health",
+        "social_housing",
+        "gmo_safe",
+        "east_germans",
+    ]
+    QUESTIONS_OTHERS = {
+        "en": dict(
+            zip(
+                QUS_OTHERS,
+                [
+                    "The internet should be regulated much more strongly.",  # # Source GESIS GLES https://search.gesis.org/research_data/ZA5722  #es sollte überhaupt keine Kontrolle des Internets geben
+                    "In a public health crisis, such as during a pandemic, it is more important to monitor and track the population than to protect individuals' privacy.",
+                    # Source: ESS 10SC Is it more important for governments to onitor and track the public or to maintain public privacy when fighting a pandemic?
+                    "There is a serious shortage of social housing in Germany.",
+                    "The production and consumption of genetically modified foods is a societal risk.",  # based on ESS
+                    "The lifetime achievements of East Germans should be recognized more.",  # Triggerpunkte
+                ],
+            )
+        ),
+        "de": dict(
+            zip(
+                QUS_OTHERS,
+                [
+                    "Das Internet sollte viel stärker kontrolliert werden.",
+                    "In einer öffentlichen Gesundheitskrise, wie z.B. einer Pandemie, ist es wichtiger, die Bevölkerung zu überwachen und nachzuverfolgen, als die Privatsphäre von Personen zu schützen.",
+                    "In Deutschland herrscht ein gravierender Mangel an Sozialwohnungen.",
+                    "Die Herstellung und der Verzehr gentechnisch veränderter Lebensmittel stellen ein gesellschaftliches Risiko dar.",
+                    "Die Lebensleistungen der Ostdeutschen sollten stärker gewürdigt werden.",
+                ],
+            )
+        ),
+        # The lifetime achievements of East Germans should be recognized more.  TRIGGERPUNKTE
+        # Significantly more wind turbines should be erected, even if this has to be done close to towns and villages.
+    }
     N_PERSONS = 10
     N_PAIRWISE_FIX = True
     MIN_REFERENCES = 7
@@ -195,7 +231,7 @@ class C(BaseConstants):
     )
 
     NLABELLED = 7  # len(LABELLED)
-    MAXSLIDES = 16
+    MAXSLIDES = 18
     # op
     # id + toc
     # references
@@ -209,7 +245,9 @@ class C(BaseConstants):
     # + toc
     # compare Task
     # importance
+    # importanceOthers
     # rela
+    # identity Identities
     # demo
 
     FORCED_PAIRS = (
@@ -282,6 +320,8 @@ class Player(BasePlayer):
         label="Language / Sprache",
     )
 
+    overall_comments = models.LongStringField(label="", blank=True)
+
     age = models.IntegerField(label="", min=18, max=100)
 
     gender = models.StringField(
@@ -305,6 +345,9 @@ class Player(BasePlayer):
     how_polarised_comments = models.LongStringField(label="", blank=True)
 
     importance_comments = models.LongStringField(
+        blank=True, label="", initial="", null=True
+    )
+    importance_other_comments = models.LongStringField(
         blank=True, label="", initial="", null=True
     )
 
@@ -339,8 +382,10 @@ class Player(BasePlayer):
     t_on_toc4 = models.IntegerField(blank=True)
     t_on_taskCompare = models.IntegerField(blank=True)
     t_on_importance = models.IntegerField(blank=True)
+    t_on_importance_other = models.IntegerField(blank=True)
     t_on_polarisation = models.IntegerField(blank=True)
     t_on_relationships = models.IntegerField(blank=True)
+    t_on_contactIdentities = models.IntegerField(blank=True)
     t_on_demographics = models.IntegerField(blank=True)
     t_on_success = models.IntegerField(blank=True)
     t_on_fail = models.IntegerField(blank=True)
@@ -418,6 +463,16 @@ for n in range(1, C.N_PERSONS + 1):
         f"reference{n}_socialCloseness",
         slider(0, 100, blank=(n > C.MIN_REFERENCES)),
     )
+    setattr(
+        Player,
+        f"reference{n}_PartyFeelClosest",
+        models.StringField(
+            label="",
+            choices=C.CHOICES_IDENTITY + ["I don't know"],
+            blank=(n > C.MIN_REFERENCES),
+            widget=widgets.RadioSelect,
+        ),
+    )
     for q in C.QUS:
         setattr(
             Player,
@@ -445,6 +500,8 @@ for n in range(1, 1 + C.N_PERSONS + len(C.LABELLED) + 1):
 ####  Importance
 ###########################
 for q in C.QUS:
+    setattr(Player, f"importance_{q}", slider(0, 100))
+for q in C.QUS_OTHERS:
     setattr(Player, f"importance_{q}", slider(0, 100))
 
 
@@ -491,7 +548,8 @@ class slide00_toc(Page):
 
     @staticmethod
     def is_displayed(player):
-        return player.consent and (player.visited_toc < 3 or player.isTrainingPassed)
+        trainingPassed = player.isTrainingPassed
+        return player.consent and (player.visited_toc < 3 or trainingPassed)
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -612,9 +670,9 @@ class slide02_Opinions(Page):
             "color": C.SELFCOLOR,
             "field_question_pairs": field_question_pairs,
             "page_title": (
-                "Your political views"
+                "Your Political Views"
                 if player.language == "en"
-                else "Ihre politischen Ansichten"
+                else "Ihre Politischen Ansichten"
             ),
             "first_label": C.LIKERT7[0] if lan == "en" else C.LIKERT7_de[0],
             "neutral_label": C.LIKERT7[3] if lan == "en" else C.LIKERT7_de[3],
@@ -671,9 +729,9 @@ class slide02a_Identity(Page):
                 else "Ihre Politische Identität"
             ),
             "qu_identity": (
-                "Do you feel closer to one of the political parties in Germany than the others? If so, which one?"
+                "In Germany, many people tend to lean toward a particular political party for long periods of time, even though they occasionally vote for another party. How about you: do you generally lean toward a particular party? And if so, which one?"  # "Do you feel closer to one of the political parties in Germany than the others? If so, which one?"
                 if lan == "en"
-                else "Gibt es eine bestimmte politische Partei in Deutschland, der Sie sich politisch näher fühlen als allen anderen Parteien? Welcher?"
+                else "In Deutschland neigen viele Leute längere Zeit einer bestimmten politischen Partei zu, obwohl sie auch ab und zu eine andere Partei wählen. Wie ist das bei Ihnen: Neigen Sie - ganz allgemein - einer bestimmten Partei zu? Und wenn ja, welcher?"  # "Gibt es eine bestimmte politische Partei in Deutschland, der Sie sich politisch näher fühlen als allen anderen Parteien? Welcher?"  # In Deutschland neigen viele Leute längere Zeit einer bestimmten politischen Partei zu, obwohl sie auch ab und zu eine andere Partei wählen. Wie ist das bei Ihnen: Neigen Sie - ganz allgemein - einer bestimmten Partei zu? Und wenn ja, welcher?
             ),
             "choices_identity": dict(
                 zip(
@@ -886,7 +944,7 @@ class slide04_ReferencesOpinions(Page):
             #     else "Hinweis: Auf der nächsten Seite bitten wir Sie um Ihre Einschätzung der fünf weiteren Kontakte."
             # ),
             instruction_bestguess=(
-                "“We know it can sometimes be hard to guess how others would respond. Please move the slider to where <em>you</em> think the other person would choose."
+                "We know it can sometimes be hard to guess how others would respond. Please move the slider to where <em>you</em> think the other person would choose."
                 if lan == "en"
                 else "Wir wissen, dass es manchmal schwer ist einzuschätzen, wie andere antworten würden. Bitte bewegen Sie den Schieberegler so, wie <em>Sie</em> glauben, dass die andere Person antworten würde.“"
             ),
@@ -1200,7 +1258,7 @@ class slide05a_MapTest(Page):
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        player.positionsTest = player.positionsTest
+        player.positionsTest = player.field_maybe_none("positionsTest")
 
         t_submitted = json.loads(player.t_practicesSubmitted)
         assert type(t_submitted) == dict
@@ -1211,7 +1269,8 @@ class slide05a_MapTest(Page):
 
     @staticmethod
     def is_displayed(player):
-        return player.consent and (not player.isTrainingPassed)
+        trainingPassed = player.isTrainingPassed
+        return player.consent and (not trainingPassed)
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1538,7 +1597,8 @@ class slide06_SPaM(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent & player.isTrainingPassed
+        trainingPassed = player.isTrainingPassed
+        return player.consent and trainingPassed
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1648,7 +1708,8 @@ class slide07_Satisfaction(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent and player.isTrainingPassed
+        trainingPassed = player.isTrainingPassed
+        return player.consent and trainingPassed
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1658,7 +1719,7 @@ class slide07_Satisfaction(Page):
         questions = [C.QUS[i] for i in json.loads(player.question_sorting)]
 
         def get_ops(prefix, questions):
-            return {q: getattr(player, f"{prefix}{q}", "NA") or "NA" for q in questions}
+            return {q: player.field_maybe_none(f"{prefix}{q}") for q in questions}
 
         def format_ops(ops_dict, lan):
             return "; ".join(
@@ -1762,10 +1823,11 @@ class slide08_PlausibilityCheck_Pairs(Page):
 
     @staticmethod
     def is_displayed(player: Player):
+        trainingPassed = player.isTrainingPassed
         return (
             (player.consent)
             and (player.n_check <= (player.n_checks))
-            and player.isTrainingPassed
+            and trainingPassed
         )
 
     @staticmethod
@@ -1877,7 +1939,8 @@ class slide09_Tasks(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent and player.isTrainingPassed
+        trainingPassed = player.isTrainingPassed
+        return player.consent and trainingPassed
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1950,7 +2013,7 @@ class slide09_Tasks(Page):
 
 
 #################################
-#####  IMPORTANCE   #####
+#####  IMPORTANCE QUESTIONS   #####
 #################################
 class slide10_Importance(Page):
     form_model = "player"
@@ -1962,7 +2025,8 @@ class slide10_Importance(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent and player.isTrainingPassed
+        trainingPassed = player.isTrainingPassed
+        return player.consent and trainingPassed
 
     @staticmethod
     def vars_for_template(player):
@@ -1971,11 +2035,7 @@ class slide10_Importance(Page):
             player.t_on_importance = int(time.time())
         questions = [C.QUS[i] for i in json.loads(player.question_sorting)]
         fields = [f"importance_{q}" for q in questions]
-        questions = [
-            # ("Opinions " if lan == "en" else "Die Meinungen ") +
-            C.QUESTIONNAMES[player.language][q]
-            for q in questions
-        ]
+        questions = [C.QUESTIONNAMES[player.language][q] for q in questions]
 
         field_question_pairs = []
         for field, question in zip(fields, questions):
@@ -2002,19 +2062,97 @@ class slide10_Importance(Page):
                 "Issue Importance" if lan == "en" else "Wichtigkeit von Themen"
             ),
             "table_head": (
-                "Importance of political issues for your perception"
+                "Importance of issues for your perception of political distance and similarity"
                 if lan == "en"
-                else "Wichtigkeit der politischen Themen für Ihre Wahrnehmung"
+                else "Wichtigkeit der Themen für Ihre Wahrnehmung von politischer Distanz und Ähnlichkeit"
             ),
             "question": (
-                "Please rate how <b>important</b> each of the four issues were to you in the last two tasks (creating the political map and evaluating the pairs of individuals)!"
+                "Please rate <b>how important</b> each of the four issues were to you in the last two tasks (creating the political map and evaluating the pairs of individuals)!"
                 if lan == "en"
-                else "Bitte schätzen Sie ein, wie <b>wichtig</b> die vier politischen Themen jeweils für Sie in den letzten beiden Aufgaben waren (Erstellen der politischen Karte bzw. Bewerten der einzelnen Paare)!"
+                else "Bitte schätzen Sie ein, <b>wie wichtig</b> die vier politischen Themen jeweils für Sie in den letzten beiden Aufgaben waren (die politische Karte zu erstellen bzw. einzelne Paare zu bewerten)!"
             ),
             "explain_text": (
-                "If you want, you can explain here in more detail which topics have influenced you in the previous tasks and in what way <em>(optional)</em>:"
+                "If you want, you can explain here in more detail how these issues have influenced you or not influenced you in the previous tasks <em>(optional)</em>:"
                 if lan == "en"
-                else "Wenn Sie wollen, können Sie hier näher erklären, was Ihre Antworten in den letzten Aufgaben beeinflusst hat und inwiefern <em>(optional)</em>:"
+                else "Wenn Sie wollen, können Sie hier näher erklären, inwiefern die Fragen Sie in den letzten Aufgaben beeinflusst oder nicht beeinflusst haben <em>(optional)</em>:"
+            ),
+        }
+
+
+#################################
+#####  IMPORTANCE NOT COVERED QUESTIONS  #####
+#################################
+class slide10b_ImportanceOther(Page):
+    form_model = "player"
+    form_fields = [f"importance_{q}" for q in C.QUS_OTHERS] + [
+        "importance_other_comments"
+    ]
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        player.current_page += 1
+
+    @staticmethod
+    def is_displayed(player: Player):
+        trainingPassed = player.isTrainingPassed
+        return player.consent and trainingPassed
+
+    @staticmethod
+    def vars_for_template(player):
+        lan = player.language
+        if player.field_maybe_none(f"t_on_importance_other") is None:
+            player.t_on_importance_other = int(time.time())
+        questions = (
+            C.QUS_OTHERS
+        )  # [C.QUS[i] for i in json.loads(player.question_sorting)]
+        fields = [f"importance_{q}" for q in questions]
+        questions = [C.QUESTIONS_OTHERS[player.language][q] for q in questions]
+
+        field_question_pairs = []
+        for field, question in zip(fields, questions):
+            field_question_pairs.append(
+                {
+                    "field_name": field,
+                    "question_text": question,
+                    "first_label": (
+                        "not important at all"
+                        if lan == "en"
+                        else "überhaupt nicht wichtig"
+                    ),
+                    "last_label": (
+                        "extremely important" if lan == "en" else "extrem wichtig"
+                    ),
+                }
+            )
+        return {
+            "maxslides": C.MAXSLIDES,
+            "nslide": player.current_page,
+            "lan_en": lan == "en",
+            "field_question_pairs": field_question_pairs,
+            "page_title": (
+                "Importance of Issues not Considered"
+                if lan == "en"
+                else "Wichtigkeit nicht berücksichtigter Themen"
+            ),
+            "table_head": (
+                "Importance of additional questions for your perception of political distance and similarity"
+                if lan == "en"
+                else "Wichtigkeit von zusätzlichen Fragen für Ihre Wahrnehmung von politischer Distanz und Ähnlichkeit"
+            ),
+            "pretext": (
+                "For this survey, we have selected four political questions that cover a broad spectrum of issues and have long been present in public debate. Of course, four questions cannot fully reflect your political worldview or that of other people. Below, we present four additional questions."
+                if lan == "en"
+                else "Für diese Umfrage haben wir vier politische Fragen ausgewählt, die ein breites Spektrum an Themen abdecken und seit langem in der öffentlichen Debatte präsent sind. Natürlich können vier Fragen nicht Ihr politisches Weltbild oder das anderer Personen vollständig widerspiegeln. Im Folgenden zeigen wir Ihnen vier zusätzliche Fragen."
+            ),
+            "question": (
+                "Please rate <b>how important</b> each of these additional questions <b>would have been</b> to you personally for the last two tasks (creating the political map and evaluating the pairs of individuals), if we had asked them in addition!"
+                if lan == "en"
+                else "Bitte schätzen Sie ein, <b>wie wichtig</b> diese zusätzlichen politischen Fragen jeweils für Sie <b>gewesen wären</b> für die Bearbeitung der letzten beiden Aufgaben (die politische Karte zu erstellen bzw. einzelne Paare zu bewerten), wenn wir die Fragen zusätzlich gestellt hätten!"
+            ),
+            "explain_text": (
+                "If you want, you can explain here in more detail how these additional questions would have influenced you or not influenced you in the previous tasks <em>(optional)</em>:"
+                if lan == "en"
+                else "Wenn Sie wollen, können Sie hier näher erklären, wie diese zusätzlichen Fragen Sie in den letzten Aufgaben beeinflusst oder nicht beeinflusst hätten <em>(optional)</em>:"
             ),
         }
 
@@ -2035,7 +2173,8 @@ class slide11_PolarisationTopics(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent and player.isTrainingPassed
+        trainingPassed = player.isTrainingPassed
+        return player.consent and trainingPassed
 
     @staticmethod
     def vars_for_template(player):
@@ -2108,7 +2247,8 @@ class slide12_Relationships(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent and player.isTrainingPassed
+        trainingPassed = player.isTrainingPassed
+        return player.consent and trainingPassed
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -2146,7 +2286,7 @@ class slide12_Relationships(Page):
             "disclaimer": (
                 "All your responses are linked to generic names <em>Person 1</em>, <em>Person 2</em>, etc. To protect privacy, we do <strong>not store</strong> the names or initials you provided."
                 if lan == "en"
-                else "Ihren Kontakten werden generischen Bezeichnungen wie <em>Person 1</em>, <em>Person 2</em> usw. zugeordnet. Zum Schutz der Privatsphäre werden die von Ihnen angegebenen Namen oder Initialen <strong>nicht gespeichert</strong>.."
+                else "Ihren Kontakten werden generischen Bezeichnungen wie <em>Person 1</em>, <em>Person 2</em> usw. zugeordnet. Zum Schutz der Privatsphäre werden die von Ihnen angegebenen Namen oder Initialen <strong>nicht gespeichert</strong>."
             ),
             "closeness_min": 0,
             "closeness_max": 100,
@@ -2154,6 +2294,80 @@ class slide12_Relationships(Page):
                 "Not particularly close" if lan == "en" else "Nicht besonders nah"
             ),
             "closeness_max_label": "Extremely close" if lan == "en" else "Extrem nah",
+        }
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        player.current_page += 1
+
+
+#################################
+#####  SOCIAL CONTACTS POLITICAL IDENTITY   #####
+#################################
+
+
+class slide13_ContactIdentities(Page):
+    form_model = "player"
+    form_fields = [f"reference{n}_PartyFeelClosest" for n in range(1, C.N_PERSONS + 1)]
+
+    @staticmethod
+    def is_displayed(player: Player):
+        trainingPassed = player.isTrainingPassed
+        return player.consent and trainingPassed
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        lan = player.language
+        if player.field_maybe_none(f"t_on_contactIdentities") is None:
+            player.t_on_contactIdentities = int(time.time())
+        references = [
+            {
+                "id": f"reference{i}",
+                "name": (
+                    f"Your contact <span class='pill' style='background-color: {C.REFPERSONCOLOR}; color: white;'><strong>{getattr(player, f'reference{i}')}</strong></span> is probably most leaning towards this party:"
+                    if lan == "en"
+                    else f"Ihr Kontakt <span class='pill' style='background-color: {C.REFPERSONCOLOR}; color: white;'><strong>{getattr(player, f'reference{i}')}</strong></span> neigt vermutlich am ehesten zu dieser Partei:"
+                ),
+            }
+            for i in range(1, player.n_references + 1)
+        ]
+
+        return {
+            "maxslides": C.MAXSLIDES,
+            "nslide": player.current_page,
+            "lan_en": lan == "en",
+            "color": C.REFPERSONCOLOR,
+            "page_title": (
+                "Political Identities of Your Contacts"
+                if lan == "en"
+                else "Politische Identitäten Ihrer Kontakte"
+            ),
+            "references": references,
+            "qu_identities": (
+                "Do <em>you</em> think, that your social contacts generally lean towards particular political parties in Germany?"  # "Do <em>you</em> think, there are political parties in Germany, that your social contacts respectively feel politically closer to than to all others? If so, which ones?"  # In Germany, many people tend to lean toward a particular political party for long periods of time, even though they occasionally vote for another party. How about you: do you generally lean toward a particular party? And if so, which one?
+                if lan == "en"
+                else "Glauben <em>Sie</em>, dass Ihre sozialen Kontakte – ganz allgemein – zu bestimmten politischen Parteien in Deutschland neigen?"  # "Glauben <em>Sie</em>, dass es bestimmte politische Parteien in Deutschland gibt, denen Ihre Kontakte sich jeweils politisch näher fühlen als allen anderen Parteien? Welchen? "   # Neigen Sie - ganz allgemein - einer bestimmten Partei zu? Und wenn ja, welcher?"
+            ),
+            "disclaimerDontKnow": (
+                "If you are unsure, you can always select <em>I don't know</em>."
+                if lan == "en"
+                else "Wenn Sie unsicher sind, können Sie immer die Option <em>Ich weiß nicht</em> auswählen."
+            ),
+            "choices_identity": dict(
+                zip(
+                    C.CHOICES_IDENTITY + ["I don't know"],
+                    (
+                        C.CHOICES_IDENTITY + ["I don't know"]
+                        if lan == "en"
+                        else C.CHOICES_IDENTITY_DE + ["Ich weiß nicht"]
+                    ),
+                )
+            ),
+            "disclaimer": (
+                "All your responses are linked to generic names <em>Person 1</em>, <em>Person 2</em>, etc. To protect privacy, we do <strong>not store</strong> the names or initials you provided."
+                if lan == "en"
+                else "Ihren Kontakten werden generischen Bezeichnungen wie <em>Person 1</em>, <em>Person 2</em> usw. zugeordnet. Zum Schutz der Privatsphäre werden die von Ihnen angegebenen Namen oder Initialen <strong>nicht gespeichert</strong>."
+            ),
         }
 
     @staticmethod
@@ -2171,11 +2385,13 @@ class slide13_Demographics(Page):
         "gender",
         "political_interest",
         "political_discussion",
+        "overall_comments",
     ]
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent and player.isTrainingPassed
+        trainingPassed = player.isTrainingPassed
+        return player.consent and trainingPassed
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -2225,6 +2441,11 @@ class slide13_Demographics(Page):
             "interest_max_label": (
                 "Very interested" if lan == "en" else "Sehr interessiert"
             ),
+            "overall_comments_qu": (
+                "Before you exit the survey by clicking on <em>Complete Survey</em>, feel free to add any final thoughts or comments. Is there anything you would like to share? We value your feedback."
+                if lan == "en"
+                else "Bevor Sie die Umfrage durch Klicken auf <em>Umfrage Abschließen</em> beenden, können Sie gerne noch abschließende Gedanken oder Kommentare hinzufügen. Gibt es etwas, das Sie uns mitteilen möchten? Wir freuen uns über Ihr Feedback."
+            ),
         }
 
     @staticmethod
@@ -2249,7 +2470,8 @@ class slideSuccess(Page):
         }
 
     def is_displayed(player: Player):
-        return player.consent and player.isTrainingPassed and player.completed
+        trainingPassed = player.isTrainingPassed
+        return player.consent and trainingPassed and player.completed
 
 
 #################################
@@ -2294,8 +2516,10 @@ page_sequence = (
     + [
         slide09_Tasks,
         slide10_Importance,
+        slide10b_ImportanceOther,
         slide11_PolarisationTopics,
         slide12_Relationships,
+        slide13_ContactIdentities,
         slide13_Demographics,
         slideSuccess,
         slideFail,
