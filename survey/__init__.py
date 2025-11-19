@@ -154,12 +154,12 @@ class C(BaseConstants):
 
     QUS_OTHERS = [
         "regulate_internet",
-        #"monitor_health",
+        # "monitor_health",
         "social_housing",
         "gmo_safe",
         "east_germans",
         "voluntary_work",
-        "wages_politicians"
+        "wages_politicians",
     ]
     QUESTIONS_OTHERS = {
         "en": dict(
@@ -167,13 +167,12 @@ class C(BaseConstants):
                 QUS_OTHERS,
                 [
                     "The internet should be regulated much more strongly.",  # # Source GESIS GLES https://search.gesis.org/research_data/ZA5722  #es sollte überhaupt keine Kontrolle des Internets geben
-                    #"In a public health crisis, such as during a pandemic, it is more important to monitor and track the population than to protect individuals' privacy.",  # Source: ESS 10SC Is it more important for governments to onitor and track the public or to maintain public privacy when fighting a pandemic?
+                    # "In a public health crisis, such as during a pandemic, it is more important to monitor and track the population than to protect individuals' privacy.",  # Source: ESS 10SC Is it more important for governments to onitor and track the public or to maintain public privacy when fighting a pandemic?
                     "There is a serious shortage of social housing in Germany.",
                     "The production and consumption of genetically modified foods is a societal risk.",  # based on ESS
                     "The lifetime achievements of East Germans should be recognized more.",  # Triggerpunkte
                     "Voluntary work should be credited towards future pensions.",
-                    "Politicians should receive lower remuneration for their public service.", # https://www.ifo.de/DocDL/cesifo1_wp11778.pdf
-"
+                    "Politicians should receive lower remuneration for their public service.",  # https://www.ifo.de/DocDL/cesifo1_wp11778.pdf"
                 ],
             )
         ),
@@ -187,8 +186,7 @@ class C(BaseConstants):
                     "Die Herstellung und der Verzehr gentechnisch veränderter Lebensmittel stellen ein gesellschaftliches Risiko dar.",
                     "Die Lebensleistungen der Ostdeutschen sollten stärker gewürdigt werden.",
                     "Ehrenamtliche Tätigkeiten sollten auf die zukünftige Rente angerechnet werden.",
-                    "Politiker und Politikerinnen sollten für ihren öffentlichen Dienst eine geringere Vergütung erhalten."
-                    
+                    "Politiker und Politikerinnen sollten für ihren öffentlichen Dienst eine geringere Vergütung erhalten.",
                 ],
             )
         ),
@@ -634,7 +632,7 @@ class slide00_toc(Page):
 #################################
 #####  Own opinions   #####
 #################################
-#class slide02_Opinions(Page):
+# class slide02_Opinions(Page):
 class slide02_OpinionsWithNan(Page):
     form_model = "player"
     form_fields = [f"own__{q}" for q in C.QUS]
@@ -2128,7 +2126,9 @@ class slide10b_ImportanceOther(Page):
                         else "überhaupt keinen Einfluss"
                     ),
                     "last_label": (
-                        "very strong influence" if lan == "en" else "sehr starker Einfluss"
+                        "very strong influence"
+                        if lan == "en"
+                        else "sehr starker Einfluss"
                     ),
                 }
             )
@@ -2154,11 +2154,10 @@ class slide10b_ImportanceOther(Page):
             ),
             "question": (
                 "Please rate the extent to which the following additional questions would have changed your placement of the various individuals on your political map.<br>Would the question have had little influence or a strong influence on your political map and changed the positions of the individuals?"
-                #"Please rate <b>how important</b> each of these additional questions <b>would have been</b> to you personally for the last two tasks (creating the political map and evaluating the pairs of individuals), if we had asked them in addition!"
+                # "Please rate <b>how important</b> each of these additional questions <b>would have been</b> to you personally for the last two tasks (creating the political map and evaluating the pairs of individuals), if we had asked them in addition!"
                 if lan == "en"
-                else 
-                "Bitte schätzen Sie, inwieweit die folgenden zusätzlichen Fragen jeweils Ihre Anordnung der verschiedenen Personen auf Ihner politischen Landkarte verändert hätten.<br>Hätte die Frage keinen großen Einfluss, oder einen starken Einfluss auf Ihre politische Karte gehabt und die Positionen der Personen verändert?"
-                #"Bitte schätzen Sie ein, <b>wie wichtig</b> diese zusätzlichen politischen Fragen jeweils für Sie <b>gewesen wären</b> für die Bearbeitung der letzten beiden Aufgaben (die politische Karte zu erstellen bzw. einzelne Paare zu bewerten), wenn wir die Fragen zusätzlich gestellt hätten!"
+                else "Bitte schätzen Sie, inwieweit die folgenden zusätzlichen Fragen jeweils Ihre Anordnung der verschiedenen Personen auf Ihner politischen Landkarte verändert hätten.<br>Hätte die Frage keinen großen Einfluss, oder einen starken Einfluss auf Ihre politische Karte gehabt und die Positionen der Personen verändert?"
+                # "Bitte schätzen Sie ein, <b>wie wichtig</b> diese zusätzlichen politischen Fragen jeweils für Sie <b>gewesen wären</b> für die Bearbeitung der letzten beiden Aufgaben (die politische Karte zu erstellen bzw. einzelne Paare zu bewerten), wenn wir die Fragen zusätzlich gestellt hätten!"
             ),
             "explain_text": (
                 "If you want, you can explain here in more detail how these additional questions would have influenced you or not influenced you <em>(optional)</em>:"
