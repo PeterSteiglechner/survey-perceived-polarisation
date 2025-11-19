@@ -1,7 +1,8 @@
 function getLikertLabel(val, lan_en) {
           const numVal = parseInt(val);
           if (lan_en=="True") 
-            if (numVal <= -71) return "Strongly Disagree";
+            if (numVal <= -990) return "Prefer not to say"; 
+            else if (numVal <= -71) return "Strongly Disagree";
             else if (numVal <= -42) return "Disagree";
             else if (numVal <= -13) return "Somewhat Disagree";
             else if (numVal <= 13) return "Neutral";
@@ -10,7 +11,8 @@ function getLikertLabel(val, lan_en) {
             else if (numVal <= 100) return "Strongly Agree";
             else return "NA";
         else
-            if (numVal <= -71) return "Stimme überhaupt nicht zu";
+            if (numVal <= -990) return "Keine Angabe"; 
+            else if (numVal <= -71) return "Stimme überhaupt nicht zu";
             else if (numVal <= -42) return "Stimme nicht zu";
             else if (numVal <= -13) return "Stimme eher nicht zu";
             else if (numVal <= 13) return "Neutral";
@@ -28,7 +30,10 @@ function getAnswerStyling(answer) {
   let backgroundColor = '';
   let texcolor = "black";
   
-  if (trimmedAnswer === 'strongly disagree' || trimmedAnswer === 'stimme überhaupt nicht zu') {
+  if (trimmedAnswer === 'prefer not to say' || trimmedAnswer === 'keine angabe') {
+    backgroundColor = 'rgba(97, 97, 97, 1)'; // deep red
+    texcolor = "rgb(255, 255, 255)";
+  } else if (trimmedAnswer === 'strongly disagree' || trimmedAnswer === 'stimme überhaupt nicht zu') {
     backgroundColor = 'rgba(183, 28, 28, 1)'; // deep red
     texcolor = "rgb(255, 255, 255)";
   } else if (trimmedAnswer === 'disagree' || trimmedAnswer === 'stimme nicht zu') {

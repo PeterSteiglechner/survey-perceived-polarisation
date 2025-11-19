@@ -292,9 +292,9 @@ class Group(BaseGroup):
     pass
 
 
-def slider(min, max, label="", blank=False):
+def slider(min, max, label="", blank=False, nan=False):
     return models.IntegerField(
-        choices=list(range(min, max + 1)),  # + [-999],
+        choices=list(range(min, max + 1)) + ([-999] if nan else []),
         label=label,
         widget=widgets.RadioSelect,
         blank=blank,
@@ -445,8 +445,8 @@ class Player(BasePlayer):
 #####  OWN POLITICAL OPINIONS   #####
 #################################
 for q in C.QUS:
-    setattr(Player, f"own__{q}", slider(-100, 100))
-    setattr(Player, f"own2__{q}", slider(-100, 100))
+    setattr(Player, f"own__{q}", slider(-100, 100, nan=True))
+    setattr(Player, f"own2__{q}", slider(-100, 100, nan=True))
     setattr(Player, f"how_polarised_{q}", slider(0, 100))
 
 #################################
@@ -627,7 +627,8 @@ class slide00_toc(Page):
 #################################
 #####  Own opinions   #####
 #################################
-class slide02_Opinions(Page):
+#class slide02_Opinions(Page):
+class slide02_OpinionsWithNan(Page):
     form_model = "player"
     form_fields = [f"own__{q}" for q in C.QUS]
 
@@ -1000,7 +1001,7 @@ class slide04b_VotersOpinions(Page):
         if player.field_maybe_none(f"t_on_voterOpinions") is None:
             player.t_on_voterOpinions = int(time.time())
         pillname = (
-            lambda x, color: f"<span class='pill' style='background-color: {color}; color: {'#424949' if x=='FDP' or color==C.LABELLEDCOLORS['FDP'] or color=="#dddddd" else 'white'};'><strong>{x}</strong></span>"
+            lambda x, color: f"<span class='pill' style='background-color: {color}; color: {'#424949' if x=='FDP' or color==C.LABELLEDCOLORS['FDP'] or color=='#dddddd' else 'white'};'><strong>{x}</strong></span>"
         )
         player.voter_sorting = json.dumps(C.LABELLED)
         voter_sorting = json.loads(player.voter_sorting)
@@ -1050,9 +1051,9 @@ class slide04b_VotersOpinions(Page):
             references=voters,
             questions=questions,
             would_respond=(
-                f"To what extent would {pillname('each of these voters', "grey")} agree or disagree with the following statements?"
+                f"To what extent would {pillname('each of these voters', 'grey')} agree or disagree with the following statements?"
                 if lan == "en"
-                else f"Inwieweit würden {pillname('diese Wählerinnen/Wähler', "#dddddd")} jeweils wohl den folgenden Aussagen zustimmen oder nicht zustimmen?"
+                else f"Inwieweit würden {pillname('diese Wählerinnen/Wähler', '#dddddd')} jeweils wohl den folgenden Aussagen zustimmen oder nicht zustimmen?"
             ),
             first_label=(
                 "Strongly Disagree" if lan == "en" else "Stimme überhaupt nicht zu"
@@ -1080,7 +1081,7 @@ class slide04b_VotersOpinions(Page):
         return player.consent
 
 
-class slide02_OpinionsRevisited(Page):
+class slide02_OpinionsWithNanRevisited(Page):
     form_model = "player"
     form_fields = [f"own2__{q}" for q in C.QUS]
 
@@ -1355,9 +1356,9 @@ class slide05a_MapTest(Page):
                 else "<p>Dies ist eine Übung! Wenn Sie auf <em>Weiter</em> klicken, erfahren Sie, ob Ihre Anordnung alle Vorgaben erfüllt. Sie haben 5 Versuche.</p>"
             ),  # In the main task on the next slide, there will be NO right or wrong answers — only your personal perception will matter.</p> #  Im Hauptteil auf der nächsten Seite wird es dagegegen KEINE richtigen oder falschen Antworten geben – nur Ihre persönliche Wahrnehmung wird relevant sein.
             "detailed_instructions_1": (
-                "<h3>Step-by-Step Instructions</h4><p>Arrange the dots as described in the following:</p>"
+                "<h3>Step-by-Step Instructions</h4><p>Arrange the dots as described on the right side.</p><p>You can collapse/expand each instruction by clicking on the bold <b>Step</b>.</p>"
                 if lan == "en"
-                else "<h3>Schritt-für-Schritt Anweisungen</h4><p>Ordnen Sie die Punkte wie im Folgenden beschrieben an:</p>"
+                else "<h3>Schritt-für-Schritt Anweisungen</h4><p>Ordnen Sie die Punkte wie rechts beschrieben an.</p><p>Sie können die einzelnen Anweisungen ein-/ausklappen indem Sie auf das fettgedruckte <b>Schritt</b> klicken.</p>"
             ),
             "detailed_instructions_2": (
                 (
@@ -2497,14 +2498,14 @@ class slideFail(Page):
 page_sequence = (
     [
         slide01_Introduction,
-        slide02_Opinions,
+        slide02_OpinionsWithNan,
         slide02a_Identity,
         slide00_toc,
         slide03_References,
     ]
     + [slide04_ReferencesOpinions]
     + [slide04b_VotersOpinions]
-    + [slide02_OpinionsRevisited]
+    + [slide02_OpinionsWithNanRevisited]
     + [slide00_toc]
     + [slide05a_MapGame]
     + [slide05a_MapTest, slide05b_MapTestResult] * C.N_MAX_PRACTICE_RUNS

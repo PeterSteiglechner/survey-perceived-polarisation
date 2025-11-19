@@ -7,6 +7,9 @@
 
 {{ instruction_text }}
 
+<div class="yellow-instructions" style="margin-bottom: 2em">{{instruction_text2}}</div>
+
+
 <form method="post">
   {% for q in questions %}
   <div class="question-block" style="margin-bottom:2em;">
@@ -36,7 +39,7 @@
               <span style="font-size: 10pt; color: #000000ff; text-align: center">{{ neutral_label }}</span>
               <span style="font-size: 10pt; color: #000000ff; text-align: right">{{ last_label }}</span>
             </div>
-            <input type="hidden" name="own__{{ q.prefix }}" id="hidden_{{ q.prefix }}">
+            <input type="hidden" name="own2__{{ q.prefix }}" id="hidden_{{ q.prefix }}">
             <input 
             type="range" 
             class="likert-slider" 
@@ -44,6 +47,8 @@
             min="-100" 
             max="100"
             step="1" 
+            value="{{ q.initial_value }}"
+            data-initial="{{ q.initial_value }}"
             oninput="handleSliderInput('{{ q.prefix }}', this.value)" />
 
             <div id="sliderValue{{ q.prefix }}" class="slider-label">
@@ -77,13 +82,13 @@
 
   <div class="nav-container">
     {% if lan_en %}
-    <button type="submit" class="otree-btn-next btn btn-primary big-button" disabled>
-      Continue
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+      Looks good. Continue
     </button>
     <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
     {% else %}
-    <button type="submit" class="otree-btn-next btn btn-primary big-button" disabled>
-      Weiter
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+      Sieht gut aus. Weiter
     </button>
     <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
     {% endif %}
@@ -93,7 +98,6 @@
 <script>
   let slidersTouched = {};
   let totalSliders = 0;
-
 
   function handlePreferNotToSay(field, checked) {
       const slider = document.getElementById('slider_' + field);
@@ -105,31 +109,28 @@
           slider.disabled = true;
           slider.style.opacity = '0.3';
           slider.value = 0;
-          // Don't change slider.value, just note it in a data attribute
           slider.setAttribute('data-prefer-not', 'true');
           sliderValueDiv.innerHTML = '<span>No response</span>';
           sliderValueDiv.style.color = 'gray';
           slider.style.background = '#e0e0e0';
       } else {
-          // Re-enable slider but keep it as "not touched" until they move it
-          delete slidersTouched[field];
+          // Re-enable slider and restore previous value if available
+          slidersTouched[field] = true; // Keep as touched since they're reviewing
           slider.disabled = false;
           slider.style.opacity = '1';
-          slider.style.background = '';
           slider.removeAttribute('data-prefer-not');
-          sliderValueDiv.innerHTML = '{% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den Schieberegler{% endif %}';
+          
+          // Restore the slider to its initial value
+          const initialValue = slider.getAttribute('value') || 0;
+          slider.value = initialValue;
+          handleSliderInput(field, initialValue);
       }
 
       // Update button state
       const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
       if (nextButton) {
-          if (Object.keys(slidersTouched).length === totalSliders) {
-              nextButton.disabled = false;
-              nextButton.style.opacity = '1';
-          } else {
-              nextButton.disabled = true;
-              nextButton.style.opacity = '0.5';
-          }
+          nextButton.disabled = false;
+          nextButton.style.opacity = '1';
       }
   }
 
@@ -147,6 +148,7 @@
         if (slider) {
             slider.disabled = false;
             slider.style.opacity = '1';
+            slider.removeAttribute('data-prefer-not');
         }
 
         slidersTouched[field] = true;
@@ -165,7 +167,6 @@
     }
 
     // update slider gradient
-    //const slider = document.getElementById('slider_' + field);
     if (slider) {
       const val = parseFloat(value);
       const min = parseFloat(slider.min), max = parseFloat(slider.max);
@@ -181,36 +182,61 @@
             #e0e0e0 ${r}%, #e0e0e0 100%)`;
     }
 
-    // enable next button if all touched
-    if (Object.keys(slidersTouched).length === totalSliders) {
-      const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
-      if (nextButton) {
+    // enabled next button
+    const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
+    if (nextButton) {
         nextButton.disabled = false;
         nextButton.style.opacity = '1';
-      }
     }
   }
 
   document.addEventListener('DOMContentLoaded', function () {
     totalSliders = document.querySelectorAll('.likert-slider').length;
+    
+    // Initialize all sliders with their values
+    document.querySelectorAll('.likert-slider').forEach(function (slider) {
+      const field = slider.id.replace('slider_', '');
+      const value = slider.value;
+      
+      // Check if this was a "prefer not to say" response (value -999)
+    //   if (value == -999 || value == '-999') {
+    //     const checkbox = document.getElementById('prefer_not_' + field);
+    //     if (checkbox) {
+    //       checkbox.checked = true;
+    //       handlePreferNotToSay(field, true);
+    //     }
+    //   } else {
+    //     handleSliderInput(field, value);
+    //     slidersTouched[field] = true;
+    //   }
+
+    const rawInitial = slider.getAttribute("data-initial");
+    console.log("---- DEBUG for field:", field, "----");
+    console.log(rawInitial);
+
+    if (rawInitial == -999 || rawInitial === "-999") {
+        const checkbox = document.getElementById('prefer_not_' + field);
+        slider.value = 0
+        if (checkbox) {
+            checkbox.checked = true;
+            handlePreferNotToSay(field, true);
+        }
+    } else {
+        handleSliderInput(field, slider.value);
+        slidersTouched[field] = true;
+    }
+    });
 
     const form = document.querySelector('form');
     if (form) {
-      form.addEventListener('submit', function (e) {
-        if (Object.keys(slidersTouched).length < totalSliders) {
-          e.preventDefault();
-          alert({% if lan_en %} 'Please answer all questions by either moving the slider or selecting "Prefer not to say".'{% else %}'Bitte beantworten Sie alle Fragen, indem Sie entweder den Schieberegler bewegen oder "Keine Angabe" auswählen.'{% endif %});
-          return false;
-        }
-        // document.querySelectorAll('.likert-slider[data-prefer-not="true"]').forEach(slider => {
-        //             slider.value = -999;
-        //         });
-      });
-    
+        form.addEventListener('submit', function (e) {
+        // No validation needed since this is a review page
+      }); 
+
       const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
       if (nextButton) {
-        nextButton.disabled = true;
-        nextButton.style.opacity = '0.5';
+        nextButton.disabled = false;
+        nextButton.style.opacity = '1';
       }
     }
   }); // closes DOMContentLoaded

@@ -28,6 +28,18 @@
     font-family: Arial, sans-serif;
 }
 
+@media (max-width: 768px) {
+  div[style*="display: flex"] {
+    flex-direction: column !important;
+  }
+  
+  div[style*="flex: 1; max-width: 400px"] {
+    max-width: 100% !important;
+  }
+}
+
+
+
 .extra-space {
     margin-top: 4em;
     border-top: 1px solid #ccc;
@@ -444,7 +456,7 @@ height: 2em;
 font-size:12pt; text-align:center; flex:1; color:black; 
 }
 .slider-num-info{
-    font-size: 10pt; text-align: right; white-space: nowrap; color:gray
+    font-size: 10pt; text-align: center; white-space: nowrap; color:gray
 }
 .slider-num{
                   display: inline-block;
