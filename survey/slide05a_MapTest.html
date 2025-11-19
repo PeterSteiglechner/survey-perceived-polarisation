@@ -58,11 +58,12 @@
 
       <input type="hidden" id="positionsTest" name="positionsTest" />
 
-      <p>{{ disclaimer }}</p>
       
       {% if show_error_msg %}
       <div class="red-instructions">{{latest_error_msg}}</div>
       {% endif %}
+
+      <div class="yellow-instructions">{{ disclaimer }}</div>
 
       <div class="red-instructions">{{all_dots_instr}}</div>
 

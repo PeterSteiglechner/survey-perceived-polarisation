@@ -19,17 +19,8 @@
         <label class="form-label">{{ question }}</label>
 
         <div style="width: 80%; margin-left: 10%; margin-right: 10%">
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              margin-top: 20px;
-              margin-bottom: 2px;
-            "
-          >
-            <span
-              style="font-size: 11pt; width: 30%; text-align: left"
-              class="lab"
+          <div style="display: flex; margin-top: 10px; margin-bottom: 2px">
+            <span class="lab" style="font-size: 11pt; text-align: left"
               >{{ similarity_min_label }}</span
             >
             {% comment %}
@@ -38,8 +29,8 @@
             >
             {% endcomment %}
             <span
-              style="font-size: 11pt; width: 30%; text-align: right"
               class="lab"
+              style="margin-left: auto; font-size: 11pt; text-align: right"
               >{{ similarity_max_label }}</span
             >
           </div>

@@ -62,12 +62,17 @@
       <label class="form-label">{{ lr_question }}</label>
 
       <div style="margin-left: 10%; margin-right: 10%">
-        <div
-          style="display: flex; justify-content: space-between; margin-top: 5px"
-        >
-          <span style="font-size: 12pt; color: #777">{{ lr_first_label }}</span>
-          <span style="font-size: 12pt; color: #777">{{ lr_last_label }}</span>
+        <div style="display: flex; margin-top: 5px; margin-bottom: 2px">
+          <span class="lab" style="font-size: 11pt; text-align: left"
+            >{{ lr_first_label }}</span
+          >
+          <span
+            class="lab"
+            style="margin-left: auto; font-size: 11pt; text-align: right"
+            >{{ lr_last_label }}</span
+          >
         </div>
+
         <input
           type="range"
           class="likert-slider"
