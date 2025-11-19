@@ -374,14 +374,14 @@ class Player(BasePlayer):
     t_on_voterOpinions = models.IntegerField(blank=True)
     t_on_ownOpinion2 = models.IntegerField(blank=True)
     t_on_toc2 = models.IntegerField(blank=True)
-    t_on_practiceGame_page = models.IntegerField(blank=True)
-    t_on_practice_page = models.IntegerField(blank=True)
+    t_on_practiceGame = models.IntegerField(blank=True)
+    t_on_practice = models.IntegerField(blank=True)
     t_practicesSubmitted = models.LongStringField(blank=True, initial="{}")
-    t_on_practiceResult_page_first = models.IntegerField(blank=True)
-    t_on_map_page = models.IntegerField(blank=True)
+    t_on_practiceResult_first = models.IntegerField(blank=True)
+    t_on_map = models.IntegerField(blank=True)
     t_firstDotMoved = models.IntegerField(blank=True)
     t_on_satisfaction = models.IntegerField(blank=True)
-    # t_on_mapP_page = models.IntegerField(blank=True)
+    # t_on_mapP = models.IntegerField(blank=True)
     t_on_toc3 = models.IntegerField(blank=True)
     t_on_pairwise = models.IntegerField(blank=True)
     t_after_first_pair = models.IntegerField(blank=True)
@@ -1183,8 +1183,8 @@ class slide05a_MapGame(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
-        if player.field_maybe_none(f"t_on_practiceGame_page") is None:
-            player.t_on_practiceGame_page = int(time.time())
+        if player.field_maybe_none(f"t_on_practiceGame") is None:
+            player.t_on_practiceGame = int(time.time())
         init_dots = [
             {
                 "dottype": "food",
@@ -1283,8 +1283,8 @@ class slide05a_MapTest(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
-        if player.field_maybe_none(f"t_on_practice_page") is None:
-            player.t_on_practice_page = int(time.time())
+        if player.field_maybe_none(f"t_on_practice") is None:
+            player.t_on_practice = int(time.time())
         colors = {
             "self": C.SELFCOLOR,
             "friend": "#4DA8DA",
@@ -1405,8 +1405,8 @@ class slide05b_MapTestResult(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
-        if player.field_maybe_none(f"t_on_practiceResult_page_first") is None:
-            player.t_on_practiceResult_page_first = int(time.time())
+        if player.field_maybe_none(f"t_on_practiceResult_first") is None:
+            player.t_on_practiceResult_first = int(time.time())
         pos = json.loads(player.positionsTest)
         pos = {p["varname"]: [p["x"], p["y"]] for p in pos}
         # calculate distances
@@ -1611,8 +1611,8 @@ class slide06_SPaM(Page):
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
-        if player.field_maybe_none(f"t_on_map_page") is None:
-            player.t_on_map_page = int(time.time())
+        if player.field_maybe_none(f"t_on_map") is None:
+            player.t_on_map = int(time.time())
         displ_names = (
             ["Self" if lan == "en" else "Ich"]
             + [
