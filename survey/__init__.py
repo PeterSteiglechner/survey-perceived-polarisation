@@ -172,7 +172,7 @@ class C(BaseConstants):
                     "The production and consumption of genetically modified foods is a societal risk.",  # based on ESS
                     "The lifetime achievements of East Germans should be recognized more.",  # Triggerpunkte
                     "Voluntary work should be credited towards future pensions.",
-                    "Politicians should receive lower remuneration for their public service.",
+                    "Politicians should receive lower remuneration for their public service.", # https://www.ifo.de/DocDL/cesifo1_wp11778.pdf
 "
                 ],
             )
@@ -2123,12 +2123,12 @@ class slide10b_ImportanceOther(Page):
                     "field_name": field,
                     "question_text": question,
                     "first_label": (
-                        "not important at all"
+                        "no influence at all"
                         if lan == "en"
-                        else "überhaupt nicht wichtig"
+                        else "überhaupt keinen Einfluss"
                     ),
                     "last_label": (
-                        "extremely important" if lan == "en" else "extrem wichtig"
+                        "very strong influence" if lan == "en" else "sehr starker Einfluss"
                     ),
                 }
             )
