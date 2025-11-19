@@ -31,8 +31,8 @@ function getAnswerStyling(answer) {
   let texcolor = "black";
   
   if (trimmedAnswer === 'prefer not to say' || trimmedAnswer === 'keine angabe') {
-    backgroundColor = 'rgba(97, 97, 97, 1)'; // deep red
-    texcolor = "rgb(255, 255, 255)";
+    backgroundColor = 'rgba(255, 255, 255, 1)'; // deep red
+    texcolor = "rgba(148, 148, 148, 1)";
   } else if (trimmedAnswer === 'strongly disagree' || trimmedAnswer === 'stimme überhaupt nicht zu') {
     backgroundColor = 'rgba(183, 28, 28, 1)'; // deep red
     texcolor = "rgb(255, 255, 255)";
