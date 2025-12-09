@@ -9,7 +9,7 @@
 
 <form method="post">
   {% for q in questions %}
-  <div class="question-block" style="margin-bottom:2em;">
+  <div class="question-block" style="margin-bottom: 2em">
     <table class="survey-table-clean">
       <thead style="background: {{color}}; color: #fff">
         <tr>
@@ -25,45 +25,75 @@
             <label class="form-label"> {{overallquestion}} </label>
           </td>
           <td>
-            <div style="
+            <div
+              style="
                 display: grid;
-                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
                 margin-top: 15px;
                 width: 100%;
-              ">
-              <span style="font-size: 10pt; color: #000000ff; text-align: left">{{ first_label }}</span>
-              <span style="font-size: 10pt; color: #000000ff; text-align: center">{{ neutral_label }}</span>
-              <span style="font-size: 10pt; color: #000000ff; text-align: right">{{ last_label }}</span>
+              "
+            >
+              <span style="font-size: 10pt; color: #000000ff; text-align: left"
+                >{{ first_label }}</span
+              >
+              <span style="font-size: 10pt"></span>
+              <span
+                style="font-size: 10pt; color: #000000ff; text-align: center"
+                >{{ neutral_label }}</span
+              >
+              <span style="font-size: 10pt"></span>
+              <span style="font-size: 10pt; color: #000000ff; text-align: right"
+                >{{ last_label }}</span
+              >
             </div>
-            <input type="range" class="likert-slider" name="own__{{ q.prefix }}" id="slider_{{ q.prefix }}" min="-100"
-              max="100" step="1" required oninput="handleSliderInput('{{ q.prefix }}', this.value)" />
+            <input
+              type="range"
+              class="likert-slider"
+              name="own__{{ q.prefix }}"
+              id="slider_{{ q.prefix }}"
+              min="-100"
+              max="100"
+              step="1"
+              required
+              oninput="handleSliderInput('{{ q.prefix }}', this.value)"
+            />
 
             <div id="sliderValue{{ q.prefix }}" class="slider-label">
               {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
               den Schieberegler{% endif %}
             </div>
-            <div id="sliderlabelInfo{{ q.prefix }}" class="slider-num-info" style="margin-top: -5pt;">
-              <br>
+            <div
+              id="sliderlabelInfo{{ q.prefix }}"
+              class="slider-num-info"
+              style="margin-top: -5pt"
+            >
+              <br />
             </div>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
-  {% endfor %}
-
-  {% comment %}
+  {% endfor %} {% comment %}
   <p>{{instruction_text_batch}}</p>
   {% endcomment %}
 
   <div class="nav-container">
     {% if lan_en %}
-    <button type="submit" class="otree-btn-next btn btn-primary big-button" disabled>
+    <button
+      type="submit"
+      class="otree-btn-next btn btn-primary big-button"
+      disabled
+    >
       Continue
     </button>
     <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
     {% else %}
-    <button type="submit" class="otree-btn-next btn btn-primary big-button" disabled>
+    <button
+      type="submit"
+      class="otree-btn-next btn btn-primary big-button"
+      disabled
+    >
       Weiter
     </button>
     <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
@@ -130,7 +160,7 @@
           return false;
         }
       });
-    
+
       const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
       if (nextButton) {
         nextButton.disabled = true;

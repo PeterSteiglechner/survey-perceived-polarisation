@@ -13,10 +13,11 @@
 </style>
 
 <h2 style="margin-bottom: 0pt">Umfrage zu Wahrnehmung politischer Meinungen</h2>
+{% comment %}
 <p style="margin-bottom: 1em">
   <em>Survey on Perceptions of Political Opinions</em>
 </p>
-
+{% endcomment %} {% comment %}
 <div class="language-section" style="margin-bottom: 1em">
   <div class="card">
     <div class="form-group">
@@ -35,10 +36,13 @@
     </div>
   </div>
 </div>
+{% endcomment %}
 
 <!-- Content will be injected here -->
+<br />
 <div id="consent-content"></div>
 
+{% comment %}
 <script>
   document.querySelectorAll('input[name="language"]').forEach((radio) => {
     radio.addEventListener("change", () => {
@@ -48,7 +52,12 @@
     });
   });
 </script>
+{% endcomment %}
+
 <script>
+  document.getElementById("consent-content").innerHTML = translations["de"];
+  attachEventListeners();
+
   function attachEventListeners() {
     // Hide oTree's next button
     const nextButton = document.querySelector('button[type="submit"]');
@@ -79,8 +88,6 @@
           }
         });
       });
-
-    // Add any other event listeners you need (like for toggle buttons, etc.)
   }
 </script>
 {% endblock %}

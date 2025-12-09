@@ -44,13 +44,18 @@ class C(BaseConstants):
     CANVAS_WIDTH = 550
 
     QUS = [
-        "climate_concern",
-        "gay_marriage",
-        "rights_indep_integration",
-        "econ_inequality",
+        # "climate_concern",
+        # "gay_marriage",
+        # "rights_indep_integration",
+        # "econ_inequality",
+        "regulate_internet",
+        "east_germans",
     ]
 
-    QU_SORTS = [[0, 1, 2, 3], [1, 3, 0, 2], [2, 0, 3, 1], [3, 2, 1, 0]]
+    # QU_SORTS = [[0, 1, 2, 3], [1, 3, 0, 2], [2, 0, 3, 1], [3, 2, 1, 0]]
+    # QU_SORTS = list(
+    #     np.random.choice(range(len(QUS)), replace=False, size=len(QUS))
+    # )  # [[0, 1, 2, 3], [1, 3, 0, 2], [2, 0, 3, 1], [3, 2, 1, 0]]
 
     QUESTIONTEXT = {
         "en": dict(
@@ -61,6 +66,8 @@ class C(BaseConstants):
                     "It is good that same-sex marriages are allowed.",  # between two women or two men
                     "Migrants should have the same rights as natives – regardless of whether they make an effort and integrate.",  # Only migrants who make an effort and integrate should be given the same rights as natives.
                     "Income and wealth inequality in Germany is too high.",
+                    "Digital technologies, including the internet and social media, should be more strongly regulated.",
+                    "The lifetime achievements of East Germans should be recognized more.",
                 ],
             )
         ),
@@ -73,6 +80,8 @@ class C(BaseConstants):
                     "Migranten und Migrantinnen sollten die gleichen Rechte wie Einheimische haben – unabhängig davon, ob sie sich anstrengen und integrieren.",
                     # Nur Migranten, die sich anstrengen und integrieren, sollten die gleichen Rechte bekommen wie Einheimische.
                     "Die Einkommens- und Vermögensunterschiede in Deutschland sind zu groß.",
+                    "Digitale Technologien, insbesondere das Internet und soziale Medien, sollten stärker reguliert werden.",
+                    "Die Lebensleistungen der Ostdeutschen sollten stärker anerkannt werden.",
                 ],
             )
         ),
@@ -82,10 +91,12 @@ class C(BaseConstants):
             zip(
                 QUS,
                 [
-                    "Extreme concern about climate change",
+                    "Strong concern about climate change",
                     "Strong same-sex marriage support",
                     "Equal rights for migrants, independent of integration efforts",
-                    "Income and wealth inequalities too high",
+                    "Income and wealth inequalities are too high",
+                    "Stronger regulation of Internet and social media",
+                    "More recognition for East Germans",
                 ],
             )
         ),
@@ -97,6 +108,8 @@ class C(BaseConstants):
                     "Unterstützung für gleichgeschlechtliche Ehen",
                     "Gleiche Rechte für Migranten/-innen, unabhängig vom Integrationsgrad",
                     "Einkommens- und Vermögens-unterschiede zu groß",
+                    "Stärkere Regulierung von Internet und sozialen Medien",
+                    "Mehr Anerkennung für Ostdeutsche",
                 ],
             )
         ),
@@ -107,10 +120,12 @@ class C(BaseConstants):
             zip(
                 QUS,
                 [
-                    "The question about how concerned the person is about climate change",  # "on climate change concerns",
-                    "The question about to what extent the person approves that same-sex marriages are allowed",  # "on same-sex marriage",
-                    "The question about to what extent the person believes that migrant rights should be independent of integration",  # "on migrants' rights",  # "Opinion about whether equal rights for migrants should be given regardless of their integration efforts",
-                    "The question about to what extent the person thinks that economic inequalities are too high",  # "on economic inequalities",
+                    "...are concerned about climate change?",  # "on climate change concerns",
+                    "...approve that same-sex marriages are allowed?",  # "on same-sex marriage",
+                    "...believe that equal rights for migrants should be independent of their integration?",  # "on migrants' rights",  # "Opinion about whether equal rights for migrants should be given regardless of their integration efforts",
+                    "...think that economic inequalities are too high?",  # "on economic inequalities",
+                    "...support stronger regulation of the internet and social media?",
+                    "...think there should be more recognition of East Germans' lifetime achievements?",
                 ],
             )
         ),
@@ -118,10 +133,12 @@ class C(BaseConstants):
             zip(
                 QUS,
                 [
-                    "Die Frage wie besorgt die Person wegen des Klimawandels ist",  # "beim Thema Besorgnis über den Klimawandel",
-                    "Die Frage inwieweit die Person es gut findet, dass gleichgeschlechtliche Ehen erlaubt sind",  # "beim Thema gleichgeschlechtliche Ehen",
-                    "Die Frage inwieweit die Person findet, dass Migrantinnen und Migranten gleiche Rechte haben sollten, unabhängig von deren Integration",  # "beim Thema Rechte für Migranten und Migrantinnen",  # "Die Meinung der Person ob Migranten oder Migrantinnen unabhängig von Integrationsbemühungen die gleichen Rechte wie Einheimische bekommen sollten",
-                    "Die Frage inwieweit die Person denkt, dass ökonomische Ungleichheiten zu groß sind",  # "beim Thema ökonomische Ungleichheiten",
+                    "...wegen des Klimawandels besorgt sind?",  # "beim Thema Besorgnis über den Klimawandel",
+                    "...es gut finden, dass gleichgeschlechtliche Ehen erlaubt sind?",  # "beim Thema gleichgeschlechtliche Ehen",
+                    "...finden, dass Migrantinnen und Migranten gleiche Rechte haben sollten, unabhängig von deren Integration?",  # "beim Thema Rechte für Migranten und Migrantinnen",  # "Die Meinung der Person ob Migranten oder Migrantinnen unabhängig von Integrationsbemühungen die gleichen Rechte wie Einheimische bekommen sollten",
+                    "...denken, dass ökonomische Ungleichheiten zu groß sind?",  # "beim Thema ökonomische Ungleichheiten",
+                    "...finden, dass das Internet und soziale Medien stärker reguliert werden sollten?",
+                    "...finden, dass die Lebensleistungen der Ostdeutschen stärker anerkannt werden sollten?",
                 ],
             )
         ),
@@ -136,6 +153,8 @@ class C(BaseConstants):
                     "on same-sex marriage support",  # "on same-sex marriage",
                     "on whether equal rights for migrants should depend on integration",  # "on migrants' rights",  # "Opinion about whether equal rights for migrants should be given regardless of their integration efforts",
                     "on the evaluation economic inequalities",  # "on economic inequalities",
+                    "on internet and social media regulation",
+                    "on the recognition of east german achievements",
                 ],
             )
         ),
@@ -146,56 +165,58 @@ class C(BaseConstants):
                     "über die Besorgnis wegen des Klimawandels",  # "beim Thema Besorgnis über den Klimawandel",
                     "zum Thema gleichgeschlechtliche Ehen",  # "beim Thema gleichgeschlechtliche Ehen",
                     "darüber ob gleiche Rechte für Migrantinnen und Migranten von deren Integration abhängen sollten",  # "beim Thema Rechte für Migranten und Migrantinnen",  # "Die Meinung der Person ob Migranten oder Migrantinnen unabhängig von Integrationsbemühungen die gleichen Rechte wie Einheimische bekommen sollten",
-                    "über die Bewertung von ökonomischen Ungleichheiten",  # "beim Thema ökonomische Ungleichheiten",
+                    "über Einschätzungen zu ökonomischen Ungleichheiten",  # "beim Thema ökonomische Ungleichheiten",
+                    "über die Regulierung von Internet und sozialen Medien",
+                    "über die Anerkennung von Ostdeutschen Lebensleistungen",
                 ],
             )
         ),
     }
 
-    QUS_OTHERS = [
-        "regulate_internet",
-        # "monitor_health",
-        "social_housing",
-        "gmo_safe",
-        "east_germans",
-        "voluntary_work",
-        "wages_politicians",
-    ]
-    QUESTIONS_OTHERS = {
-        "en": dict(
-            zip(
-                QUS_OTHERS,
-                [
-                    "The internet should be regulated much more strongly.",  # # Source GESIS GLES https://search.gesis.org/research_data/ZA5722  #es sollte überhaupt keine Kontrolle des Internets geben
-                    # "In a public health crisis, such as during a pandemic, it is more important to monitor and track the population than to protect individuals' privacy.",  # Source: ESS 10SC Is it more important for governments to onitor and track the public or to maintain public privacy when fighting a pandemic?
-                    "There is a serious shortage of social housing in Germany.",
-                    "The production and consumption of genetically modified foods is a societal risk.",  # based on ESS
-                    "The lifetime achievements of East Germans should be recognized more.",  # Triggerpunkte
-                    "Voluntary work should be credited towards future pensions.",
-                    "Politicians should receive lower remuneration for their public service.",  # https://www.ifo.de/DocDL/cesifo1_wp11778.pdf"
-                ],
-            )
-        ),
-        "de": dict(
-            zip(
-                QUS_OTHERS,
-                [
-                    "Das Internet sollte viel stärker kontrolliert werden.",
-                    # "In einer öffentlichen Gesundheitskrise, wie z.B. einer Pandemie, ist es wichtiger, die Bevölkerung zu überwachen und nachzuverfolgen, als die Privatsphäre von Personen zu schützen.",
-                    "In Deutschland herrscht ein gravierender Mangel an Sozialwohnungen.",
-                    "Die Herstellung und der Verzehr gentechnisch veränderter Lebensmittel stellen ein gesellschaftliches Risiko dar.",
-                    "Die Lebensleistungen der Ostdeutschen sollten stärker gewürdigt werden.",
-                    "Ehrenamtliche Tätigkeiten sollten auf die zukünftige Rente angerechnet werden.",
-                    "Politiker und Politikerinnen sollten für ihren öffentlichen Dienst eine geringere Vergütung erhalten.",
-                ],
-            )
-        ),
-        # The lifetime achievements of East Germans should be recognized more.  TRIGGERPUNKTE
-        # Significantly more wind turbines should be erected, even if this has to be done close to towns and villages.
-    }
+    # QUS_OTHERS = [
+    #     "regulate_internet",
+    #     # "monitor_health",
+    #     "social_housing",
+    #     "gmo_safe",
+    #     "east_germans",
+    #     "voluntary_work",
+    #     "wages_politicians",
+    # ]
+    # QUESTIONS_OTHERS = {
+    #     "en": dict(
+    #         zip(
+    #             QUS_OTHERS,
+    #             [
+    #                 "The internet should be regulated much more strongly.",  # # Source GESIS GLES https://search.gesis.org/research_data/ZA5722  #es sollte überhaupt keine Kontrolle des Internets geben
+    #                 # "In a public health crisis, such as during a pandemic, it is more important to monitor and track the population than to protect individuals' privacy.",  # Source: ESS 10SC Is it more important for governments to onitor and track the public or to maintain public privacy when fighting a pandemic?
+    #                 "There is a serious shortage of social housing in Germany.",
+    #                 "The production and consumption of genetically modified foods is a societal risk.",  # based on ESS
+    #                 "The lifetime achievements of East Germans should be recognized more.",  # Triggerpunkte
+    #                 "Voluntary work should be credited towards future pensions.",
+    #                 "Politicians should receive lower remuneration for their public service.",  # https://www.ifo.de/DocDL/cesifo1_wp11778.pdf"
+    #             ],
+    #         )
+    #     ),
+    #     "de": dict(
+    #         zip(
+    #             QUS_OTHERS,
+    #             [
+    #                 "Das Internet sollte viel stärker kontrolliert werden.",
+    #                 # "In einer öffentlichen Gesundheitskrise, wie z.B. einer Pandemie, ist es wichtiger, die Bevölkerung zu überwachen und nachzuverfolgen, als die Privatsphäre von Personen zu schützen.",
+    #                 "In Deutschland herrscht ein gravierender Mangel an Sozialwohnungen.",
+    #                 "Die Herstellung und der Verzehr gentechnisch veränderter Lebensmittel stellen ein gesellschaftliches Risiko dar.",
+    #                 "Die Lebensleistungen der Ostdeutschen sollten stärker gewürdigt werden.",
+    #                 "Ehrenamtliche Tätigkeiten sollten auf die zukünftige Rente angerechnet werden.",
+    #                 "Politiker und Politikerinnen sollten für ihren öffentlichen Dienst eine geringere Vergütung erhalten.",
+    #             ],
+    #         )
+    #     ),
+    #     # The lifetime achievements of East Germans should be recognized more.  TRIGGERPUNKTE
+    #     # Significantly more wind turbines should be erected, even if this has to be done close to towns and villages.
+    # }
     N_PERSONS = 10
     N_PAIRWISE_FIX = True
-    MIN_REFERENCES = 5
+    MIN_REFERENCES = 7
     MAX_REFERENCE_LEN = 10  # characters
 
     # N_BATCHES = 2
@@ -235,25 +256,25 @@ class C(BaseConstants):
         )
     )
 
-    NLABELLED = 7  # len(LABELLED)
-    MAXSLIDES = 18
-    # op
-    # id + toc
-    # references
-    # 5 person Op
-    # labelled Op + toc
-    # MapGame
-    # MapTest
-    # Map + toc
-    # Satis
+    # NLABELLED = 7  # len(LABELLED)
+    MAXSLIDES = 17
+    #  op
+    #  id + toc
+    #  references
+    #  person Op
+    # 5 voter Op + toc
+    #  MapGame
+    #  MapTest
+    #  Map + toc
+    #  Satis
     # 10 Pairiwse
-    # + toc
-    # compare Task
-    # importance
-    # importanceOthers
-    # rela
-    # identity Identities
-    # demo
+    #  + toc
+    #  compare Task
+    #  importance
+    #  relationships
+    # 15 identity Identities
+    #  demographics
+    #  end
 
     FORCED_PAIRS = (
         []
@@ -316,6 +337,8 @@ class Player(BasePlayer):
 
     consent = models.BooleanField(blank=False)
 
+    recontact = models.BooleanField(blank=False)
+
     question_sorting = models.LongStringField(initial="")
     voter_sorting = models.LongStringField(initial="")
 
@@ -352,11 +375,13 @@ class Player(BasePlayer):
     importance_comments = models.LongStringField(
         blank=True, label="", initial="", null=True
     )
-    importance_other_comments = models.LongStringField(
-        blank=True, label="", initial="", null=True
-    )
+    # importance_other_comments = models.LongStringField(
+    #     blank=True, label="", initial="", null=True
+    # )
 
     n_references = models.IntegerField(blank=True)
+
+    nudged_for_variation = models.BooleanField(initial=False)
 
     #################################
     #####  TIME   #####
@@ -387,7 +412,7 @@ class Player(BasePlayer):
     t_on_toc4 = models.IntegerField(blank=True)
     t_on_taskCompare = models.IntegerField(blank=True)
     t_on_importance = models.IntegerField(blank=True)
-    t_on_importance_other = models.IntegerField(blank=True)
+    # t_on_importance_other = models.IntegerField(blank=True)
     t_on_polarisation = models.IntegerField(blank=True)
     t_on_relationships = models.IntegerField(blank=True)
     t_on_contactIdentities = models.IntegerField(blank=True)
@@ -432,7 +457,12 @@ class Player(BasePlayer):
     is_distS2F_gt_distS2C = models.BooleanField(initial=False)  #
     is_distF2C_gt_distS2C = models.BooleanField(initial=False)  #
     is_distS2R_gt_distS2F = models.BooleanField(initial=False)  #
-    is_distS2R_gt_distF2RanddistC2R = models.BooleanField(initial=False)  #
+    # is_distS2R_gt_distF2RanddistC2R = models.BooleanField(initial=False)  #
+    is_distsRCS_similar = models.BooleanField(initial=False)
+    is_FR_gt_SR = models.BooleanField(blank=True)
+    practice_sanity_check_answer = models.StringField(blank=True)
+    practice_sanity_check_correct = models.BooleanField(initial=False)
+    attempts_sanity_check = models.IntegerField(initial=1)
     attemptPractice = models.IntegerField(initial=0)
     latest_error_msg = models.LongStringField(blank=True, initial="")
 
@@ -506,8 +536,8 @@ for n in range(1, 1 + C.N_PERSONS + len(C.LABELLED) + 1):
 ###########################
 for q in C.QUS:
     setattr(Player, f"importance_{q}", slider(0, 100))
-for q in C.QUS_OTHERS:
-    setattr(Player, f"importance_{q}", slider(0, 100))
+# for q in C.QUS_OTHERS:
+#     setattr(Player, f"importance_{q}", slider(0, 100))
 
 
 #################################
@@ -527,17 +557,19 @@ for q in C.QUS_OTHERS:
 #################################
 class slide01_Introduction(Page):
     form_model = "player"
-    form_fields = ["consent", "language"]
+    form_fields = ["consent"]  # , "language"]
 
     @staticmethod
     def vars_for_template(player: Player):
+        player.language = "de"
         if player.field_maybe_none(f"t_on_consent") is None:
             player.t_on_consent = int(time.time())
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         player.question_sorting = json.dumps(
-            C.QU_SORTS[np.random.choice(range(len(C.QU_SORTS)))]
+            np.random.choice(range(len(C.QUS)), replace=False, size=len(C.QUS)).tolist()
+            # C.QU_SORTS[np.random.choice(range(len(C.QU_SORTS)))]
         )
         voters = list(np.random.choice(C.LABELLED, replace=False, size=len(C.LABELLED)))
         player.voter_sorting = json.dumps(voters)
@@ -812,12 +844,12 @@ class slide03_References(Page):
                 else "Neben Ihren eigenen politischen Meinungen interessieren wir uns auch für die Meinungen in Ihrem sozialen Umfeld."
             ),
             "instruction_text1": (
-                f"Please think about <strong>{C.N_PERSONS} people</strong> who you would count to your social circle, including friends, family members, colleagues (who you value), or people whose opinions matter to you personally, who have a substantial influence on you, or with whom you regularly talk about politics or world events in person or otherwise."
+                f"Please think about <strong>{C.N_PERSONS} people</strong> who you would count to your social circle. This may include friends, family members, colleagues (who you value), or other people <ul style='margin-top:-1em;'><li>whose opinions matter to you personally, </li><li>who have a substantial influence on you, or </li><li>with whom you talk about politics or world events in person or otherwise.</li></ul>"
                 if lan == "en"
-                else f"Denken Sie bitte an <strong>{C.N_PERSONS} Personen</strong>, die Sie zu Ihrem sozialen Umfeld zählen würden. Zum Beispiel,Freunde, Familienmitglieder, Kolleginnen (die Sie wertschätzen), oder andere Personen, deren Meinungen für Sie persönlich wichtig sind, die einen erheblichen Einfluss auf Sie haben, oder mit denen Sie sich regelmäßig persönlich oder anderweitig über Politik oder das Weltgeschehen austauschen."
+                else f"Denken Sie bitte an <strong>{C.N_PERSONS} Personen</strong>, die Sie zu Ihrem sozialen Umfeld zählen würden. Dazu können zum Beispiel, Freunde, Familienmitglieder, Kolleginnen (die Sie wertschätzen), oder andere Personen gehören, <ul style='margin-top:-1em;'><li>deren Meinungen für Sie persönlich wichtig sind, </li><li>die einen großen Einfluss auf Sie haben, oder</li><li>mit denen Sie sich persönlich oder anderweitig über Politik und Weltgeschehen austauschen.</li></ul>"
             ),
             "disclaimer2": (
-                f"It can be difficult to come up with {C.N_PERSONS} such contacts. However, since this is a critical part of our study, we ask you to name <em>at least {C.MIN_REFERENCES}</em> contacts. You may leave the last {C.N_PERSONS - C.MIN_REFERENCES} text boxes empty, but we would highly appreciate if you can fill all {C.N_PERSONS}."
+                f"It can be difficult to come up with {C.N_PERSONS} such contacts. However, since this is a critical part of our study, we ask you to name <em>at least {C.MIN_REFERENCES}</em> contacts. You may leave the last {C.N_PERSONS - C.MIN_REFERENCES} text boxes empty, but we would highly appreciate it if you can fill all {C.N_PERSONS}."
                 if lan == "en"
                 else f"Es kann schwer sein, {C.N_PERSONS} solche Kontakte zu nennen. Da dies aber ein wichtiger Teil unserer Umfrage ist, bitten wir Sie <em>zumindest {C.MIN_REFERENCES}</em> Kontakte zu nennen. Sie können die letzten {C.N_PERSONS - C.MIN_REFERENCES} Textfelder leer lassen; wir wären allerdings sehr dankbar, wenn Sie tatsächlich alle {C.N_PERSONS} ausfüllen."
             ),
@@ -909,6 +941,16 @@ class slide04_ReferencesOpinions(Page):
         pillname = (
             lambda name: f"<span class='pill' style='background-color: {C.REFPERSONCOLOR}; color: white;'>{name}</span>"
         )
+
+        questions = []
+        for q in [C.QUS[i] for i in json.loads(player.question_sorting)]:
+            questions.append(
+                {
+                    "prefix": f"{q}",
+                    "text": C.QUESTIONTEXT[lan][q],
+                }
+            )
+
         references = [
             {
                 "id": f"reference{i}",
@@ -921,14 +963,20 @@ class slide04_ReferencesOpinions(Page):
             for i in range(1, player.n_references + 1)
         ]
 
-        questions = []
+        # Build a flat list of all question-reference combinations with values
+        question_reference_pairs = []
         for q in [C.QUS[i] for i in json.loads(player.question_sorting)]:
-            questions.append(
-                {
-                    "prefix": f"{q}",
-                    "text": C.QUESTIONTEXT[lan][q],
-                }
-            )
+            for i in range(1, player.n_references + 1):
+                field_name = f"reference{i}__{q}"
+                value = player.field_maybe_none(field_name)
+                question_reference_pairs.append(
+                    {
+                        "ref_id": f"reference{i}",
+                        "question_prefix": q,
+                        "field_name": field_name,
+                        "value": value if value is not None else "",
+                    }
+                )
 
         return dict(
             lan_en=(lan == "en"),
@@ -937,7 +985,7 @@ class slide04_ReferencesOpinions(Page):
             page_title=(
                 f"Political Opinions in your Social Circle"
                 if lan == "en"
-                else "Politische Meinungen in Ihrem sozialen Umfeld"
+                else "Politische Meinungen in Ihrem Sozialen Umfeld"
             ),  # + ("I" if player.current_batch == 1 else "II"),
             # instruction_text_batch=(
             #     "Please note: On the next page, we will ask you about your evaluations of the other five references."
@@ -949,12 +997,18 @@ class slide04_ReferencesOpinions(Page):
                 if lan == "en"
                 else "Es kann schwierig sein, einzuschätzen, wie jemand anderes antwortet. Bitte bewegen Sie den Schieberegler auf den Punkt, der <em>Ihrer Meinung nach</em> am besten die Position der jeweiligen Person widerspiegelt."
             ),
-            instruction_text=(
-                f"How do you think each of these {pillname(f'{player.n_references} contacts')} would react to the political statements? To what extent would they agree or disagree with the statements?"
+            nudge_variation=(
+                "The slider is smooth, so that you can indicate nuances among your contact opinions. Your contacts might for example generally agree on an issue, but some might still have stronger views than others."
                 if lan == "en"
-                else f"Wie würden Ihrer Meinung nach diese {pillname(f'{player.n_references} Kontakte')} auf die politischen Aussagen reagieren? Inwieweit würden sie wohl den Aussagen zustimmen oder nicht zustimmen?"
+                else "Der Schieberegler ist stufenlos, damit Sie auch feine Unterschiede zwischen Ihren Kontakten angeben können. Ihre Kontakte sind sich vielleicht generell über ein Thema einig, aber einige könnten dennoch etwas stärkere Ansichten haben als andere."
+            ),
+            instruction_text=(
+                f"How do you think each of these {pillname(f'{player.n_references} contacts')} would respond to the political statements? To what extent would they agree or disagree with the statements?"
+                if lan == "en"
+                else f"Wie würden Ihrer Meinung nach diese {pillname(f'{player.n_references} Kontakte')} auf die politischen Aussagen antworten? Inwieweit würden sie wohl den Aussagen zustimmen oder nicht zustimmen?"
             ),
             references=references,
+            question_reference_pairs=question_reference_pairs,
             questions=questions,
             color=C.REFPERSONCOLOR,
             textcolor="white",
@@ -982,6 +1036,39 @@ class slide04_ReferencesOpinions(Page):
             for i in range(1, player.n_references + 1):
                 fields.append(f"reference{i}__{q}")
         return fields
+
+    @staticmethod
+    def error_message(player, values):
+        lan = player.language
+        if not player.nudged_for_variation and player.n_references > 0:
+            errormsg = (
+                "<h4>Note</h4>You have indicated that your social contacts all have the exact same opinion on the following statements: "
+                if lan == "en"
+                else "<h4>Hinweis</h4>Sie haben angegeben, dass Ihre Kontakte alle exakt gleiche Ansichten zu folgenden Aussagen haben: "
+            ) + "<ul style='margin-top:0.5em;margin-bottom:0.5em;'>"
+            nudges = 0
+            for q in [C.QUS[i] for i in json.loads(player.question_sorting)]:
+                variance = np.std(
+                    [
+                        values[f"reference{i}__{q}"]
+                        for i in range(1, player.n_references + 1)
+                    ]
+                )
+                if variance == 0:
+                    nudges += 1
+                    errormsg += f"<li>{C.QUESTIONTEXT[lan][q]}</li>"
+            errormsg += "</ul>" + (
+                "Please consider if some of the contacts might feel a bit stronger or weaker about their views. If so, please indicate those nuances by adjusting the sliders slightly. Thank you!"
+                if lan == "en"
+                else "Bitte überlegen Sie noch einmal, ob nicht einige Ihrer Kontakte etwas stärkere Ansichten haben als andere. Falls ja, drücken Sie diese Abstufung bitte aus indem Sie die jeweiligen Schieberegler leicht anpassen. Vielen Dank!"
+            )
+            if nudges > 0:
+                player.nudged_for_variation = True
+                # Store the values temporarily so they can be restored
+                for field_name, value in values.items():
+                    setattr(player, field_name, value)
+                return errormsg
+                return errormsg
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
@@ -1365,14 +1452,16 @@ class slide05a_MapTest(Page):
                     f"<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 1:</strong> {pill('Self', 'self')}</summary><p>Place the dot {pill('Self', 'self')} somewhere within the rectangle – this dot represents your own political views.</p></details>"
                     + f"<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 2:</strong> {pill('Friend', 'friend')}</summary><p>Place the dot {pill('Friend', 'friend')} near you – they share similar views.</p></details>"
                     + f"<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 3:</strong> {pill('Co-worker', 'coworker')}</summary><p>Place {pill('Co-worker', 'coworker')} farther away, because, although you value her, you often disagree with her opinions. Position {pill('Co-worker', 'coworker')} closer to {pill('Self', 'self')} than to {pill('Friend', 'friend')}, because you perceive an even greater political difference between Co-worker and Friend.</p></details>"
-                    + f"<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 4:</strong> {pill('Relative', 'relative')}</summary><p>Your relative has very different political views to you – place {pill('Relative', 'relative')} far from {pill('Self', 'self')}. At the same time, the relative shares some opinions with your friend and your co-worker – place {pill('Relative', 'relative')} somewhat closer to {pill('Friend', 'friend')} and {pill('Co-worker', 'coworker')} than to {pill('Self', 'self')}.</p></details>"
+                    # + f"<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 4:</strong> {pill('Relative', 'relative')}</summary><p>Your relative has very different political views to you – place {pill('Relative', 'relative')} far from {pill('Self', 'self')}. At the same time, the relative shares some opinions with your friend and your co-worker – place {pill('Relative', 'relative')} somewhat closer to {pill('Friend', 'friend')} and {pill('Co-worker', 'coworker')} than to {pill('Self', 'self')}.</p></details>"
+                    + f"<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Step 4:</strong> {pill('Relative', 'relative')}</summary><p>Your relative has very different political views compared to you. But also compared to your co-worker. Place the dot {pill('Relative', 'relative')} in a triangle with {pill('Co-worker', 'coworker')}, and {pill('Ich', 'self')} such that the distances between the three dots are similar.</p></details>"
                 )
                 if lan == "en"
                 else (
                     f"<details  open style='margin-bottom: 0em;'> <summary  style='white-space: nowrap;'><strong>Schritt 1:</strong> {pill('Ich', 'self')}</summary> <p>Platzieren Sie den Punkt {pill('Ich', 'self')} irgendwo im Rechteck – dieser Punkt steht für Ihre politischen Ansichten.</p></details>"
                     + f"<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Schritt 2:</strong> {pill('Freund', 'friend')}</summary><p>Setzen Sie den Punkt {pill('Freund', 'friend')} in Ihre Nähe – er teilt ähnliche Ansichten wie Sie.</p></details>"
                     + f"<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Schritt 3:</strong> {pill('Kollegin', 'coworker')}</summary><p>Platzieren Sie {pill('Kollegin', 'coworker')} weiter entfernt, da Sie die Kollegin zwar schätzen aber oft anderer Meinung sind. Platzieren Sie {pill('Kollegin', 'coworker')} etwas näher zu {pill('Ich', 'self')} als zu {pill('Freund', 'friend')}, weil Sie zwischen der Kollegin und dem Freund eine noch größere politische Differenz wahrnehmen.</p></p></details>"
-                    + f"<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Schritt 4:</strong> {pill('Verwandter', 'relative')}</summary><p>Der Verwandte denkt politisch ganz anders als Sie – setzen Sie {pill('Verwandter', 'relative')} weit weg von {pill('Ich', 'self')}. Gleichzeitig teilt der Verwandte aber einige Ansichten sowohl mit dem Freund als auch mit der Kollegin – platzieren Sie {pill('Verwandter', 'relative')} daher näher an {pill('Freund', 'friend')} und {pill('Kollegin', 'coworker')} als an {pill('Ich', 'self')}.</p></details>"
+                    # + f"<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Schritt 4:</strong> {pill('Verwandter', 'relative')}</summary><p>Der Verwandte denkt politisch ganz anders als Sie – setzen Sie {pill('Verwandter', 'relative')} weit weg von {pill('Ich', 'self')}. Gleichzeitig teilt der Verwandte aber einige Ansichten sowohl mit dem Freund als auch mit der Kollegin – platzieren Sie {pill('Verwandter', 'relative')} daher näher an {pill('Freund', 'friend')} und {pill('Kollegin', 'coworker')} als an {pill('Ich', 'self')}.</p></details>"
+                    + f"<details  open style='margin-bottom: 0em;'><summary  style='white-space: nowrap;'><strong>Schritt 4:</strong> {pill('Verwandter', 'relative')}</summary><p>Ihr Verwandter denkt politisch ganz anders als Sie. Aber auch ganz anders als Ihre Kollegin. Platzieren Sie den Punkt {pill('Verwandter', 'relative')} in einem Dreieck mit {pill('Kollegin', 'coworker')} und {pill('Ich', 'self')} so dass die Distanzen zwischen den drei Punkten ähnlich groß sind.</p></details>"
                 )
             ),
             "all_dots_instr": (
@@ -1394,14 +1483,17 @@ class slide05a_MapTest(Page):
 #####  Practice Run Results   #####
 #################################
 class slide05b_MapTestResult(Page):
+    form_model = "player"
+    form_fields = ["practice_sanity_check_answer"]
 
     @staticmethod
     def vars_for_template(player: Player):
         lan = player.language
         if player.field_maybe_none(f"t_on_practiceResult_first") is None:
             player.t_on_practiceResult_first = int(time.time())
-        pos = json.loads(player.positionsTest)
-        pos = {p["varname"]: [p["x"], p["y"]] for p in pos}
+        dots = json.loads(player.positionsTest)
+        pos = {p["varname"]: [p["x"], p["y"]] for p in dots}
+
         # calculate distances
         dF = distance(pos["self"], pos["friend"])
         dC = distance(pos["self"], pos["coworker"])
@@ -1417,14 +1509,18 @@ class slide05b_MapTestResult(Page):
             dFC > dC
         )  # Rule: colleague is closer to self than to friend.
         player.is_distS2R_gt_distS2F = bool(dR > dF)  # Rule: relative is very different
-        player.is_distS2R_gt_distF2RanddistC2R = bool(
-            (dR > dFR) and (dR > dCR)
-        )  # Rule 6.
+        # player.is_distS2R_gt_distF2RanddistC2R = bool(
+        #     (dR > dFR) and (dR > dCR)
+        # )  # Rule 6.
+        player.is_distsRCS_similar = (
+            max(dR, dC, dCR) / min(dR, dC, dCR) < 1.67
+        )  # is R roughly equally far from S, F, and C?
+
         isTrainingPassed = (
             player.is_distS2F_gt_distS2C
             & player.is_distF2C_gt_distS2C
             & player.is_distS2R_gt_distS2F
-            & player.is_distS2R_gt_distF2RanddistC2R
+            & player.is_distsRCS_similar
         )
         player.isTrainingPassed = isTrainingPassed
         colors = {
@@ -1453,9 +1549,35 @@ class slide05b_MapTestResult(Page):
                 if player.is_distS2R_gt_distS2F == 0
                 else ""
             )
+            # errors += (
+            #     rf"<li>The distance between {pill('Self', 'self')} and {pill('Relative', 'relative')} should be larger than the distance between {pill('Friend', 'friend')} and {pill('Relative', 'relative')} and larger than the distance between {pill('Co-worker', 'coworker')} and {pill('Relative', 'relative')}. <br>"
+            #     if player.is_distS2R_gt_distF2RanddistC2R == 0
+            #     else ""
+            # )
+            maxDistR = max(dR, dC, dCR) / min(dR, dC, dCR)
+            whichmaxDistR = (
+                [
+                    ("Relative", "Self"),
+                    ("Co-worker", "Self"),
+                    ("Relative", "Co-worker"),
+                ][np.argmax([dR, dC, dCR])],
+                [("relative", "self"), ("coworker", "self"), ("relative", "coworker")][
+                    np.argmax([dR, dC, dCR])
+                ],
+            )
+            whichminDistR = (
+                [
+                    ("Relative", "Self"),
+                    ("Co-worker", "Self"),
+                    ("Relative", "Co-worker"),
+                ][np.argmin([dR, dC, dCR])],
+                [("relative", "self"), ("coworker", "self"), ("relative", "coworker")][
+                    np.argmin([dR, dC, dCR])
+                ],
+            )
             errors += (
-                rf"<li>The distance between {pill('Self', 'self')} and {pill('Relative', 'relative')} should be larger than the distance between {pill('Friend', 'friend')} and {pill('Relative', 'relative')} and larger than the distance between {pill('Co-worker', 'coworker')} and {pill('Relative', 'relative')}. <br>"
-                if player.is_distS2R_gt_distF2RanddistC2R == 0
+                rf"<li>The distances between {pill('Relative', 'relative')}, {pill('Self', 'self')}, and {pill('Co-worker', 'coworker')} should be similar. In your arrangement, however, {pill(whichmaxDistR[0][0], whichmaxDistR[1][0])}–{pill(whichmaxDistR[0][1], whichmaxDistR[1][1])} is substantially larger than {pill(whichminDistR[0][0], whichminDistR[1][0])}–{pill(whichminDistR[0][1], whichminDistR[1][1])}.</li>"
+                if player.is_distsRCS_similar == 0
                 else ""
             )
         else:
@@ -1474,14 +1596,44 @@ class slide05b_MapTestResult(Page):
                 if player.is_distS2R_gt_distS2F == 0
                 else ""
             )
+            # errors += (
+            #     rf"<li>Die Distanz zwischen {pill('Ich', 'self')} und {pill('Verwandte', 'relative')} sollte größer sein als die Distanz zwischen {pill('Freund', 'friend')} und {pill('Verwandte', 'relative')} und größer als die Distanz zwischen {pill('Kollegin', 'coworker')} und {pill('Verwandte', 'relative')}. </li>"
+            #     if player.is_distS2R_gt_distF2RanddistC2R == 0
+            #     else ""
+            # )
+            maxDistR = max(dR, dFR, dCR) / min(dR, dFR, dCR)
+            whichmaxDistR = (
+                [
+                    ("Verwandter", "Ich"),
+                    ("Kollegin", "Ich"),
+                    ("Verwandter", "Kollegin"),
+                ][np.argmax([dR, dC, dCR])],
+                [("relative", "self"), ("coworker", "self"), ("relative", "coworker")][
+                    np.argmax([dR, dC, dCR])
+                ],
+            )
+            whichminDistR = (
+                [
+                    ("Verwandter", "Ich"),
+                    ("Kollegin", "Ich"),
+                    ("Verwandter", "Kollegin"),
+                ][np.argmin([dR, dC, dCR])],
+                [("relative", "self"), ("coworker", "self"), ("relative", "coworker")][
+                    np.argmin([dR, dC, dCR])
+                ],
+            )
             errors += (
-                rf"<li>Die Distanz zwischen {pill('Ich', 'self')} und {pill('Verwandte', 'relative')} sollte größer sein als die Distanz zwischen {pill('Freund', 'friend')} und {pill('Verwandte', 'relative')} und größer als die Distanz zwischen {pill('Kollegin', 'coworker')} und {pill('Verwandte', 'relative')}. </li>"
-                if player.is_distS2R_gt_distF2RanddistC2R == 0
+                rf"<li>Die Distanzen zwischen {pill('Verwandter', 'relative')}, {pill('Ich', 'self')} und {pill('Kollegin', 'coworker')} sollten ähnlich sein. In Ihrer Anordnung ist allerdings {pill(whichmaxDistR[0][0], whichmaxDistR[1][0])}–{pill(whichmaxDistR[0][1], whichmaxDistR[1][1])} deutlich größer als {pill(whichminDistR[0][0], whichminDistR[1][0])}–{pill(whichminDistR[0][1], whichminDistR[1][1])}</li>"
+                if player.is_distsRCS_similar == 0
                 else ""
             )
         errors += "</ul>"
 
         player.latest_error_msg = errors
+
+        if player.isTrainingPassed:
+            player.is_FR_gt_SR = bool(dFR > dR)
+        player.practice_sanity_check_correct = False
 
         return {
             "maxslides": C.MAXSLIDES,
@@ -1538,12 +1690,31 @@ class slide05b_MapTestResult(Page):
             )
             + ":</p>",
             "img_source": f"correctTraining_{lan}.png",
+            "show_canvas": player.isTrainingPassed,
+            "dots": pos if player.isTrainingPassed else [],
+            "sanity_check_error": (player.practice_sanity_check_correct),
+            "sanity_question": (
+                f"According to <em>your</em> map of this practice scenario, which individual is politically closer to the {pill('Relative', 'relative')}?"
+                if lan == "en"
+                else f"In Ihrer Anordnung oben, wer ist dem {pill('Verwandten', 'relative')} politisch näher: Sie selbst oder Ihr Freund?"
+            ),
+            "option_a": (
+                f"{pill('Self', 'self')} is politically closer to the relative"
+                if lan == "en"
+                else f"{pill('Ich', 'self')} ist dem Verwandten politisch näher"
+            ),
+            "option_b": (
+                f"{pill('Friend', 'friend')} is politically closer to the relative"
+                if lan == "en"
+                else f"{pill('Freund', 'friend')} ist dem Verwandten politisch näher"
+            ),
         }
 
     @staticmethod
     def is_displayed(player: Player):
         return (
             player.consent
+            and (not player.practice_sanity_check_correct)
             and (player.attemptPractice <= C.N_MAX_PRACTICE_RUNS)
             and (
                 (not player.isTrainingPassed)
@@ -1552,8 +1723,23 @@ class slide05b_MapTestResult(Page):
         )
 
     @staticmethod
-    def before_next_page(player, timeout_happened):
+    def error_message(player, values):
         if player.isTrainingPassed:
+            if values.get("practice_sanity_check_answer") != (
+                "Self" if player.is_FR_gt_SR else "Friend"
+            ):
+                player.practice_sanity_check_correct = False
+                player.attempts_sanity_check += 1
+                if player.language == "en":
+                    return "Your answer is unfortunately incorrect. Please try again."
+                else:
+                    return "Ihre Antwort ist leider nicht korrekt. Bitte versuchen Sie es erneut."
+            else:
+                player.practice_sanity_check_correct = True
+
+    @staticmethod
+    def before_next_page(player, timeout_happened):
+        if player.isTrainingPassed and player.practice_sanity_check_correct:
             player.current_page += 1
 
 
@@ -1667,9 +1853,9 @@ class slide06_SPaM(Page):
                 else f"Stellen Sie sich vor, Sie sind zusammen mit den {player.n_references} Personen, die Ihr soziales Umfeld repräsentieren, und mit den typischen Wählern oder Wählerinnen der vorher genannten Parteien in einem Raum (das Rechteck unten)."
             ),
             "instru_main": (
-                "<p>Arrange the people in the room based on how <em>you</em> see their political views about the questions regarding climate change, migration, inequality and diversity:</p><ul><li><strong>Place individuals closer together if you perceive them as politically similar.</strong></li><li><strong>Place individuals farther apart if you perceive them as politically different.</strong></li></ul>"
+                "<p>Arrange the people in the room based on how <em>you</em> see their views on the political questions from the beginning of this survey:</p><ul><li><strong>Place individuals closer together if you perceive them as politically similar.</strong></li><li><strong>Place individuals farther apart if you perceive them as politically different.</strong></li></ul>"  # regarding climate change, migration, inequality and diversity
                 if lan == "en"
-                else "<p>Ordnen Sie die Personen im Raum so an, wie <em>Sie</em> deren politische Ansichten zu den Fragen über Klimawandel, Migration, Ungleichheit und Vielfalt wahrnehmen:</p><ul> <li>Platzieren Sie Personen <strong>näher beieinander</strong>, wenn Sie diese als <strong>politisch ähnlich</strong> wahrnehmen.</li><li>Platzieren Sie Personen <strong>weiter auseinander</strong>, wenn Sie diese als <strong>politisch unterschiedlich</strong> wahrnehmen.</li></ul>"
+                else "<p>Ordnen Sie die Personen im Raum so an, wie <em>Sie</em> deren Ansichten zu den politischen Fragen vom Beginn der Umfrage wahrnehmen:</p><ul> <li>Platzieren Sie Personen <strong>näher beieinander</strong>, wenn Sie diese als <strong>politisch ähnlich</strong> wahrnehmen.</li><li>Platzieren Sie Personen <strong>weiter auseinander</strong>, wenn Sie diese als <strong>politisch unterschiedlich</strong> wahrnehmen.</li></ul>"  # über Klimawandel, Migration, Ungleichheit und Vielfalt
             ),
             "no_wrong_answers": (
                 f"<p>There are NO right or wrong answers — we are interested in your personal perception.</p>"
@@ -1780,9 +1966,9 @@ class slide07_Satisfaction(Page):
                 else "Tipp: Wenn Sie auf einen der Punkte im Rechteck klicken, erscheint ein Fenster, das Ihre Antworten für die jeweilige Person zeigt."
             ),
             "question": (
-                "<p>How <em>satisfied</em> are you with your political map? Does this arrangement of dots reflect more or less accurately how you perceive similarities or differences between the political opinions of the individuals?</p>"
+                "<p>How <em>satisfied</em> are you with your political map? Does this arrangement of dots reflect more or less accurately how you perceive differences between the political opinions of the individuals?</p>"
                 if lan == "en"
-                else "<p>Wie <em>zufrieden</em> sind Sie mit Ihrer politischen Karte? Spiegelt diese Anordnung der Punkte mehr oder weniger <em>akkurat</em> wider, wie Sie die Ähnlichkeiten oder Differenzen zwischen den politischen Meinungen der Personen wahrnehmen?</p>"
+                else "<p>Wie <em>zufrieden</em> sind Sie mit Ihrer politischen Karte? Spiegelt diese Anordnung der Punkte mehr oder weniger <em>akkurat</em> wider, wie Sie die Differenzen zwischen den politischen Meinungen der Personen wahrnehmen?</p>"
             ),
             "explain_text": (
                 "If you like, you can add any thoughts, comments, or explanations here <em>(optional)</em>:"
@@ -1908,9 +2094,9 @@ class slide08_PlausibilityCheck_Pairs(Page):
                 else f"<ul><li style='font-size:18px;'>{get_descr(p1)}</li><li style='font-size:18px;'>{get_descr(p2)}</li></ul>"
             ),
             "question": (
-                "<p>In <em>your</em> view, how similar are these two individuals overall in their political views on the questions concerning climate change, migration, inequality, and diversity?</p>"
+                "<p>In <em>your</em> view, how similar are these two individuals in their views on the political questions from the beginning of this survey?</p>"  # concerning climate change, migration, inequality, and diversity
                 if lan == "en"
-                else "<p>Wie ähnlich sind sich diese beiden Personen <em>Ihrer Meinung nach</em> insgesamt in ihren politischen Ansichten über die Fragen zu Klimawandel, Migration, Ungleichheit und Diversität?</p>"
+                else "<p>Wie ähnlich sind sich diese beiden Personen <em>Ihrer Meinung nach</em> in ihren Ansichten über die politischen Fragen vom Beginn dieser Umfrage?</p>"  # zu Klimawandel, Migration, Ungleichheit und Diversität
             ),
             "similarity_min": 0,
             "similarity_max": 100,
@@ -1960,7 +2146,7 @@ class slide09_Tasks(Page):
             "questioneasierMapping": (
                 "<p>Which task did you find <b>easier</b> to provide your evaluation of the political similarity/differences between people?</p>"  #  Arranging the 18 dots on the square <em>or</em> or evaluating the similarity of 18 pairs of individuals?
                 if lan == "en"
-                else "<p>Welche Aufgabe hat sich <b>einfacher</b> angefühlt, um Ihre Wahrnehmung von politischen Unterschieden oder Ähnlickeit auszudrücken? </p>"  # Die 18 Punkte auf der Karte anzuordnen <em>oder</em> Die politische Ähnlichkeit von 18 Paaren zu bewerten?
+                else "<p>Welche Aufgabe hat sich <b>einfacher</b> angefühlt, um Ihre Wahrnehmung von politischen Unterschieden oder Ähnlichkeit auszudrücken? </p>"  # Die 18 Punkte auf der Karte anzuordnen <em>oder</em> Die politische Ähnlichkeit von 18 Paaren zu bewerten?
             ),
             "easier_min": -50,
             "easier_max": 50,
@@ -2063,9 +2249,9 @@ class slide10_Importance(Page):
                 "Issue Importance" if lan == "en" else "Wichtigkeit von Themen"
             ),
             "table_head": (
-                "Importance of issues for your perception of political differences and similarity"
+                "For your perception of political differences or similarities, how important was the extent to which the people..."
                 if lan == "en"
-                else "Wichtigkeit der Themen für Ihre Wahrnehmung politischer Differenzen und Ähnlichkeit"
+                else "Für Ihre Wahrnehmung politischer Unterschiede oder Gemeinsamkeiten, wie wichtig war es, inwieweit die Personen..."
             ),
             "question": (
                 "Please rate <b>how important</b> each of the four issues were to you in the last two tasks (creating the political map and evaluating the pairs of individuals)!"
@@ -2076,88 +2262,6 @@ class slide10_Importance(Page):
                 "If you want, you can explain here in more detail how these issues have influenced you or not influenced you in the previous tasks <em>(optional)</em>:"
                 if lan == "en"
                 else "Wenn Sie wollen, können Sie hier näher erklären, inwiefern die Fragen Sie in den letzten Aufgaben beeinflusst oder nicht beeinflusst haben <em>(optional)</em>:"
-            ),
-        }
-
-
-#################################
-#####  IMPORTANCE NOT COVERED QUESTIONS  #####
-#################################
-class slide10b_ImportanceOther(Page):
-    form_model = "player"
-    form_fields = [f"importance_{q}" for q in C.QUS_OTHERS] + [
-        "importance_other_comments"
-    ]
-
-    @staticmethod
-    def before_next_page(player: Player, timeout_happened):
-        player.current_page += 1
-
-    @staticmethod
-    def is_displayed(player: Player):
-        trainingPassed = player.isTrainingPassed
-        return player.consent and trainingPassed
-
-    @staticmethod
-    def vars_for_template(player):
-        lan = player.language
-        if player.field_maybe_none(f"t_on_importance_other") is None:
-            player.t_on_importance_other = int(time.time())
-        questions = (
-            C.QUS_OTHERS
-        )  # [C.QUS[i] for i in json.loads(player.question_sorting)]
-        fields = [f"importance_{q}" for q in questions]
-        questions = [C.QUESTIONS_OTHERS[player.language][q] for q in questions]
-
-        field_question_pairs = []
-        for field, question in zip(fields, questions):
-            field_question_pairs.append(
-                {
-                    "field_name": field,
-                    "question_text": question,
-                    "first_label": (
-                        "no influence at all"
-                        if lan == "en"
-                        else "überhaupt kein Einfluss"
-                    ),
-                    "last_label": (
-                        "very strong influence"
-                        if lan == "en"
-                        else "sehr starker Einfluss"
-                    ),
-                }
-            )
-        return {
-            "maxslides": C.MAXSLIDES,
-            "nslide": player.current_page,
-            "lan_en": lan == "en",
-            "field_question_pairs": field_question_pairs,
-            "page_title": (
-                "Relevance of Issues not Considered"
-                if lan == "en"
-                else "Relevanz nicht berücksichtigter Themen"
-            ),
-            "table_head": (
-                "Influence of additional issues on your perception of political differences and similarities"
-                if lan == "en"
-                else "Einfluss zusätzlicher politischer Themen auf Ihre Wahrnehmung politischer Differenzen und Ähnlichkeit"
-            ),
-            "pretext": (
-                "For this survey, we have selected four political questions that cover a broad spectrum of issues and have long been present in public debate. Of course, four questions cannot fully reflect your political worldview or that of other people. Below, we present four additional questions."
-                if lan == "en"
-                else "Für diese Umfrage haben wir vier politische Fragen ausgewählt, die ein breites Spektrum an Themen abdecken und seit langem in der öffentlichen Debatte präsent sind. Natürlich können vier Fragen nicht Ihr politisches Weltbild oder das anderer Personen vollständig widerspiegeln. Im Folgenden zeigen wir Ihnen vier zusätzliche Fragen."
-            ),
-            "question": (
-                "Please rate the extent to which the following additional questions would have changed your placement of the various individuals on your political map.<br>Would the question have had little influence or a strong influence on your political map and changed the positions of the individuals?"
-                # "Please rate <b>how important</b> each of these additional questions <b>would have been</b> to you personally for the last two tasks (creating the political map and evaluating the pairs of individuals), if we had asked them in addition!"
-                if lan == "en"
-                else "Bitte schätzen Sie, inwieweit die folgenden zusätzlichen Fragen jeweils Ihre Anordnung der verschiedenen Personen auf Ihner politischen Landkarte verändert hätten.<br>Hätte die Frage keinen großen Einfluss, oder einen starken Einfluss auf Ihre politische Karte gehabt und die Positionen der Personen verändert?"
-                # "Bitte schätzen Sie ein, <b>wie wichtig</b> diese zusätzlichen politischen Fragen jeweils für Sie <b>gewesen wären</b> für die Bearbeitung der letzten beiden Aufgaben (die politische Karte zu erstellen bzw. einzelne Paare zu bewerten), wenn wir die Fragen zusätzlich gestellt hätten!"
-            ),
-            "explain_text": (
-                "If you want, you can explain here in more detail how these additional questions would have influenced you or not influenced you <em>(optional)</em>:"
-                if lan == "en"
-                else "Wenn Sie wollen, können Sie hier näher erklären, wie diese zusätzlichen Fragen Sie beeinflusst oder nicht beeinflusst hätten <em>(optional)</em>:"
             ),
         }
 
@@ -2360,11 +2464,11 @@ class slide13_ContactIdentities(Page):
             ),
             "choices_identity": dict(
                 zip(
-                    C.CHOICES_IDENTITY + ["No answer"],
+                    C.CHOICES_IDENTITY,
                     (
-                        C.CHOICES_IDENTITY + ["No answer"]
+                        C.CHOICES_IDENTITY  # +
                         if lan == "en"
-                        else C.CHOICES_IDENTITY_DE + ["Keine Angabe"]
+                        else C.CHOICES_IDENTITY_DE  #
                     ),
                 )
             ),
@@ -2391,6 +2495,7 @@ class slide13_Demographics(Page):
         "political_interest",
         "political_discussion",
         "overall_comments",
+        "recontact",
     ]
 
     @staticmethod
@@ -2446,6 +2551,27 @@ class slide13_Demographics(Page):
             "interest_max_label": (
                 "Very interested" if lan == "en" else "Sehr interessiert"
             ),
+            "recontact_options": dict(
+                zip(
+                    [True, False],
+                    (
+                        [
+                            "Yes. I want to be invited.",
+                            "No. I do not want to be invited.",
+                        ]
+                        if lan == "en"
+                        else [
+                            "Ja. Ich möchte eingeladen werden.",
+                            "Nein. Ich möchte nicht eingeladen werden.",
+                        ]
+                    ),
+                )
+            ),
+            "recontact_question": (
+                "We would like to invite you to participate in a similar survey for a follow-up study in a few weeks. Would you like to be invited by Bilendi for this follow-up survey? "
+                if lan == "en"
+                else "Wir würden Sie gerne in einigen Wochen einladen, an einer ähnlichen Umfrage für eine Folgestudie teilzunehmen. Möchten Sie von Bilendi für diese Umfrage eingeladen werden?"
+            ),  # <em>Your decision is entirely voluntary and will not affect your participation or the use of your data in any way.</em> <em> Ihre Entscheidung ist vollkommen freiwillig und hat keinerlei Auswirkungen auf Ihre Teilnahme oder die Verwendung Ihrer Daten.</em>
             "overall_comments_qu": (
                 "Before you exit the survey by clicking on <em>Complete Survey</em>, feel free to add any final thoughts or comments. Is there anything you would like to share? We value your feedback."
                 if lan == "en"
@@ -2521,7 +2647,7 @@ page_sequence = (
     + [
         slide09_Tasks,
         slide10_Importance,
-        slide10b_ImportanceOther,
+        # slide10b_ImportanceOther,
         slide11_PolarisationTopics,
         slide12_Relationships,
         slide13_ContactIdentities,

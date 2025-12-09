@@ -10,6 +10,8 @@
 
 <div class="yellow-instructions">{{instruction_bestguess}}</div>
 
+<div class="blue-instructions">{{nudge_variation}}</div>
+
 <form method="post">
   {% for q in questions %}
   <div class="question-block">
@@ -47,20 +49,22 @@
             </div>
           </td>
         </tr>
-        {% for c in references %}
+        {% for c in references %} {% for pair in question_reference_pairs %} {%
+        if pair.ref_id == c.id and pair.question_prefix == q.prefix %}
         <tr>
           <td>
-            <label class="form-label"> {{ c.name }} </label>
+            <label class="form-label">{{ c.name }}</label>
           </td>
           <td>
             <input
               type="range"
               class="likert-slider"
-              name="{{ c.id }}__{{ q.prefix }}"
+              name="{{ pair.field_name }}"
               id="slider_{{ q.prefix }}{{ c.id }}"
               min="-100"
               max="100"
               step="1"
+              value="{{ pair.value }}"
               oninput="handleSliderInput('{{ q.prefix }}{{ c.id }}', this.value)"
             />
             <div id="sliderValue{{ q.prefix }}{{ c.id }}" class="slider-label">
@@ -69,7 +73,7 @@
             </div>
           </td>
         </tr>
-        {% endfor %}
+        {% endif %} {% endfor %} {% endfor %}
       </tbody>
     </table>
   </div>
@@ -93,6 +97,8 @@
 <script>
   let slidersTouched = {};
   let totalSliders = 0;
+
+
 
   function handleSliderInput(field, value) {
     slidersTouched[field] = true;
@@ -139,6 +145,13 @@
   document.addEventListener("DOMContentLoaded", function () {
     totalSliders = document.querySelectorAll(".likert-slider").length;
 
+    document.querySelectorAll(".likert-slider").forEach(function(slider) {
+        if (slider.value && slider.value !== "" && slider.value !== "0") {
+          const field = slider.id.replace('slider_', '');
+          handleSliderInput(field, slider.value);
+        }
+      });
+
     // Localized alert message
     const sliderAlertMsg =
       "{% if lan_en %}Please move all sliders to select values.{% else %}Bitte bewegen Sie alle Schieberegler, um Werte auszuwählen.{% endif %}";
@@ -155,11 +168,18 @@
     }
 
     const nextButton =
-      document.getElementById("nextButton") ||
-      document.querySelector(".otree-btn-next");
+    document.getElementById("nextButton") ||
+    document.querySelector(".otree-btn-next");
     if (nextButton) {
-      nextButton.disabled = true;
-      nextButton.style.opacity = "0.5";
+      // Only disable if not all sliders have been touched (i.e., fresh page load)
+      if (Object.keys(slidersTouched).length < totalSliders) {
+        nextButton.disabled = true;
+        nextButton.style.opacity = "0.5";
+      } else {
+        // All sliders touched (error page reload), enable button
+        nextButton.disabled = false;
+        nextButton.style.opacity = "1";
+      }
     }
   });
 </script>
