@@ -1,0 +1,95 @@
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{{ static 'main.css' }}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{{ static 'global.js' }}"></script>
+<script src="{% static 'consent_content.js' %}"></script>
+
+<style>
+  p {
+    margin-bottom: 0.1em;
+    margin-top: 0.1em;
+  }
+</style>
+
+<h2 style="margin-bottom: 0pt; text-align: center">
+  Umfrage zur Wahrnehmung politischer Meinungen
+</h2>
+{% comment %}
+<p style="margin-bottom: 1em">
+  <em>Survey on Perceptions of Political Opinions</em>
+</p>
+{% endcomment %} {% comment %}
+<div class="language-section" style="margin-bottom: 1em">
+  <div class="card">
+    <div class="form-group">
+      <label class="form-label"
+        >Please select your preferred language / Bitte wählen Sie Ihre
+        bevorzugte Sprache:</label
+      >
+      <div class="option-cards" data-field="language">
+        <label class="option-card" style="width: 40%">
+          <input type="radio" name="language" value="en" /> English
+        </label>
+        <label class="option-card" style="width: 40%">
+          <input type="radio" name="language" value="de" /> Deutsch
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+{% endcomment %}
+
+<!-- Content will be injected here -->
+<br />
+<div id="consent-content"></div>
+
+{% comment %}
+<script>
+  document.querySelectorAll('input[name="language"]').forEach((radio) => {
+    radio.addEventListener("change", () => {
+      document.getElementById("consent-content").innerHTML =
+        translations[radio.value];
+      attachEventListeners();
+    });
+  });
+</script>
+{% endcomment %}
+
+<script>
+  document.getElementById("consent-content").innerHTML = translations["de"];
+  attachEventListeners();
+
+  function attachEventListeners() {
+    // Hide oTree's next button
+    const nextButton = document.querySelector('button[type="submit"]');
+    if (nextButton) nextButton.style.display = "none";
+
+    // Handle consent selection
+    document
+      .querySelectorAll(
+        '.option-cards[data-field="consent"] input[type="radio"]'
+      )
+      .forEach((radio) => {
+        radio.addEventListener("change", () => {
+          // Remove all selected classes
+          document
+            .querySelectorAll(
+              '.option-cards[data-field="consent"] .option-card'
+            )
+            .forEach((card) => {
+              card.classList.remove("selected");
+            });
+
+          // Add selected class to clicked option
+          radio.closest(".option-card").classList.add("selected");
+
+          // Auto-submit if user clicks "I consent" (value="1")
+          if (radio.value === "1") {
+            document.querySelector("form").submit();
+          }
+        });
+      });
+  }
+</script>
+{% endblock %}

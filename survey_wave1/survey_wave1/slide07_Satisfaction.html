@@ -1,0 +1,372 @@
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'main.css' %}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{% static 'global.js' %}"></script>
+
+<form method="post">
+  <div class="container">
+    <h2>{{ page_title }}</h2>
+
+    <p>{{instru1}}</p>
+
+    <canvas
+      id="dragCanvas"
+      width="{{ satisfaction_canvas_width }}"
+      height="{{ satisfaction_canvas_width }}"
+      style="
+        border: 0px solid #333;
+        background: #fafafa;
+        display: block;
+        margin: 0px 0;
+        cursor: grab;
+      "
+    ></canvas>
+
+    <div
+      id="popup"
+      style="
+        display: none;
+        position: absolute;
+        width: 350px;
+        padding: 8px;
+        background: white;
+        border: 2px solid #333;
+        border-radius: 6px;
+        box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        font-size: 10px;
+        line-height: 1.3;
+      "
+    ></div>
+
+    <input type="hidden" name="positions" id="positions" />
+
+    <div class="blue-instructions">
+      <p>{{instru2}}</p>
+    </div>
+
+    <div class="card-section">
+      <div class="card">
+        <!-- Satisfaction Slider -->
+        <label class="form-label" style="margin-bottom: -1em"
+          >{{ question }}</label
+        >
+        <div style="width: 80%; margin-left: 10%; margin-right: 10%">
+          <div style="display: flex; margin-top: 30px; margin-bottom: 2px">
+            <span class="lab" style="font-size: 10pt; text-align: left"
+              >{{ satisfaction_min_label }}</span
+            >
+            <span
+              class="lab"
+              style="margin-left: auto; font-size: 10pt; text-align: right"
+              >{{ satisfaction_max_label }}</span
+            >
+          </div>
+          <input
+            type="range"
+            class="likert-slider"
+            name="satisfaction"
+            id="satisfactionSlider"
+            min="{{ satisfaction_min }}"
+            max="{{ satisfaction_max }}"
+            step="1"
+            style="color: #aaaaaa; background: #ccc"
+            oninput="handleSliderInput('satisfaction', this.value)"
+            required
+          />
+
+          <div class="slider-label-container" id="sliderValue">
+            <div class="slider-label-text" style="color: #777">
+              {% if lan_en %}
+              <span id="satisfactionsliderValue" style="color: #777"
+                >Please move the slider</span
+              >
+              {% else %}
+              <span id="satisfactionsliderValue" style="color: #777">
+                Bitte bewegen Sie den Schieberegler
+              </span>
+              {% endif %}
+            </div>
+          </div>
+
+          {{ formfield_errors "satisfaction" }}
+        </div>
+      </div>
+
+      <div class="card-section" style="margin-top: -0em">
+        <div class="card">
+          <p style="margin-bottom: -10px">{{explain_text}}</p>
+          {{ formfield "satisfaction_text" }}
+        </div>
+        <p style="margin-bottom: -10px">{{more_later}}</p>
+      </div>
+
+      <div class="nav-container">
+        {% if lan_en %}
+        <button
+          type="submit"
+          id="nextButton"
+          class="otree-btn-next btn btn-primary big-button"
+        >
+          Continue
+        </button>
+        <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+        {% else %}
+        <button
+          type="submit"
+          id="nextButton"
+          class="otree-btn-next btn btn-primary big-button"
+        >
+          Weiter
+        </button>
+        <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+    let slidersTouched = {
+      satisfaction: false,
+    };
+
+    function handleSliderInput(sliderName, value) {
+    slidersTouched[sliderName] = true;
+
+    // Update displayed value
+    const valueSpan = 'satisfactionsliderValue'
+    const sliderSpan = document.getElementById(valueSpan);
+    sliderSpan.innerHTML = `<div class="slider-label-container"><div class="slider-label-text">` +
+      `{% if lan_en %}Selected:  {% else %}Ausgewählt: {%endif%}` +
+      `<strong><span class="slider-num">${Math.round(
+        value / 10
+      )}</span></strong> / 10 </div>` +
+      `</div></div>`;
+    sliderSpan.style.color = 'black';
+
+    // Update slider background gradient
+    const sliderObject = 'satisfactionSlider'
+    const slider = document.getElementById(sliderObject);
+    const percentage = ((value - slider.min) / (slider.max - slider.min)) * 100;
+    slider.style.background = `linear-gradient(to right, #007bff 0%, #007bff ${percentage}%, #e0e0e0 ${percentage}%, #e0e0e0 100%)`;
+
+
+    // Enable next button if at least one slider touched
+    const nextButton = document.getElementById('nextButton');
+    if (nextButton && slidersTouched.satisfaction ) {
+      nextButton.disabled = false;
+      nextButton.style.opacity = '1';
+    }
+  }
+
+
+    // Form validation before submission
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form');
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          if (!slidersTouched.satisfaction) {
+            e.preventDefault();
+            const lang = {% if lan_en %}true{% else %}false{% endif %};
+            alert(lang ? 'Please move the slider to select a value.' : 'Bitte bewegen Sie den Schieberegler, um einen Wert auszuwählen.');
+            return false;
+          }
+        });
+      }
+    });
+</script>
+
+<script>
+
+  document.addEventListener("DOMContentLoaded", function () {
+      const canvas = document.getElementById("dragCanvas");
+      const ctx = canvas.getContext("2d");
+      const points = [
+          {% for dot in dots %}
+              {
+              name_disp: "{{ dot.name_disp }}",
+              varname: "{{ dot.varname }}",
+              x: {{ dot.x }} * {{satisfaction_canvas_width}}/ {{canvas_width}},
+              y: {{ dot.y }}* {{satisfaction_canvas_width}}/ {{canvas_width}},
+              dottype: "{{ dot.dottype }}" ,
+              descr:"{{ dot.descr }}",
+              radius: 12 * {{satisfaction_canvas_width}}/ {{canvas_width}}
+              },
+          {% endfor %}
+      ];
+      const popup = document.getElementById("popup");
+
+      let hoveredPoint = null;
+
+      console.log("Loaded points:", points);
+
+      function drawCanvas() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          // Draw the boundary square with enhanced styling
+          ctx.strokeStyle = "#333";
+          ctx.lineWidth = 1;
+          ctx.strokeRect(0, 0, canvas.height, canvas.height);
+
+          // Draw all points
+          points.forEach(p => {
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+
+              // Set fill color based on type
+              ctx.fillStyle =  COLORS[p.varname] || COLORS[p.dottype] || "white";
+              ctx.fill();
+
+              // Add border with hover effect
+              ctx.strokeStyle = p === hoveredPoint ? "#fff" : "#333";
+              ctx.lineWidth = p === hoveredPoint ? 3 : 2;
+              ctx.stroke();
+
+              // Draw label with better positioning
+              ctx.fillStyle = "#333";
+              ctx.font = "12px Arial";
+              ctx.textAlign = "center";
+              ctx.textBaseline = "bottom";
+              ctx.fillText(p.name_disp, p.x, p.y - 18);
+          });
+      }
+
+      function getMousePos(evt) {
+          const rect = canvas.getBoundingClientRect();
+          return {
+              x: evt.clientX - rect.left,
+              y: evt.clientY - rect.top
+          };
+      }
+
+      function getTouchPos(touch) {
+          const rect = canvas.getBoundingClientRect();
+          return {
+              x: touch.clientX - rect.left,
+              y: touch.clientY - rect.top
+          };
+      }
+
+      function findPoint(pos) {
+          return points.find(p => Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius);
+      }
+
+      function showPopup(point, mouseX, mouseY) {
+          const canvasRect = canvas.getBoundingClientRect();
+          const canvasOffsetTop = canvas.offsetTop;
+          const canvasOffsetLeft = canvas.offsetLeft;
+
+          // Position popup to the right of canvas, starting at x=510px from canvas left
+          popup.style.left = `${canvasOffsetLeft + canvas.width + 10}px`;
+          popup.style.top = `${canvasOffsetTop}px`;
+
+          // Create table from description
+          let tableContent = '';
+          if (point.descr && point.descr.includes(';')) {
+              const lines = point.descr.split(';').map(line => line.trim()).filter(line => line);
+              tableContent = lines.map(line => {
+                  const colonIndex = line.indexOf(':');
+                  if (colonIndex !== -1) {
+                      const question = line.substring(0, colonIndex);
+                      const answer = line.substring(colonIndex + 1).trim();
+                      const label = getLikertLabel(answer, "{{lan_en}}");
+                      const answerStyling = getAnswerStyling(answer);
+
+                      return `<tr><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; width: 60%; word-wrap: break-word; line-height: 1.3;">${question}</td></td><td style="padding: 6px 4px 4px 0; vertical-align: center; border-bottom: 2px solid #eee; font-weight: bold; width: 33%; word-wrap: break-word;line-height:1.8"><span style="${answerStyling}">${label}</span></td></tr>`;
+                  }
+                  return `<tr><td colspan="2" style="padding: 10px 0px; border-bottom: 1px solid #eee;">${line}</td></tr>`;
+              }).join('');
+          } else {
+              tableContent = `<tr><td style="padding: 0px 0;">${point.descr || 'No description available'}</td></tr>`;
+          }
+          popup.innerHTML = `
+              <strong style="font-size: 12px;">${point.name_disp}</strong><br><br>
+              <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                  ${tableContent}
+              </table>
+          `;
+          popup.style.display = "block";
+      }
+
+      // Touch event handlers
+      canvas.addEventListener("touchstart", function (evt) {
+          const touch = evt.touches[0];
+          const touchPos = getTouchPos(touch);
+          const touchedPoint = findPoint(touchPos);
+
+          if (touchedPoint) {
+              showPopup(touchedPoint, touchPos.x, touchPos.y);
+          } else {
+              popup.style.display = "none";
+          }
+          evt.preventDefault();
+      }, { passive: false });
+
+      canvas.addEventListener("touchend", function () {
+          hoveredPoint = null;
+          drawCanvas();
+      }, { passive: false });
+
+      // Mouse event handlers (for desktop)
+      canvas.addEventListener("mousedown", function (evt) {
+          const mousePos = getMousePos(evt);
+          const clickedPoint = findPoint(mousePos);
+
+          if (clickedPoint) {
+              showPopup(clickedPoint, mousePos.x, mousePos.y);
+          } else {
+              popup.style.display = "none";
+          }
+      });
+
+      canvas.addEventListener("mousemove", function (evt) {
+          const mousePos = getMousePos(evt);
+          const newHoveredPoint = findPoint(mousePos);
+
+          // Update cursor based on what we're hovering over
+          if (newHoveredPoint) {
+              canvas.style.cursor = "pointer";
+          } else {
+              canvas.style.cursor = "default";
+          }
+
+          if (newHoveredPoint !== hoveredPoint) {
+              hoveredPoint = newHoveredPoint;
+              drawCanvas();
+          }
+      });
+
+      canvas.addEventListener("mouseleave", function () {
+          hoveredPoint = null;
+          canvas.style.cursor = "default";
+          drawCanvas();
+      });
+
+      document.addEventListener("click", function (e) {
+          if (!canvas.contains(e.target) && !popup.contains(e.target)) {
+              popup.style.display = "none";
+          }
+      });
+
+      // Initial draw
+      drawCanvas();
+  });
+</script>
+
+<script>
+  document.querySelectorAll(".option-cards").forEach((group) => {
+    const name = group.dataset.field;
+    group.querySelectorAll('input[type="radio"]').forEach((radio) => {
+      radio.addEventListener("change", () => {
+        group.querySelectorAll(".option-card").forEach((card) => {
+          card.classList.remove("selected");
+        });
+        radio.closest(".option-card").classList.add("selected");
+      });
+    });
+  });
+</script>
+
+{% endblock %}

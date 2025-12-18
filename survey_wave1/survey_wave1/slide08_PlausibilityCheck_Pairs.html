@@ -1,0 +1,183 @@
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'main.css' %}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{% static 'global.js' %}"></script>
+
+<style>
+  .li {
+    margin-bottom: 5px;
+  }
+</style>
+
+{{ block title }}{{ page_title }}{{ endblock }}
+<form method="post">
+  <div>
+    <div class="card-section">
+      <div class="card">
+        {{ instru1 }} {{instru2}}
+        <label class="form-label">{{ question }}</label>
+
+        <div style="width: 80%; margin-left: 10%; margin-right: 10%">
+          <div style="display: flex; margin-top: 10px; margin-bottom: 2px">
+            <span class="lab" style="font-size: 11pt; text-align: left"
+              >{{ similarity_min_label }}</span
+            >
+            {% comment %}
+            <span style="font-size: 10pt; color: #777"
+              >{{ similarity_neutral_label }}</span
+            >
+            {% endcomment %}
+            <span
+              class="lab"
+              style="margin-left: auto; font-size: 11pt; text-align: right"
+              >{{ similarity_max_label }}</span
+            >
+          </div>
+
+          <input
+            type="range"
+            class="likert-slider"
+            name="{{ current_check }}"
+            id="similaritySlider"
+            min="{{ similarity_min }}"
+            max="{{ similarity_max }}"
+            step="1"
+            style="color: #aaaaaa; background: #ccc"
+            oninput="handleSliderInput(this.value)"
+            required
+          />
+
+          <div class="slider-label-container" id="sliderValue">
+            <div class="slider-label-text" style="color: #777">
+              {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
+              den Schieberegler{% endif %}
+            </div>
+          </div>
+          {{ formfield_errors current_check }}
+        </div>
+      </div>
+    </div>
+
+    <div id="progressContainer" style="margin-top: 2em; margin-bottom: 2em">
+      <table style="margin: 0 auto">
+        <tr>
+          <td style="width: 15%">
+            <div style="text-align: left; font-size: 10pt; margin-top: 2px">
+              {%if lan_en%}Your Progress {%else%}Ihr Fortschritt{%endif%}
+            </div>
+          </td>
+          <td style="width: 40%">
+            <div
+              style="
+                background: #eee;
+                height: 15px;
+                width: 200px;
+                border-radius: 15px;
+                overflow: hidden;
+              "
+            >
+              <div
+                id="progressBar"
+                style="
+                  background: linear-gradient(90deg, #4a90e2, #357abd);
+                  width: 0%;
+                  height: 100%;
+                "
+              ></div>
+            </div>
+          </td>
+          <td style="width: 15%">
+            <div style="text-align: left; font-size: 10pt; margin-top: 2px">
+              <span id="progressText">Progress</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="nav-container">
+      {% if lan_en %}
+      <button
+        type="submit"
+        class="otree-btn-next btn btn-primary big-button"
+        id="nextButton"
+        disabled
+        style="opacity: 0.5"
+      >
+        {% if final%} Continue {%else%} Next Pair {%endif%}
+      </button>
+      <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+      {% else %}
+      <button
+        type="submit"
+        class="otree-btn-next btn btn-primary big-button"
+        id="nextButton"
+        disabled
+        style="opacity: 0.5"
+      >
+        {% if final%} Weiter {%else%} Nächstes Paar {%endif%}
+      </button>
+      <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+      {% endif %}
+    </div>
+  </div>
+</form>
+
+<script>
+  let totalPairs = {{ pairs|length }};
+  let currentIndex = {{ completedPairs }};
+  document.getElementById("progressBar").style.width = currentIndex/totalPairs *100 + "%";
+  document.getElementById("progressText").textContent = currentIndex + " / " + totalPairs;
+
+  let sliderTouched = false;
+
+  function handleSliderInput(value) {
+    sliderTouched = true;
+
+    // Update the displayed value
+    const div = document.getElementById('sliderValue')
+      if (div) {
+          div.innerHTML = `<div class="slider-label-container"><div class="slider-label-text">` +
+      `{% if lan_en %}Selected:  {% else %}Ausgewählt: {%endif%}` +
+      `<strong><span class="slider-num">${Math.round(
+        value / 10
+      )}</span></strong> / 10 </div>` +
+      `</div></div>`;
+          div.style.color = 'black';
+      }
+
+    // Enable the next button
+    const nextButton = document.getElementById('nextButton');
+    if (nextButton) {
+      nextButton.disabled = false;
+      nextButton.style.opacity = '1';
+    }
+
+    // Update slider styling
+    const slider = document.getElementById('similaritySlider');
+    const pct = (value - slider.min) / (slider.max - slider.min) * 100;
+    slider.style.background = `linear-gradient(to right, #424242ff 0%, #424242ff ${pct}%, #e0e0e0 ${pct}%, #e0e0e0 100%)`;
+  }
+
+  // Form validation before submission
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        if (!sliderTouched) {
+          e.preventDefault();
+          const lang = {% if lan_en %} true {% else %} false {% endif %};
+          alert(
+            lang
+              ? 'Please move the slider to select a value.'
+              : 'Bitte bewegen Sie den Schieberegler, um einen Wert auszuwählen.'
+          );
+          return false;
+        }
+      });
+    }
+  });
+</script>
+
+{% endblock %}

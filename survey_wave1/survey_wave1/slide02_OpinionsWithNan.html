@@ -1,0 +1,242 @@
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'main.css' %}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{% static 'global.js' %}"></script>
+<h2>{{ page_title }}</h2>
+
+{{ instruction_text }}
+
+<form method="post">
+  {% for q in questions %}
+  <div class="question-block" style="margin-bottom: 2em">
+    <table class="survey-table-clean">
+      <thead style="background: {{color}}; color: #fff">
+        <tr>
+          <td></td>
+          <th style="width: 63%">
+            <label><strong>{{ q.text }}</strong></label>
+          </th>
+          <td style="width: 5%"></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <label class="form-label"> {{overallquestion}} </label>
+          </td>
+          <td>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 2fr auto 2fr;
+                margin-top: 15px;
+                width: 100%;
+                column-gap: 20%;
+              "
+            >
+              <span style="font-size: 10pt; color: #000000ff; text-align: left"
+                >{{ first_label }}</span
+              >
+              <span
+                style="font-size: 10pt; color: #000000ff; text-align: center"
+                >{{ neutral_label }}</span
+              >
+              <span style="font-size: 10pt; color: #000000ff; text-align: right"
+                >{{ last_label }}</span
+              >
+            </div>
+            <input
+              type="hidden"
+              name="own__{{ q.prefix }}"
+              id="hidden_{{ q.prefix }}"
+            />
+            <input
+              type="range"
+              class="likert-slider"
+              id="slider_{{ q.prefix }}"
+              min="-100"
+              max="100"
+              step="1"
+              oninput="handleSliderInput('{{ q.prefix }}', this.value)"
+            />
+
+            <div id="sliderValue{{ q.prefix }}" class="slider-label">
+              {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
+              den Schieberegler{% endif %}
+            </div>
+            <div
+              id="sliderlabelInfo{{ q.prefix }}"
+              class="slider-num-info"
+              style="margin-top: -5pt"
+            >
+              <br />
+            </div>
+          </td>
+          <td style="text-align: center">
+            <label class="slider-label">
+              <input
+                type="checkbox"
+                id="prefer_not_{{ q.prefix }}"
+                onchange="handlePreferNotToSay('{{ q.prefix }}', this.checked)"
+              />
+              {% if lan_en %}Prefer not to say{% else %}Keine Angabe{% endif %}
+            </label>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  {% endfor %} {% comment %}
+  <p>{{instruction_text_batch}}</p>
+  {% endcomment %}
+
+  <div class="nav-container">
+    {% if lan_en %}
+    <button
+      type="submit"
+      class="otree-btn-next btn btn-primary big-button"
+      disabled
+    >
+      Continue
+    </button>
+    <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+    {% else %}
+    <button
+      type="submit"
+      class="otree-btn-next btn btn-primary big-button"
+      disabled
+    >
+      Weiter
+    </button>
+    <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+    {% endif %}
+  </div>
+</form>
+
+<script>
+  let slidersTouched = {};
+  let totalSliders = 0;
+
+
+  function handlePreferNotToSay(field, checked) {
+      const slider = document.getElementById('slider_' + field);
+      const sliderValueDiv = document.getElementById('sliderValue' + field);
+      document.getElementById("hidden_" + field).value = -999;
+      if (checked) {
+          // Mark as touched and set to special value
+          slidersTouched[field] = true;
+          slider.disabled = true;
+          slider.style.opacity = '0.3';
+          slider.value = 0;
+          // Don't change slider.value, just note it in a data attribute
+          slider.setAttribute('data-prefer-not', 'true');
+          sliderValueDiv.innerHTML = '<span>No response</span>';
+          sliderValueDiv.style.color = 'gray';
+          slider.style.background = '#e0e0e0';
+      } else {
+          // Re-enable slider but keep it as "not touched" until they move it
+          delete slidersTouched[field];
+          slider.disabled = false;
+          slider.style.opacity = '1';
+          slider.style.background = '';
+          slider.removeAttribute('data-prefer-not');
+          sliderValueDiv.innerHTML = '{% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie den Schieberegler{% endif %}';
+      }
+
+      // Update button state
+      const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
+      if (nextButton) {
+          if (Object.keys(slidersTouched).length === totalSliders) {
+              nextButton.disabled = false;
+              nextButton.style.opacity = '1';
+          } else {
+              nextButton.disabled = true;
+              nextButton.style.opacity = '0.5';
+          }
+      }
+  }
+
+  function handleSliderInput(field, value) {
+    // Uncheck the "prefer not to say" checkbox if it's checked
+      document.getElementById("hidden_" + field).value = value;
+
+      const checkbox = document.getElementById('prefer_not_' + field);
+        if (checkbox && checkbox.checked) {
+            checkbox.checked = false;
+        }
+
+        // Re-enable slider in case it was disabled
+        const slider = document.getElementById('slider_' + field);
+        if (slider) {
+            slider.disabled = false;
+            slider.style.opacity = '1';
+        }
+
+        slidersTouched[field] = true;
+    const numVal = parseInt(value, 10);
+    let label = getLikertLabel(value, "{{lan_en}}");
+    // update text under slider
+    const div = document.getElementById('sliderValue' + field);
+    if (div) {
+      div.innerHTML = `<span class='pill' style='background-color: {{ color }}; color: white;'>${label}</span>`;
+      div.style.color = "{{ color }}";
+    }
+    const divinfo = document.getElementById('sliderlabelInfo' + field)
+    if (divinfo) {
+      divinfo.innerHTML = `{% if lan_en %}around  {% else %}ca. {%endif%}` + `<span class="slider-num">${Math.round(value / 10)}</span>` + `{% if lan_en %} on the scale from -10 to 10{% else %}  auf der Skala von -10 bis 10{%endif%}`
+      div.style.color = 'black';
+    }
+
+    // update slider gradient
+    //const slider = document.getElementById('slider_' + field);
+    if (slider) {
+      const val = parseFloat(value);
+      const min = parseFloat(slider.min), max = parseFloat(slider.max);
+      const mid = (min + max) / 2;
+      const sliderColor = "{{ color }}";  //424242ff
+
+      const l = val < mid ? Math.max(0, 50 + ((val - mid) / (mid - min)) * 50) : 50;
+      const r = val < mid ? 50 : Math.min(100, 50 + ((val - mid) / (max - mid)) * 50);
+
+      slider.style.background = `linear-gradient(to right,
+            #e0e0e0 0%, #e0e0e0 ${l}%,
+            ${sliderColor} ${l}%, ${sliderColor} ${r}%,
+            #e0e0e0 ${r}%, #e0e0e0 100%)`;
+    }
+
+    // enable next button if all touched
+    if (Object.keys(slidersTouched).length === totalSliders) {
+      const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
+      if (nextButton) {
+        nextButton.disabled = false;
+        nextButton.style.opacity = '1';
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    totalSliders = document.querySelectorAll('.likert-slider').length;
+
+    const form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        if (Object.keys(slidersTouched).length < totalSliders) {
+          e.preventDefault();
+          alert({% if lan_en %} 'Please answer all questions by either moving the slider or selecting "Prefer not to say".'{% else %}'Bitte beantworten Sie alle Fragen, indem Sie entweder den Schieberegler bewegen oder "Keine Angabe" auswählen.'{% endif %});
+          return false;
+        }
+        // document.querySelectorAll('.likert-slider[data-prefer-not="true"]').forEach(slider => {
+        //             slider.value = -999;
+        //         });
+      });
+
+      const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
+      if (nextButton) {
+        nextButton.disabled = true;
+        nextButton.style.opacity = '0.5';
+      }
+    }
+  }); // closes DOMContentLoaded
+</script>
+{% endblock %}

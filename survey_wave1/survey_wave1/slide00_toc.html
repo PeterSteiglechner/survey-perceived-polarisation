@@ -1,0 +1,45 @@
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{{ static 'main.css' }}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{{ static 'global.js' }}"></script>
+
+<style>
+  .checkmark {
+    color: #16a34a;
+    font-weight: bold;
+    margin-right: 0.75rem;
+    font-size: 1.2rem;
+  }
+  .upcoming {
+    background-color: #fffeb2ff;
+  }
+  li {
+    margin: 14px 0;
+  }
+  ul {
+    list-style-type: none;
+  }
+</style>
+
+<h2>{{page_title}}</h2>
+
+<p style="margin-bottom: 20pt">{{instruction_text1}}</p>
+
+{{items}}
+
+<p style="margin-top: 20pt">{{instruction_text2}}</p>
+
+<div class="nav-container">
+  {% if lan_en %}
+  <button type="submit" class="otree-btn-next btn btn-primary big-button">
+    Continue
+  </button>
+  {% else %}
+  <button type="submit" class="otree-btn-next btn btn-primary big-button">
+    Weiter
+  </button>
+  {% endif %}
+</div>
+
+{% endblock %}

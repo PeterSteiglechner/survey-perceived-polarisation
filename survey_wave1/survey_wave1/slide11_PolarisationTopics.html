@@ -1,0 +1,280 @@
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'main.css' %}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{% static 'global.js' %}"></script>
+
+<h2>{{ page_title }}</h2>
+
+<style>
+  .form-label {
+    font-size: 1rem;
+    font-weight: normal;
+  }
+</style>
+
+<p>{{question}}</p>
+
+<form method="post">
+  <table class="survey-table-clean">
+    <thead>
+      <tr>
+        <th colspan="2" style="text-align: left; padding: 8px">
+          {{ qu_polarization }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in field_question_pairs %}
+      <tr>
+        <!-- Question text cell (30%) -->
+        <td style="width: 40%; vertical-align: center; padding: 8px">
+          <label class="form-label">{{ item.question_text }}</label>
+        </td>
+
+        <!-- Slider cell (70%) -->
+        <td style="width: 58%; padding: 8px">
+          <div style="display: flex; margin-top: 5px; margin-bottom: -2px">
+            <span class="lab" style="font-size: 10pt; text-align: left"
+              >{{ first_label }}</span
+            >
+            <span
+              class="lab"
+              style="margin-left: auto; font-size: 10pt; text-align: right"
+              >{{ last_label }}</span
+            >
+          </div>
+          <input
+            type="range"
+            class="likert-slider"
+            name="{{ item.field_name }}"
+            id="slider_{{ item.field_name }}"
+            min="0"
+            max="100"
+            step="1"
+            style="color: #aaaaaa; background: #ccc"
+            oninput="handleSliderInput{{ item.field_name }}(this.value)"
+            required
+            style="width: 100%"
+          />
+
+          <div style="text-align: center; margin-top: -15px">
+            {% if lan_en %}
+            <span id="sliderValue{{ item.field_name }}" style="color: #999"
+              ><p style="font-size: 10pt">Please move the slider</p></span
+            >
+            {% else %}
+            <span id="sliderValue{{ item.field_name }}" style="color: #999"
+              ><p style="font-size: 10pt; color: #999">
+                Bitte bewegen Sie den Schieberegler
+              </p></span
+            >
+            {% endif %}
+          </div>
+
+          {{ formfield_errors item.field_name }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <br />
+
+  <table class="survey-table-clean">
+    <thead>
+      <tr>
+        <th colspan="2" style="text-align: left; padding: 8px">
+          {{ qu_polarization }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <!-- Question text cell (30%) -->
+        <td style="width: 40%; vertical-align: center; padding: 8px">
+          <label class="form-label">{{ how_polarised_question_text }}</label>
+        </td>
+
+        <!-- Slider cell (70%) -->
+        <td style="width: 58%; padding: 8px">
+          <div style="display: flex; margin-top: 5px; margin-bottom: -2px">
+            <span
+              class="lab"
+              style="font-size: 10pt; text-align: left; white-space: nowrap"
+              >{{ first_label }}</span
+            >
+            <span
+              class="lab"
+              style="
+                margin-left: auto;
+                font-size: 10pt;
+                text-align: right;
+                white-space: nowrap;
+              "
+              >{{ last_label }}</span
+            >
+          </div>
+          <input
+            type="range"
+            class="likert-slider"
+            name="how_polarised"
+            id="slider_how_polarised"
+            min="0"
+            max="100"
+            step="1"
+            style="color: #aaaaaa; background: #ccc"
+            oninput="handleSliderInputhow_polarised(this.value)"
+            required
+            style="width: 100%"
+          />
+
+          <div style="text-align: center; margin-top: -15px">
+            {% if lan_en %}
+            <span id="sliderValuehow_polarised" style="color: #999"
+              ><p style="font-size: 10pt">Please move the slider</p></span
+            >
+            {% else %}
+            <span id="sliderValuehow_polarised" style="color: #999"
+              ><p style="font-size: 10pt; color: #999">
+                Bitte bewegen Sie den Schieberegler
+              </p></span
+            >
+            {% endif %}
+          </div>
+
+          {{ formfield_errors "how_polarised" }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</form>
+
+<!-- Comment Card -->
+<div class="card" style="margin-bottom: 1em">
+  <p style="margin-bottom: -10px">{{explain_text}}</p>
+  {{ formfield "how_polarised_comments" }} {{ formfield_errors
+  "how_polarised_comments" }}
+</div>
+
+<div class="nav-container">
+  {% if lan_en %}
+  <button type="submit" class="otree-btn-next btn btn-primary big-button">
+    Continue
+  </button>
+  <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+  {% else %}
+  <button type="submit" class="otree-btn-next btn btn-primary big-button">
+    Weiter
+  </button>
+  <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+  {% endif %}
+</div>
+
+<script>
+  let slidersTouched = {};
+  const totalSliders = {{ field_question_pairs|length }}+1;
+
+  function handleSliderInputhow_polarised(value) {
+      slidersTouched["how_polarised"] = true;
+
+
+      {% if lan_en %}
+      document.getElementById('sliderValuehow_polarised').innerHTML =
+        `<p style="font-size:10pt;">Selected: <b>${value}</b> / 100</p>`;
+
+      {% else %}
+      document.getElementById('sliderValuehow_polarised').innerHTML =
+        `<p style="font-size:10pt;">Ausgewählt: <b>${value}</b> / 100</p>`;
+      {% endif %}
+
+      document.getElementById('sliderValuehow_polarised').style.color = 'black';
+
+      const slider = document.getElementById('slider_how_polarised');
+      const val = parseFloat(value);
+      const min = parseFloat(slider.min), max = parseFloat(slider.max);
+      const mid = (min + max) / 2;
+      const sliderColor = "#424242ff";
+
+      // compute fill percentages from center
+      const l = 0;
+      const r = Math.min(100, val);
+
+      slider.style.background = `linear-gradient(to right,
+        #e0e0e0 0%, #e0e0e0 ${l}%,
+        ${sliderColor} ${l}%, ${sliderColor} ${r}%,
+        #e0e0e0 ${r}%, #e0e0e0 100%)`;
+
+
+      if (Object.keys(slidersTouched).length === totalSliders) {
+          const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
+          if (nextButton) {
+              nextButton.disabled = false;
+              nextButton.style.opacity = '1';
+          }
+      }
+  }
+
+
+  {% for item in field_question_pairs %}
+  function handleSliderInput{{ item.field_name }}(value) {
+      slidersTouched["{{ item.field_name }}"] = true;
+
+
+      {% if lan_en %}
+      document.getElementById('sliderValue{{ item.field_name }}').innerHTML =
+        `<p style="font-size:10pt;">Selected: <b>${value}</b> / 100</p>`;
+
+      {% else %}
+      document.getElementById('sliderValue{{ item.field_name }}').innerHTML =
+        `<p style="font-size:10pt;">Ausgewählt: <b>${value}</b> / 100</p>`;
+      {% endif %}
+
+      document.getElementById('sliderValue{{ item.field_name }}').style.color = 'black';
+
+      const slider = document.getElementById('slider_{{ item.field_name }}');
+      const val = parseFloat(value);
+      const min = parseFloat(slider.min), max = parseFloat(slider.max);
+      const mid = (min + max) / 2;
+      const sliderColor = "#424242ff";
+
+      // compute fill percentages from center
+      const l = 0;
+      const r = Math.min(100, val);
+
+      slider.style.background = `linear-gradient(to right,
+        #e0e0e0 0%, #e0e0e0 ${l}%,
+        ${sliderColor} ${l}%, ${sliderColor} ${r}%,
+        #e0e0e0 ${r}%, #e0e0e0 100%)`;
+
+
+      if (Object.keys(slidersTouched).length === totalSliders) {
+          const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
+          if (nextButton) {
+              nextButton.disabled = false;
+              nextButton.style.opacity = '1';
+          }
+      }
+  }
+  {% endfor %}
+
+  document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form');
+      if (form) {
+          form.addEventListener('submit', function(e) {
+              if (Object.keys(slidersTouched).length < totalSliders) {
+                  e.preventDefault();
+                  alert({% if lan_en %}'Please move all sliders to select values.'{% else %}'Bitte bewegen Sie alle Schieberegler, um Werte auszuwählen.'{% endif %});
+                  return false;
+              }
+          });
+      }
+      const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
+      if (nextButton) {
+          nextButton.disabled = true;
+          nextButton.style.opacity = '0.5';
+      }
+  });
+</script>
+
+{% endblock %}

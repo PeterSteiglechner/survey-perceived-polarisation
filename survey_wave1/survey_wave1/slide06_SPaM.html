@@ -1,0 +1,272 @@
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'main.css' %}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{% static 'global.js' %}"></script>
+
+<form method="post">
+  <div class="container">
+    <h2>{{page_title}}</h2>
+
+    <p>{{instru1}}</p>
+
+    <p>{{instruRoom}}</p>
+
+    <div class="yellow-instructions">{{instru_main}}</div>
+
+    <p>{{no_wrong_answers}}</p>
+
+    <canvas
+      id="dragCanvas"
+      width="{{ canvas_width_parkingLot }}"
+      height="{{ canvas_height }}"
+      style="
+        border: 0px solid #333;
+        background: #fafafa;
+        display: block;
+        margin: 0px 0;
+        cursor: grab;
+        touch-action: none;
+      "
+    ></canvas>
+    <p>{{gender}}</p>
+
+    <input type="hidden" name="positions" id="positions" />
+  </div>
+
+  <div class="red-instructions">
+    <p>{{all_dots_instr}}</p>
+  </div>
+
+  <div class="nav-container">
+    {% if lan_en %}
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+      Continue
+    </button>
+    <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+    {% else %}
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+      Weiter
+    </button>
+    <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+    {% endif %}
+  </div>
+</form>
+
+<script>
+
+   // Run only after everything (DOM + CSS + fonts) is ready
+   window.addEventListener("load", function () {
+     const canvas = document.getElementById("dragCanvas");
+     const ctx = canvas.getContext("2d");
+
+     // Scale canvas to fit screen on mobile
+     const maxWidth = canvas.parentElement.clientWidth;
+     const scaleRatio = Math.min(1, maxWidth / canvas.width);
+
+     const points = [
+       {% for dot in dots %}
+       {
+       name_disp: "{{ dot.name_disp }}",
+       varname: "{{ dot.varname }}",
+       x: {{ dot.x }},
+     y: {{ dot.y }},
+     dottype: "{{ dot.dottype }}",
+     descr: "{{ dot.descr }}",
+     radius: 15,
+     color: COLORS["{{dot.varname}}"] || COLORS["{{dot.dottype}}"] || "white",
+     t_last_moved: {{ dot.t_last_moved }},
+     t_first_moved: {{ dot.t_first_moved }}
+       },
+     {% endfor %}
+     ];
+
+     const inverseScale = 1 / scaleRatio;
+
+   if (scaleRatio < 1) {
+     const ratio = window.devicePixelRatio || 1;
+      // scale canvas internal buffer
+      canvas.width = originalWidth * scaleRatio * ratio;
+      canvas.height = originalHeight * scaleRatio * ratio;
+
+      canvas.style.width = originalWidth * scaleRatio + "px";
+      canvas.style.height = originalHeight * scaleRatio + "px";
+
+      ctx.scale(ratio * scaleRatio, ratio * scaleRatio);
+   }
+
+   let draggingPoint = null,
+     hoveredPoint = null,
+     lastMousePos = { x: 0, y: 0 },
+     lastTouchPos = { x: 0, y: 0 };
+
+   function drawCanvas() {
+     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+     // Draw the boundary square with enhanced styling
+     ctx.strokeStyle = "#333";
+     ctx.lineWidth = 1;
+     ctx.strokeRect(0, 0, canvas.height, canvas.height);
+
+
+     // Draw all points
+     points.forEach(p => {
+       ctx.beginPath();
+       ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+
+       // Set fill color based on type
+       ctx.fillStyle = p.color;
+       ctx.fill();
+
+       // Add border with hover effect
+       ctx.strokeStyle = p === hoveredPoint ? "#fff" : "#333";
+       ctx.lineWidth = p === hoveredPoint ? 3 : 2;
+       ctx.stroke();
+
+       // Draw name with better positioning
+       ctx.fillStyle = "#333";
+       ctx.font = "12px Arial";
+       ctx.textAlign = "center";
+       ctx.textBaseline = "bottom";
+       ctx.fillText(p.name_disp, p.x, p.y - 15);
+     });
+   }
+
+
+   function recordMove(dot) {
+     const now = Math.floor(Date.now() / 1000);
+     if (dot.t_first_moved === -1) dot.t_first_moved = now;
+     dot.t_last_moved = now;
+   }
+
+
+  function getMousePos(evt) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (evt.clientX - rect.left) * inverseScale,
+        y: (evt.clientY - rect.top) * inverseScale
+      };
+    }
+
+    function getTouchPos(touch) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (touch.clientX - rect.left) * inverseScale,
+        y: (touch.clientY - rect.top) * inverseScale
+      };
+    }
+
+   function findPoint(pos) {
+     return points.find(p => Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius);
+   }
+
+
+   // Validation function for boundary checking
+   function allPointsInsideBox() {
+     return points.every(p => p.x >= 0 && p.x <= canvas.height && p.y >= 0 && p.y <= canvas.height);
+   }
+
+   // Prevent native drag
+   ["dragstart", "drag", "dragend"].forEach(ev =>
+     canvas.addEventListener(ev, e => e.preventDefault())
+   );
+
+   // Touch handlers
+   canvas.addEventListener("touchstart", evt => {
+     const touchPos = getTouchPos(evt.touches[0]);
+     lastTouchPos = touchPos;
+     draggingPoint = findPoint(touchPos) || null;
+     drawCanvas();
+     evt.preventDefault();
+   }, { passive: false });
+
+   canvas.addEventListener("touchmove", evt => {
+     if (!draggingPoint) return;
+     const touchPos = getTouchPos(evt.touches[0]);
+     draggingPoint.x = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, touchPos.x));
+     draggingPoint.y = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, touchPos.y));
+     drawCanvas();
+     lastTouchPos = touchPos;
+     evt.preventDefault();
+   }, { passive: false });
+
+   canvas.addEventListener("touchend", () => {
+     if (draggingPoint) recordMove(draggingPoint);
+     draggingPoint = null;
+     hoveredPoint = null;
+     drawCanvas();
+   }, { passive: false });
+
+   // Mouse handlers
+   canvas.addEventListener("mousedown", evt => {
+     const mousePos = getMousePos(evt);
+     lastMousePos = mousePos;
+     draggingPoint = findPoint(mousePos) || null;
+     drawCanvas();
+   });
+
+   canvas.addEventListener("mousemove", evt => {
+     const mousePos = getMousePos(evt);
+     const newHoveredPoint = findPoint(mousePos);
+
+     canvas.style.cursor = newHoveredPoint ? "grab" : "default";
+
+     if (newHoveredPoint !== hoveredPoint) {
+       hoveredPoint = newHoveredPoint;
+       drawCanvas();
+     }
+
+     if (draggingPoint) {
+       draggingPoint.x = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, mousePos.x));
+       draggingPoint.y = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, mousePos.y));
+       drawCanvas();
+     }
+
+     lastMousePos = mousePos;
+   });
+
+   canvas.addEventListener("mouseup", () => {
+     if (draggingPoint) recordMove(draggingPoint);
+     draggingPoint = null;
+     canvas.style.cursor = "default";
+   });
+
+   canvas.addEventListener("mouseleave", () => {
+     draggingPoint = null;
+     hoveredPoint = null;
+     canvas.style.cursor = "default";
+     drawCanvas();
+   });
+
+   // Initial draw
+   drawCanvas();
+
+   // Form handling
+   const form = document.querySelector("form");
+   const nextButton = document.querySelector("button.otree-btn-next[type=submit]");
+
+   if (nextButton) {
+     nextButton.addEventListener("click", e => {
+       e.preventDefault();
+       if (!allPointsInsideBox()) {
+         {% if lan_en %}
+         alert("Please place all dots inside the positioning square before continuing.");
+         {% else %}
+         alert("Platzieren Sie bitte alle Punkte innerhalb des Rechtecks.");
+         {% endif %}
+         return;
+       }
+       // The serialized 'points' array contains objects with:
+       // {
+       //   name_disp: String, varname: String, x: Number, y: Number,
+       //   dottype: String, descr: String, radius: Number,
+       //   color: String, t_last_moved: Number, t_first_moved: Number
+       // }
+       document.getElementById("positions").value = JSON.stringify(points);
+       form.submit();
+     });
+   }
+   });
+</script>
+
+{% endblock %}

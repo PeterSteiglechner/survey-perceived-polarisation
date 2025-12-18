@@ -1,0 +1,268 @@
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'main.css' %}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{% static 'global.js' %}"></script>
+
+<div class="container">
+  <form method="post">
+    <h2>{{page_title}}</h2>
+
+    <div class="card-section">
+      {% comment %}
+      <!-- Demographic Card -->
+      <div class="card">
+        <label class="form-label" style="margin-bottom: -15px">
+          {{qu_age}}
+        </label>
+        <div class="form-group">
+          {% formfield player.age %} {{ formfield_errors "age" }}
+        </div>
+
+        <label class="form-label"> {{qu_gender}} </label>
+        <div
+          class="option-cards"
+          data-field="gender"
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 5px;
+          "
+        >
+          {% for choice, label in choices_gender.items %}
+          <label class="option-card">
+            <input type="radio" name="gender" value="{{ choice }}" />
+            {{ label }}
+          </label>
+          {% endfor %}
+        </div>
+        {{ formfield_errors "gender" }}
+      </div>
+      {% endcomment %}
+
+      <!-- Discussion Card -->
+      <div class="card">
+        <label class="form-label"> {{qu_discussion}} </label>
+        <div style="margin-left: 10%; margin-right: 10%">
+          <div style="display: flex; margin-top: 0px; margin-bottom: -3px">
+            <span
+              class="lab"
+              style="font-size: 10pt; text-align: left; white-space: nowrap"
+              >{{ discussion_min_label }}</span
+            >
+            <span
+              class="lab"
+              style="
+                margin-left: auto;
+                font-size: 10pt;
+                text-align: right;
+                white-space: nowrap;
+              "
+              >{{ discussion_max_label }}</span
+            >
+          </div>
+          <input
+            type="range"
+            class="likert-slider"
+            name="political_discussion"
+            id="slider_political_discussion"
+            min="{{discussion_min}}"
+            max="{{discussion_max}}"
+            step="1"
+            required
+            oninput="handleSliderInput('political_discussion', this.value)"
+          />
+          <div class="slider-label" style="margin-bottom: 3em">
+            <p style="color: #999; font-size: 10pt">
+              {% if lan_en %} Selected: {% else %} Ausgewählt: {%endif%}
+              <span
+                id="sliderValuepolitical_discussion"
+                style="color: #999; font-size: 10pt"
+              >
+                <strong>
+                  {% if lan_en %}Please move the slider{% else %}Bitte bewegen
+                  Sie den Schieberegler{% endif %}
+                </strong>
+              </span>
+            </p>
+          </div>
+
+          {{ formfield_errors "political_discussion" }}
+        </div>
+        {% comment %}
+      </div>
+
+      <!-- Interest Card -->
+      <div class="card">
+        {% endcomment %}
+        <label class="form-label"> {{qu_interest}} </label>
+        <div style="margin-left: 10%; margin-right: 10%">
+          <div style="display: flex; margin-top: 0px; margin-bottom: -3px">
+            <span
+              class="lab"
+              style="font-size: 10pt; text-align: left; white-space: nowrap"
+              >{{ interest_min_label }}</span
+            >
+            <span
+              class="lab"
+              style="
+                margin-left: auto;
+                font-size: 10pt;
+                text-align: right;
+                white-space: nowrap;
+              "
+              >{{ interest_max_label }}</span
+            >
+          </div>
+          <input
+            type="range"
+            class="likert-slider"
+            name="political_interest"
+            id="slider_political_interest"
+            min="{{interest_min}}"
+            max="{{interest_max}}"
+            step="1"
+            required
+            oninput="handleSliderInput('political_interest', this.value)"
+          />
+          <div class="slider-label">
+            <p style="color: #999; font-size: 10pt">
+              {% if lan_en %} Selected: {% else %} Ausgewählt: {%endif%}
+              <span
+                id="sliderValuepolitical_interest"
+                style="color: #999; font-size: 10pt; margin-bottom: 3em"
+              >
+                <strong>
+                  {% if lan_en %}Please move the slider{% else %}Bitte bewegen
+                  Sie den Schieberegler{% endif %}
+                </strong>
+              </span>
+            </p>
+          </div>
+
+          {{ formfield_errors "political_interest" }}
+        </div>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <!-- Demographic Card -->
+      <div class="card">
+        <label class="form-label"> {{recontact_question}} </label>
+        <div
+          class="option-cards"
+          data-field="recontact"
+          style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px"
+        >
+          {% for choice, label in recontact_options.items %}
+          <label class="option-card">
+            <input type="radio" name="recontact" value="{{ choice }}" />
+            {{ label }}
+          </label>
+          {% endfor %}
+        </div>
+        {{ formfield_errors "recontact" }}
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card" style="margin-bottom: 1em">
+        <p style="margin-bottom: -10px">{{overall_comments_qu}}</p>
+        {{ formfield "overall_comments" }}
+      </div>
+    </div>
+
+    <br />
+
+    <div class="nav-container">
+      {% if lan_en %}
+      <button type="submit" class="otree-btn-next btn btn-primary big-button">
+        Complete Survey
+      </button>
+      <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+      {% else %}
+      <button type="submit" class="otree-btn-next btn btn-primary big-button">
+        Umfrage Abschließen
+      </button>
+      <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<script>
+  let slidersTouched = {};
+  let totalSliders = 0;
+
+  function handleSliderInput(field, value) {
+      slidersTouched[field] = true;
+      const numVal = parseInt(value, 10);
+      const span = document.getElementById('sliderValue' + field);
+      if (span) {
+          span.innerHTML = `<strong>${Math.round(value/10)}</strong> / 10`;
+          span.style.color = 'black';
+      }
+
+      // update slider gradient
+      const slider = document.getElementById('slider_' + field);
+      if (slider) {
+          const val = parseFloat(value);
+          const min = parseFloat(slider.min), max = parseFloat(slider.max);
+          const sliderColor = "#007bff";
+
+          const l = 0;
+          const r = Math.min(100, val);
+
+          slider.style.background = `linear-gradient(to right,
+            #e0e0e0 0%, #e0e0e0 ${l}%,
+            ${sliderColor} ${l}%, ${sliderColor} ${r}%,
+            #e0e0e0 ${r}%, #e0e0e0 100%)`;
+      }
+
+      // enable next button if all touched
+      if (Object.keys(slidersTouched).length === totalSliders) {
+          const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
+          if (nextButton) {
+              nextButton.disabled = false;
+              nextButton.style.opacity = '1';
+          }
+      }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+      totalSliders = document.querySelectorAll('.likert-slider').length;
+
+      const form = document.querySelector('form');
+      if (form) {
+          form.addEventListener('submit', function(e) {
+              if (Object.keys(slidersTouched).length < totalSliders) {
+                  e.preventDefault();
+                  alert({% if lan_en %}'Please move all sliders to select values.'{% else %}'Bitte bewegen Sie alle Schieberegler, um Werte auszuwählen.'{% endif %});
+                  return false;
+              }
+          });
+      }
+
+      const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
+      if (nextButton) {
+          nextButton.disabled = true;
+          nextButton.style.opacity = '0.5';
+      }
+  });
+</script>
+
+<script>
+  document.querySelectorAll(".option-cards").forEach((group) => {
+    const name = group.dataset.field;
+    group.querySelectorAll('input[type="radio"]').forEach((radio) => {
+      radio.addEventListener("change", () => {
+        group.querySelectorAll(".option-card").forEach((card) => {
+          card.classList.remove("selected");
+        });
+        radio.closest(".option-card").classList.add("selected");
+      });
+    });
+  });
+</script>
+
+{% endblock %}
