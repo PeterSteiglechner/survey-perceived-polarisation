@@ -1,0 +1,555 @@
+:root {
+    --col-greens: #7cbb15;
+    --col-afd: #009de0;
+    --col-fdp: #ffcc00;
+    --col-linke: #bd3075;
+    --col-cducsu: #121212;
+    --col-spd: #d71f1f;
+    --col-bsw: #691940;
+    --col-self: #808080;
+    --col-P: #00e6b8; 
+    --col-contact: #ff6600; 
+}
+
+.pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 700;
+    border: 1px solid #d9d9d9;
+    background: "pink";
+    color: #111;
+    line-height: 1.2;
+  }
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+}
+
+@media (max-width: 768px) {
+  div[style*="display: flex"] {
+    flex-direction: column !important;
+  }
+  
+  div[style*="flex: 1; max-width: 400px"] {
+    max-width: 100% !important;
+  }
+}
+
+
+
+.extra-space {
+    margin-top: 4em;
+    border-top: 1px solid #ccc;
+    padding-top: 4em;
+}
+
+p {
+    margin-bottom: 1.2em;
+    margin-top: 0.5em;
+    color: black;
+}
+
+.form-group {
+    margin-bottom: 1.5em;
+}
+
+
+
+h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 1.5em;
+    /* or any value you prefer */
+}
+
+
+.card-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    margin: 30px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    background-color: #fff;
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.card h3 {
+    margin-top: 0;
+    margin-bottom: 1em;
+    font-size: 20px;
+    color: #2c3e50;
+}
+
+
+/* Radio Card Styling */
+.option-cards {
+    display: flex;
+    gap: 7px;
+    margin-top: 3px;
+    justify-content: left;
+    flex-wrap: wrap;
+}
+
+.option-card {
+    width: 100%; 
+    flex: none; 
+    max-width: none; 
+    min-width: 0;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 4px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    min-height: 50px;
+    /* min-width: 120px;
+    max-width: 300px; */
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    font-size: 15px;
+    /* Allow shrinking */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+.option-card:hover {
+    border-color: #666;
+    background-color: #f9f9f9;
+}
+
+.option-card input[type="radio"] {
+    display: none;
+    margin-right: 10px;
+}
+
+.option-card.selected {
+    border-color: #007bff;
+    background-color: #e6f0ff;
+}
+
+.option-separator {
+    width: 100%;
+    /* Full width separator */
+    height: 2px;
+    /* Thinner line looks better */
+    background-color: #ccc;
+    margin: 8px 0;
+    /* Remove horizontal margins for equal spacing */
+    flex-basis: 100%;
+    /* Forces separator to take full width in flex container */
+}
+
+.option-card.no-answer {
+    opacity: 0.7;
+    flex: none;
+    /* Don't grow */
+    width: calc(20% - 5.6px);
+    /* Same as other cards */
+    flex: none;
+    /* Don't grow */
+    max-width: calc(20% - 5.6px);
+    background-color: rgb(180, 180, 180);
+    /* Removed quotes */
+    font-style: italic;
+    color: white;
+    margin: 0 auto;
+    /* Add white text for better contrast */
+}
+
+
+.survey-table-clean {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 25px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+
+.survey-table-clean thead {
+    background: #808080;
+    color: white;
+}
+
+.survey-table-clean th {
+    padding: 15px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 18px;
+}
+.survey-table-clean tr {
+    margin-top: 15px;
+}
+
+  .survey-table-clean td {
+    padding: 0px 10px 0px;
+    border-bottom: 1px solid #808080;
+    vertical-align: center;
+    font-size: 15px;
+  }
+
+  .statement{
+    margin: 15px 15px; font-size: 13pt
+  }
+
+
+.survey-table-clean tr:hover {
+    background-color: rgba(71, 98, 216, 0.05);
+}
+
+.survey-table-clean .statement-cell {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #2c3e50;
+    font-weight: 500;
+    margin-bottom: 0.8em;
+}
+
+.option-card[data-value="Strongly disagree"] {
+    background-color: rgba(230, 97, 1, 0.12);
+    color: #222;
+}
+
+.option-card[data-value="Disagree"] {
+    background-color: rgba(253, 184, 99, 0.10);
+    color: #222;
+}
+
+.option-card[data-value="Neutral"] {
+    background-color: rgba(165, 165, 165, 0.15);
+    color: #222;
+}
+
+.option-card[data-value="Agree"] {
+    background-color: rgba(178, 171, 210, 0.12);
+    color: #222;
+}
+
+.option-card[data-value="Strongly agree"] {
+    background-color: rgba(94, 60, 153, 0.14);
+    color: #222;
+}
+
+.option-card[data-value="Strongly disagree"]:hover {
+    background-color: rgba(230, 97, 1, 0.5);
+}
+
+.option-card[data-value="Disagree"]:hover {
+    background-color: rgba(253, 184, 99, 0.5);
+}
+
+.option-card[data-value="Neutral"]:hover {
+    background-color: rgba(165, 165, 165, 0.5);
+}
+
+.option-card[data-value="Agree"]:hover {
+    background-color: rgba(178, 171, 210, 0.5);
+}
+
+.option-card[data-value="Strongly agree"]:hover {
+    background-color: rgba(94, 60, 153, 0.5);
+}
+
+.option-card.selected[data-value="Strongly disagree"] {
+    background-color: rgba(230, 97, 1, 0.7);
+}
+
+.option-card.selected[data-value="Disagree"] {
+    background-color: rgba(253, 184, 99, 0.7);
+}
+
+.option-card.selected[data-value="Neutral"] {
+    background-color: rgba(165, 165, 165, 0.7);
+}
+
+.option-card.selected[data-value="Agree"] {
+    background-color: rgba(178, 171, 210, 0.7);
+}
+
+.option-card.selected[data-value="Strongly agree"] {
+    background-color: rgba(94, 60, 153, 0.7);
+}
+
+.option-card input[type="radio"] {
+    display: none;
+}
+
+.option-card.selected {
+    border: 3px solid black;
+    padding: 6px 9px;
+}
+
+
+
+
+#dragCanvas:active {
+    cursor: grabbing;
+}
+
+
+
+#toggleHelpingLines:hover {
+    background: #5a6268 !important;
+}
+
+
+/* 
+.option-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+} */
+
+
+
+
+/* Checkbox Card Styling */
+.checkbox-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.checkbox-card {
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: #fff;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.checkbox-card:hover {
+    border-color: #007bff;
+    background-color: #f8f9fa;
+    transform: translateY(-1px);
+}
+
+.checkbox-card.selected {
+    border-color: #007bff;
+    background-color: #e6f0ff;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+}
+
+.checkbox-card input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #007bff;
+    cursor: pointer;
+}
+
+.checkbox-card .checkbox-label {
+    font-size: 15px;
+    color: #495057;
+    cursor: pointer;
+    margin: 0;
+    flex: 1;
+    line-height: 1.3;
+}
+
+.checkbox-card.selected .checkbox-label {
+    color: #0056b3;
+    font-weight: 500;
+}
+
+/* Hidden field for form submission */
+#topic_importance_hidden {
+    display: none;
+}
+
+
+
+.popup-box {
+    width: 100%;
+    padding: 8px;
+    background: white;
+    border: 2px solid #333;
+    border-radius: 6px;
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.3);
+    font-size: 13px;
+    line-height: 1.3;
+}
+
+
+input[type="range"] {
+    width: 100%;
+}
+
+/* General slider track */
+.likert-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 80%;
+    height: 24px;
+    border-radius: 3px;
+    background: #e0e0e0;
+    cursor: pointer;
+    margin: 5px auto;
+}
+ 
+/* Thumb (Chrome, Safari) */
+.likert-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: #5f5f5f;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    cursor: pointer;
+}
+
+/* Thumb (Firefox) */
+.likert-slider::-moz-range-thumb {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: #5f5f5f;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    cursor: pointer;
+} 
+
+.slider-label{
+    text-align: center;
+    color: #999; 
+    font-size: 10pt; 
+    height: 2.5em; 
+    margin-top: -5pt;
+}
+
+.slider-label-container{
+display:flex; 
+justify-content:space-between; 
+align-items:flex-start; 
+width:100%; 
+line-height:1;  
+text-align: center;
+height: 2em; 
+}
+
+.slider-label-text{
+font-size:12pt; text-align:center; flex:1; color:black; 
+}
+.slider-num-info{
+    font-size: 10pt; text-align: center; white-space: nowrap; color:gray
+}
+.slider-num{
+                  display: inline-block;
+                  width: 3ch;
+                  text-align: right;
+}
+
+
+/* Labels under slider */
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12pt;
+    color: #777;
+    margin-top: 5px;
+}
+
+/* Display selected value */
+.slider-value {
+    text-align: center;
+    font-size: 12pt;
+    margin: 4px 0;
+    color: #777;
+}
+
+.nav-container {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-left: 10px;
+}
+
+.nav-progress {
+margin-left: auto;
+}
+
+/* Make button much bigger */
+.big-button {
+    font-size: 18px;      /* bigger text */
+    padding: 10px 10px;   /* more space inside */
+    border-radius: 10px;  /* rounded corners */
+}
+
+.green-instructions {
+    padding: 1em; border-left: 4px solid #4CAF50; background-color: #e8f5e9; border-radius: 8px; margin-bottom: 1.5em;
+}
+
+.yellow-instructions {
+    margin: 15px 0;
+    padding: 10px;
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    border-radius: 4px;
+  }
+.blue-instructions{
+    margin: 15px 0; 
+    padding: 10px; 
+    background: #ddddffff; border-left: 4px solid #0000ffff; border-radius: 4px;
+}
+.red-instructions {
+    margin: 15px 0;
+    padding: 10px;
+    background: rgb(255, 235, 235);
+    border-left: 4px solid rgba(255, 77, 77, 1);
+    border-radius: 4px;
+}
+
+ .contact-form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 2 columns */
+    gap: 2rem 1rem; /* vertical gap | horizontal gap */
+    margin-bottom: 2em;
+  }
+
+  .contact-form-grid .form-group {
+    margin-top: 0em; /* remove default margin */
+  }
+
+  .contact-form-grid label {
+    margin-top: -0.5em; /* small spacing above input */
+    display: block;
+  }
+
+  .contact-form-grid input {
+    width: 100%;
+  }
+
+  .lab {
+    font-size: 10pt;
+    color: #777;
+    margin-top: -3pt;
+    width: 25%;
+    word-wrap: break-word;
+    text-align: center;
+    white-space: normal;
+  }

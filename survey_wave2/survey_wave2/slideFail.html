@@ -1,0 +1,43 @@
+{% block styles %}
+<link rel="stylesheet" href="{{ static 'main.css' }}" />
+{% endblock %} {{ block title }} {% if lan_en %} End of survey {% else %} Ende
+der Umfrage {% endif %} {{ endblock }} {{ block content }} {% if lan_en %}
+<p>One of the following issues led to the end of this survey:</p>
+<ul>
+  <li>An technical error has occurred,</li>
+  <li>you did not pass the training after five tries,</li>
+  <li>or you did not declare your consent for participation in this survey</li>
+</ul>
+
+<p>No data from your participation will be used.</p>
+
+<p>
+  If you believe this was an error or if you have any questions, feel free to
+  contact the study coordinators at
+  <a href="mailto:collectivemindslab@csh.ac.at">collectivemindslab@csh.ac.at</a
+  >.
+</p>
+
+{% else %}
+<p>
+  Eines der folgenden Probleme hat zu einer vorzeitigen Beendigung der Umfrage
+  geführt:
+</p>
+<ul>
+  <li>Ein technischer Fehler ist aufgetreten,</li>
+  <li>Sie haben das Training nach 5 Versuchen nicht bestanden</li>
+  <li>
+    oder Sie haben nicht Ihr Einverständnis gegeben an dieser Studie
+    teilzunehmen.
+  </li>
+</ul>
+
+<p>Es werden keine Daten aus Ihrer Teilnahme verwendet.</p>
+
+<p>
+  Wenn Sie glauben, dass es sich um einen Fehler handelt oder wenn Sie Fragen
+  haben, wenden Sie sich gerne an die Studienkoordinator:innen unter
+  <a href="mailto:collectivemindslab@csh.ac.at">collectivemindslab@csh.ac.at</a
+  >.
+</p>
+{% endif %} {{ endblock }}

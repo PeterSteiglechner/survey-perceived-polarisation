@@ -1,0 +1,251 @@
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'main.css' %}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{% static 'global.js' %}"></script>
+
+<style>
+  /* Make unselected cards look dimmer */
+  .option-card {
+    opacity: 0.4;
+    transition: all 0.2s ease;
+    border: 2px solid #ccc;
+  }
+
+  /* Selected card pops out */
+  .option-card.selected {
+    opacity: 1 !important;
+    border: 3px solid #000; /* thicker, darker border */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4); /* glow effect */
+    transform: scale(1.02); /* slight zoom */
+    z-index: 1; /* keep above others */
+  }
+</style>
+
+<h2>{{page_title}}</h2>
+
+<form method="post">
+  <div class="card-section">
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label"> {{qu_identity}} </label>
+        <div
+          class="option-cards"
+          data-field="feel_closest_party"
+          style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 9px"
+        >
+          {% for choice, label in choices_identity.items %}
+          <label class="option-card">
+            <input
+              type="radio"
+              name="feel_closest_party"
+              value="{{ choice }}"
+            />
+            {{ label }}
+          </label>
+          {% endfor %}
+        </div>
+        {# Renders validation errors for the 'feel_closest_party' field using a
+        custom template tag. #} {{ formfield_errors "feel_closest_party" }}
+      </div>
+
+      <div style="font-size: 8pt; color: gray">{{partytext}}</div>
+
+      <p style="margin-bottom: -0.5em">{{qu_party_comment}}</p>
+
+      {{formfield "party_comment"}}
+    </div>
+  </div>
+
+  <div class="card-section">
+    <div class="card">
+      <label class="form-label">{{ lr_question }}</label>
+
+      <div style="margin-left: 10%; margin-right: 10%">
+        <div style="display: flex; margin-top: 5px; margin-bottom: 2px">
+          <span class="lab" style="font-size: 11pt; text-align: left"
+            >{{ lr_first_label }}</span
+          >
+          <span
+            class="lab"
+            style="margin-left: auto; font-size: 11pt; text-align: right"
+            >{{ lr_last_label }}</span
+          >
+        </div>
+
+        <input
+          type="range"
+          class="likert-slider"
+          name="lrscale"
+          id="sliderlr"
+          min="-50"
+          max="50"
+          step="1"
+          style="color: #aaaaaa; background: #ccc"
+          oninput="handleSliderInput(this.value)"
+          required
+        />
+
+        <div style="text-align: center; margin-top: 0px">
+          {% if lan_en %}
+          <span id="sliderValue" style="color: #999; font-size: 10pt"
+            >Please move the slider</span
+          >
+          {% else %}
+          <span id="sliderValue" style="color: #999; font-size: 10pt">
+            Bitte bewegen Sie den Schieberegler
+          </span>
+          {% endif %}
+        </div>
+
+        {{ formfield_errors "lrscale" }}
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-container">
+    {% if lan_en %}
+    <button
+      type="submit"
+      class="otree-btn-next btn btn-primary big-button"
+      id="nextButton"
+      disabled
+    >
+      Continue
+    </button>
+    <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+    {% else %}
+    <button
+      type="submit"
+      class="otree-btn-next btn btn-primary big-button"
+      id="nextButton"
+      disabled
+    >
+      Weiter
+    </button>
+    <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+    {% endif %}
+  </div>
+</form>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const cards = document.querySelectorAll(".option-card");
+
+    cards.forEach((card) => {
+      const label = card.textContent.trim();
+
+      if (COLORS[label]) {
+        card.style.backgroundColor = COLORS[label];
+        card.style.color =
+          label === "FDP"
+            ? "#424949"
+            : COLORS[label] === "#c7c7c7"
+            ? "black"
+            : "white";
+      }
+    });
+
+    // Force last two cards to span full width (two columns)
+    const lastTwo = Array.from(cards).slice(-2);
+    lastTwo.forEach((card) => {
+      card.style.gridColumn = "1 / span 3";
+    });
+  });
+</script>
+
+<script>
+  let sliderTouched = false;
+  let radioSelected = false;
+
+  // Check if both conditions are met and enable button
+  function checkFormValidity() {
+    const nextButton = document.getElementById("nextButton");
+    if (nextButton && sliderTouched && radioSelected) {
+      nextButton.disabled = false;
+      nextButton.style.opacity = "1";
+    }
+  }
+
+  document.querySelectorAll(".option-cards").forEach((group) => {
+    const name = group.dataset.field;
+    group.querySelectorAll('input[type="radio"]').forEach((radio) => {
+      radio.addEventListener("change", () => {
+        group.querySelectorAll(".option-card").forEach((card) => {
+          card.classList.remove("selected");
+        });
+        radio.closest(".option-card").classList.add("selected");
+        radioSelected = true;
+        checkFormValidity();
+      });
+    });
+  });
+</script>
+
+<script>
+  // Form validation before submission
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        const lang = {% if lan_en %}true{% else %}false{% endif %};
+
+        if (!radioSelected) {
+          e.preventDefault();
+          alert(lang ? 'Please select a party option.' : 'Bitte wählen Sie eine Parteioption aus.');
+          return false;
+        }
+
+        if (!sliderTouched) {
+          e.preventDefault();
+          alert(lang ? 'Please move the slider to select a value.' : 'Bitte bewegen Sie den Schieberegler, um einen Wert auszuwählen.');
+          return false;
+        }
+      });
+    }
+  });
+</script>
+
+<script>
+  function handleSliderInput(value) {
+    sliderTouched = true;
+    checkFormValidity();
+
+    const va = document.getElementById("sliderValue");
+    {% if lan_en %}
+      va.innerHTML = `Selected: <span class="slider-num"><b>${Math.round(value/10)}</b></span>`;
+    {% else %}
+      va.innerHTML = `Ausgewählt: <span class="slider-num"><b>${Math.round(value/10)}</b></span>`;
+    {% endif %}
+
+    va.style.color = "black";
+    va.style.fontSize = "10pt";
+
+    // Update slider styling
+    const slider = document.getElementById("sliderlr");
+    const val = parseFloat(value);
+    const min = parseFloat(slider.min),
+      max = parseFloat(slider.max);
+    const mid = (min + max) / 2;
+    const sliderColor = "#424242ff";
+
+    // compute fill percentages from center
+    // l: left fill percentage, increases as slider moves left from center
+    const l =
+      val < mid
+        ? Math.max(0, 50 + ((val - mid) / (mid - min)) * 50) // left of center
+        : 50; // right of center, left fill stays at 50%
+    // r: right fill percentage, increases as slider moves right from center
+    const r =
+      val < mid
+        ? 50 // left of center, right fill stays at 50%
+        : Math.min(100, 50 + ((val - mid) / (max - mid)) * 50); // right of center
+    slider.style.color = "black";
+    slider.style.background = `linear-gradient(to right,
+        #e0e0e0 0%, #e0e0e0 ${l}%,
+        ${sliderColor} ${l}%, ${sliderColor} ${r}%,
+        #e0e0e0 ${r}%, #e0e0e0 100%)`;
+  }
+</script>
+
+{% endblock %}

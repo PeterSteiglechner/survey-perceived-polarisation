@@ -1,0 +1,77 @@
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'main.css' %}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{% static 'global.js' %}"></script>
+
+{% block title %}{{ page_title }}{% endblock %}
+
+<form method="post">
+  <div>
+    <p>{{instruction_text0}}</p>
+
+    <p>{{instruction_text1}}</p>
+
+    {% if showTreatment %}
+    <div class="red-instructions" style="margin-bottom: 2em; margin-top: 0.5em">
+      <p style="text-align: center"><b> {{ treatmentTitle }} </b></p>
+      <p>{{ treatmentCondition }}</p>
+    </div>
+    {% endif %}
+
+    <div class="blue-instructions" style="margin-bottom: 2em">{{reminder}}</div>
+
+    <p>{{disclaimer2}}</p>
+
+    <p>{{instruction_text3}}</p>
+
+    <div class="contact-form-grid">
+      {% for field_info in references_fields %}
+      <div class="contact-form-group">
+        <label for="id_{{ field_info.name }}">{{ field_info.label }}</label>
+        {{ formfield_errors field_info.name }}
+        <input
+          type="text"
+          name="{{ field_info.name }}"
+          id="id_{{ field_info.name }}"
+          class="form-control"
+          value="{{ field_info.value }}"
+          {%
+          if
+          field_info.max_length
+          %}maxlength="{{ field_info.max_length }}"
+          {%
+          endif
+          %}
+          {%
+          comment
+          %}
+          required
+          {%
+          endcomment
+          %}
+        />
+      </div>
+      {% endfor %}
+    </div>
+
+    {% comment %}
+    <p>{{instruction2}}</p>
+    {% endcomment %}
+
+    <div class="nav-container">
+      {% if lan_en %}
+      <button type="submit" class="otree-btn-next btn btn-primary big-button">
+        Continue
+      </button>
+      <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+      {% else %}
+      <button type="submit" class="otree-btn-next btn btn-primary big-button">
+        Weiter
+      </button>
+      <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+      {% endif %}
+    </div>
+  </div>
+</form>
+{% endblock %}

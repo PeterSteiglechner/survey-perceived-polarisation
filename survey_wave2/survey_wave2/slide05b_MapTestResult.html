@@ -1,0 +1,174 @@
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'main.css' %}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{% static 'global.js' %}"></script>
+
+<h2>{{ page_title }}</h2>
+
+<form method="post">
+  <p style="margin-bottom: 1em; font-weight: bold; font-size: 1.1em">
+    {{ attempt_msg }}
+  </p>
+
+  {% if passed %}
+  <div class="green-instructions">
+    <p>{{success_msg}}</p>
+  </div>
+  {% else %}
+  <div class="red-instructions">
+    <p>{{error_msg}}</p>
+  </div>
+  {% if img_help %} {{ img_help_text }}
+  <div style="text-align: center; margin: 1.5em 0">
+    <img
+      id="training-result-img"
+      src="{% static img_source %}"
+      alt="Training Result Example"
+      style="
+        max-width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      "
+    />
+  </div>
+  {% endif %} {% endif %} {% if show_canvas %}
+  <div style="margin: 0em 0">
+    {% comment %} <p>{% if lan_en %}Your Arrangement{% else %}Ihre Anordnung{% endif %}</p> {% endcomment %}
+
+    <canvas
+      id="resultCanvas"
+      width="360"
+      height="300"
+      style="
+        border: 1px solid #333;
+        background: rgb(250, 250, 250);
+        display: block;
+        margin: 1em auto;
+      "
+    >
+    </canvas>
+
+    <div class="card-section">
+      <div class="card">
+        <label class="form-label">{{ sanity_question }}</label>
+        <div
+          class="option-cards"
+          data-field="practice_sanity_check_answer"
+          style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px"
+        >
+          <label class="option-card">
+            <input
+              type="radio"
+              name="practice_sanity_check_answer"
+              value="Self"
+              required
+            />
+            {{ option_a }}
+          </label>
+          <label class="option-card">
+            <input
+              type="radio"
+              name="practice_sanity_check_answer"
+              value="Friend"
+              required
+            />
+            {{ option_b }}
+          </label>
+        </div>
+        {{ formfield_errors "practice_sanity_check_answer" }}
+      </div>
+
+      {% if sanity_check_error %}
+      <div class="red-instructions" style="margin-top: 1em">
+        <p>
+          {% if lan_en %}Your answer is unfortunately incorrect. Please try
+          again.{% else %}Ihre Antwort ist leider falsch. Bitte versuchen Sie es
+          erneut.{% endif %}
+        </p>
+      </div>
+      {% endif %}
+    </div>
+
+  <script>
+    // Draw the result canvas
+    const resultCanvas = document.getElementById("resultCanvas");
+    const resultCtx = resultCanvas.getContext("2d");
+    const resultPoints = {{ dots|safe }};
+
+    resultCtx.strokeStyle = "#333";
+    resultCtx.lineWidth = 1;
+    resultCtx.strokeRect(0, 0, resultCanvas.height, resultCanvas.height);
+
+    Object.keys(resultPoints).forEach(key => {
+      const [x, y] = resultPoints[key];
+      const colors = {
+        "self": COLORS["self"] ,
+        "friend": "#4DA8DA",
+        "coworker": "#2E8B57",
+        "relative": "#D64545"
+      };
+
+      resultCtx.beginPath();
+      resultCtx.arc(x, y, 12, 0, Math.PI * 2);
+      resultCtx.fillStyle = colors[key];
+      resultCtx.fill();
+      resultCtx.strokeStyle = "#333";
+      resultCtx.lineWidth = 2;
+      resultCtx.stroke();
+
+      resultCtx.fillStyle = "#333";
+      resultCtx.font = "12px Arial";
+      resultCtx.textAlign = "center";
+      resultCtx.textBaseline = "bottom";
+      const names = {
+        "self": "{% if lan_en %}Self{% else %}Ich{% endif %}",
+        "friend": "{% if lan_en %}Friend{% else %}Freund{% endif %}",
+        "coworker": "{% if lan_en %}Co-Worker{% else %}Kollegin{% endif %}",
+        "relative": "{% if lan_en %}Relative{% else %}Verwandter{% endif %}"
+      };
+      resultCtx.fillText(names[key], x, y - 15);
+    });
+  </script>
+  <script>
+    // Option card selection
+  document.querySelectorAll(".option-cards").forEach((group) => {
+    const name = group.dataset.field;
+    group.querySelectorAll('input[type="radio"]').forEach((radio) => {
+      radio.addEventListener("change", () => {
+        group.querySelectorAll(".option-card").forEach((card) => {
+          card.classList.remove("selected");
+        });
+        radio.closest(".option-card").classList.add("selected");
+      });
+    });
+  });
+</script>
+  {% endif %}
+
+  <div class="nav-container">
+    <button
+      style="
+        background-color: #4caf50;
+        color: white;
+        padding: 0.6em 1.2em;
+        margin: 0 0.5em;
+        border: none;
+        border-radius: 6px;
+        font-size: 1em;
+        cursor: pointer;
+      "
+      name="next"
+    >
+      {{button_msg}}
+    </button>
+
+    {% if lan_en %}
+    <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+    {% else %}
+    <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+    {% endif %}
+  </div>
+</form>
+
+{% endblock %}

@@ -1,0 +1,325 @@
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'main.css' %}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{% static 'global.js' %}"></script>
+
+<div class="container">
+<h2>{{page_title}}</h2>
+
+<form method="post">
+
+    <p>{{instruction_text2}}</p>
+
+    <div class="yellow-instructions" >
+        {{instruction_text3}}
+    </div>   
+        
+    {{detailed_instructions_1}}
+    <div style="display: flex; justify-content: center; align-items: flex-start; gap: 20px; margin-top: 20px;">
+    
+    <canvas id="dragCanvas" width="420" height="300" 
+        style="border: 0px solid #333; background: rgb(250, 250, 250); display: block; cursor: grab; touch-action: none;">
+    </canvas>
+    
+    </div>
+    
+        <input type="hidden" id="positionsGame" name="positionsGame">
+
+        <br>
+
+   <div> <!--class="yellow-instructions">-->
+           
+            <div class="blue-instructions">
+             <p>{{no_wrong_answers}}</p>
+             <p>{{tomato}}</p>
+        
+    </div>  
+    </div>   
+    
+        <div class="red-instructions" >
+                {{all_dots_instr}}
+        </div>
+
+
+   <div class="nav-container">
+    {% if lan_en %}
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+      Continue
+    </button>
+    <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+    {% else %}
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+      Weiter
+    </button>
+    <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+    {% endif %}
+  </div>
+
+</div>
+</div>
+
+</form>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const canvas = document.getElementById("dragCanvas");
+        const ctx = canvas.getContext("2d");
+        const points = [
+            {% for dot in dots %}
+                {
+                name_disp: "{{ dot.name_disp }}", 
+                varname: "{{ dot.varname }}", 
+                x: {{ dot.x }}, 
+                y: {{ dot.y }}, 
+                dottype: "{{ dot.dottype }}" ,
+                color:"{{ dot.color }}",
+                radius: 12,
+                t_first_moved: -1,
+                t_last_moved: -1
+                },    
+            {% endfor %}
+        ];
+        //const popup = document.getElementById("popup");
+
+        let draggingPoint = null;
+        let hoveredPoint = null;
+        let selectedPoint = null;
+        
+        console.log("Loaded points:", points);  
+        
+        
+
+
+                
+            function drawCanvas() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    // Draw the boundary square with enhanced styling
+                    ctx.strokeStyle = "#333";
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(0, 0, canvas.height, canvas.height);
+
+
+                    // Draw all points
+                    points.forEach(p => {
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+
+                        // Set fill color based on type
+                        ctx.fillStyle =p.color;
+                        ctx.fill();
+
+                        // Add border with hover effect
+                        ctx.strokeStyle = p === hoveredPoint ? "#fff" : "#333";
+                        ctx.lineWidth = p === hoveredPoint ? 3 : 2;
+                        ctx.stroke();
+
+                        // Draw name with better positioning
+                        ctx.fillStyle = "#333";
+                        ctx.font = "12px Arial";
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "bottom";
+                        ctx.fillText(p.name_disp, p.x, p.y - 15);
+                    });
+                }
+
+
+        function recordMove(dot) {
+            const now = Math.floor(Date.now() / 1000);
+            if (dot.t_first_moved === -1) dot.t_first_moved = now;
+            dot.t_last_moved = now;
+            }
+
+
+
+        function getMousePos(evt) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: evt.clientX - rect.left,
+                y: evt.clientY - rect.top
+            };
+        }
+
+        function getTouchPos(touch) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: touch.clientX - rect.left,
+                y: touch.clientY - rect.top
+            };
+        }
+
+        function findPoint(pos) {
+            return points.find(p => Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius);
+        }
+
+
+        // Validation function for boundary checking
+        function allPointsInsideBox() {
+            return points.every(p => p.x >= 0 && p.x <= canvas.height && p.y >= 0 && p.y <= canvas.height);
+        }
+
+
+
+
+
+        canvas.addEventListener("dragstart", function(evt) {
+            evt.preventDefault();
+            return false;
+        });
+
+        canvas.addEventListener("drag", function(evt) {
+            evt.preventDefault();
+            return false;
+        });
+
+        canvas.addEventListener("dragend", function(evt) {
+            evt.preventDefault();
+            return false;
+        });
+
+
+        // Touch event handlers
+        canvas.addEventListener("touchstart", function (evt) {
+            const touch = evt.touches[0];
+            const touchPos = getTouchPos(touch);
+            const touchedPoint = findPoint(touchPos);
+
+            if (touchedPoint) {
+                draggingPoint = touchedPoint;
+                selectedPoint = touchedPoint;
+                drawCanvas();
+                evt.preventDefault();
+            } else {
+                selectedPoint = null;
+                drawCanvas();
+            }
+        }, { passive: false });
+
+        canvas.addEventListener("touchmove", function (evt) {
+            if (!draggingPoint) return;
+
+            if (draggingPoint) {
+                evt.preventDefault(); // Add this line
+            }
+
+            const touch = evt.touches[0];
+            const touchPos = getTouchPos(touch);
+
+
+            draggingPoint.x = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, touchPos.x));
+            draggingPoint.y = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, touchPos.y));
+            
+            drawCanvas();
+            evt.preventDefault();
+        }, { passive: false });
+
+        canvas.addEventListener("touchend", function () {
+            draggingPoint = null;
+            hoveredPoint = null;
+            drawCanvas();
+        }, { passive: false });
+
+        // Mouse event handlers (for desktop)
+        canvas.addEventListener("mousedown", function (evt) {
+            evt.preventDefault();
+            const mousePos = getMousePos(evt);
+            const clickedPoint = findPoint(mousePos);
+
+            if (clickedPoint) {
+                draggingPoint = clickedPoint;
+                selectedPoint = clickedPoint;
+                //showPopup(clickedPoint, mousePos.x, mousePos.y);
+            } else {
+                selectedPoint = null;
+                //popup.style.display = "none";
+            }
+        });
+
+        canvas.addEventListener("mousemove", function (evt) {
+            const mousePos = getMousePos(evt);
+            const newHoveredPoint = findPoint(mousePos);
+            
+            if (draggingPoint) {
+                evt.preventDefault(); 
+            }
+
+            if (newHoveredPoint !== hoveredPoint) {
+                hoveredPoint = newHoveredPoint;
+                drawCanvas();
+            }
+            
+            if (draggingPoint) {
+                draggingPoint.x = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, mousePos.x));
+                draggingPoint.y = Math.max(draggingPoint.radius, Math.min(canvas.height - draggingPoint.radius, mousePos.y));
+                drawCanvas();
+
+                // if (selectedPoint === draggingPoint) {
+                //    showPopup(draggingPoint, draggingPoint.x, draggingPoint.y);
+                // }
+            }
+        });
+
+        canvas.addEventListener("mouseup", function () {
+            draggingPoint = null;
+        });
+
+        canvas.addEventListener("mouseleave", function () {
+            draggingPoint = null;
+            hoveredPoint = null;
+            drawCanvas();
+        });
+          
+        {% comment %} document.addEventListener("click", function (e) {
+            if (!canvas.contains(e.target) && !popup.contains(e.target)) {
+                popup.style.display = "none";
+                selectedPoint = null;
+            }
+        }); {% endcomment %}
+
+        // Initial draw
+        drawCanvas();
+        
+        const form = document.querySelector("form");
+        const nextButton = document.querySelector("button[type=submit], .otree-btn-next");
+        
+        if (nextButton) {
+            nextButton.addEventListener("click", function (e) {
+                e.preventDefault();
+                if (!allPointsInsideBox()) {
+                    {% if lan_en %}
+                        alert("Please place all dots inside the square before continuing.");
+                    {% else %}
+                        alert("Platzieren Sie bitte alle Punkte innerhalb des Rechtecks.");
+                    {% endif %};
+                    return;
+                }
+                document.getElementById("positionsGame").value = JSON.stringify(
+                    points.map(p => ({
+                        name_disp: p.name_disp,
+                        varname: p.varname,
+                        x: p.x,
+                        y: p.y,
+                        dottype: p.dottype,
+                        color: p.color,
+                        radius: p.radius
+                    }))
+                );
+                form.submit();
+            });
+        }
+
+
+
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

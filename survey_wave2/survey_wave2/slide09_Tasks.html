@@ -1,0 +1,220 @@
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'main.css' %}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{% static 'global.js' %}"></script>
+
+<div class="container">
+
+  <h2>{{ page_title }}</h2>
+
+  <form method="post">
+
+    <div class="card-section" style="margin-top: 0em">
+      <div class="card">
+        <!-- Easier Mapping Slider -->
+        <label class="form-label" style="margin-bottom: 0em; margin-top: 0em"
+          >{{ questioneasierMapping }}</label
+        >
+
+
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+          "
+        >
+          <span class="lab" style="text-align: center; width: 25%">{{ easier_min_label }}</span>
+          <span class="lab" style="text-align: center; width: 25%">{{ easier_neutral_label }}</span>
+          <span class="lab" style="text-align: center; width: 25%">{{ easier_max_label }}</span>
+        </div>
+
+        <div style="margin-left: 5%; margin-right: 5%">
+
+        <input
+          type="range"
+          class="likert-slider"
+          name="mappingEasier"
+          id="easierSlider"
+          min="{{ easier_min }}"
+          max="{{ easier_max }}"
+          step="1"
+          value="0"
+          style="color: #aaaaaa; background: #ccc"
+          oninput="handleSliderInput('mappingEasier', this.value)"
+          required
+        />
+
+        <div class="slider-label-container" id="sliderValue">
+            <div class="slider-label-text" style="color: #777">
+          {% if lan_en %}
+          <span id="easierSliderValue" style="color: #777"
+            >Please move the slider</span
+          >
+          {% else %}
+          <span id="easierSliderValue" style="color: #777">
+            Bitte bewegen Sie den Schieberegler
+          </span>
+          {% endif %}
+        </div>
+        </div>
+
+        {{ formfield_errors "mappingEasier" }}
+
+      </div>
+
+
+        <!-- Enjoy Mapping Slider -->
+        <label class="form-label" style="margin-bottom: 0em; margin-top: 1em"
+          >{{ questionenjoyMapping }}</label
+        >
+
+
+        <div
+          style="
+            display: flex;
+            margin-top: 10px;
+          "
+        >
+            <span class="lab" style="flex: 1; text-align: center;">{{ enjoy_min_label }}</span>
+            <span class="lab" style="flex: 1; text-align: center;">{{ enjoy_neutral_label }}</span>
+            <span class="lab" style="flex: 1; text-align: center;">{{ enjoy_max_label }}</span>
+        </div>
+
+        <div style="margin-left: 5%; margin-right: 5%">
+
+
+        <input
+          type="range"
+          class="likert-slider"
+          name="mappingEnjoy"
+          id="enjoySlider"
+          min="{{ enjoy_min }}"
+          max="{{ enjoy_max }}"
+          step="1"
+          value="0"
+          style="color: #aaaaaa; background: #ccc"
+          oninput="handleSliderInput('mappingEnjoy', this.value)"
+          required
+        />
+
+               <div class="slider-label-container" id="sliderValue">
+            <div class="slider-label-text" style="color: #777">
+          {% if lan_en %}
+          <span id="enjoySliderValue" style="color: #777"
+            >Please move the slider</span
+          >
+          {% else %}
+          <span id="enjoySliderValue" style="color: #777">
+            Bitte bewegen Sie den Schieberegler
+          </span>
+          {% endif %}
+        </div>
+      </div>
+
+        {{ formfield_errors "mappingEnjoy" }}
+      </div>
+      </div>
+    </div>
+
+    <div class="card-section" style="margin-top: 0em">
+      <div class="card">
+        <p style="margin-bottom: -10px">{{explain_text}}</p>
+        {{ formfield "task_text" }}
+      </div>
+    </div>
+
+    <div class="nav-container">
+      {% if lan_en %}
+      <button type="submit"     id="nextButton" class="otree-btn-next btn btn-primary big-button">
+        Continue
+      </button>
+      <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+      {% else %}
+      <button type="submit"     id="nextButton" class="otree-btn-next btn btn-primary big-button">
+        Weiter
+      </button>
+      <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+</form>
+
+
+<script>
+  let slidersTouched = {
+    mappingEasier: false,
+    mappingEnjoy: false,
+  };
+
+  function handleSliderInput(sliderName, value) {
+    slidersTouched[sliderName] = true;
+
+    // Update displayed value
+    const valueSpan = sliderName === 'mappingEasier' ? "easierSliderValue"
+      : "enjoySliderValue";
+    const sliderSpan = document.getElementById(valueSpan);
+    sliderSpan.innerHTML = `<div class="slider-label-container"><div class="slider-label-text">` +
+      `{% if lan_en %}Selected:  {% else %}Ausgewählt: {%endif%}` +
+      `<strong><span class="slider-num">${Math.round(
+        value / 10
+      )}</span></strong> / 10 </div>` +
+      `</div></div>`;
+    sliderSpan.style.color = 'black';
+
+    // Update slider background gradient
+    const sliderObject = sliderName === 'mappingEasier' ? "easierSlider"
+      : "enjoySlider";
+    const slider = document.getElementById(sliderObject);
+    const val = parseFloat(value);
+    const min = parseFloat(slider.min), max = parseFloat(slider.max);
+    const mid = (min + max) / 2;
+    const l = val < mid ? Math.max(0, 50 + ((val - mid) / (mid - min)) * 50) : 50;
+    const r = val < mid ? 50 : Math.min(100, 50 + ((val - mid) / (max - mid)) * 50);
+
+    slider.style.background = `linear-gradient(to right,
+      #e0e0e0 0%, #e0e0e0 ${l}%,
+      #007bff ${l}%, #007bff ${r}%,
+      #e0e0e0 ${r}%, #e0e0e0 100%)`;
+
+    // Enable next button if at least one slider touched
+    const nextButton = document.getElementById('nextButton');
+    if (nextButton && (slidersTouched.mappingEasier && slidersTouched.mappingEnjoy)) {
+      nextButton.disabled = false;
+      nextButton.style.opacity = '1';
+    }
+  }
+
+
+    // Form validation before submission
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form');
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          if (!slidersTouched.mappingEasier && !slidersTouched.mappingEnjoy) {
+            e.preventDefault();
+            const lang = {% if lan_en %}true{% else %}false{% endif %};
+            alert(lang ? 'Please move the slider to select a value.' : 'Bitte bewegen Sie den Schieberegler, um einen Wert auszuwählen.');
+            return false;
+          }
+        });
+      }
+    });
+</script>
+<script>
+  document.querySelectorAll(".option-cards").forEach((group) => {
+    const name = group.dataset.field;
+    group.querySelectorAll('input[type="radio"]').forEach((radio) => {
+      radio.addEventListener("change", () => {
+        group.querySelectorAll(".option-card").forEach((card) => {
+          card.classList.remove("selected");
+        });
+        radio.closest(".option-card").classList.add("selected");
+      });
+    });
+  });
+</script>
+
+{% endblock %}

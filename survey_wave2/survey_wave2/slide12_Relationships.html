@@ -1,0 +1,156 @@
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'main.css' %}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{% static 'global.js' %}"></script>
+
+<h2>{{page_title}}</h2>
+
+<p>{{qu_closeness}}</p>
+
+<form method="post">
+  <div class="question-block">
+    <table class="survey-table-clean">
+      <thead>
+        <tr>
+          <td></td>
+          <th style="width: 65%"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in references %}
+        <tr>
+          <td style="text-align: left">
+            <label class="form-label" style="margin-left: 15pt">
+              {{ c.name }}</label
+            >
+          </td>
+          <td>
+            <div style="display: flex; margin-top: 7px; margin-bottom: -3px">
+              <span
+                class="lab"
+                style="font-size: 10pt; text-align: left; white-space: nowrap"
+                >{{ closeness_min_label }}</span
+              >
+              <span
+                class="lab"
+                style="
+                  margin-left: auto;
+                  font-size: 10pt;
+                  text-align: right;
+                  white-space: nowrap;
+                "
+                >{{ closeness_max_label }}</span
+              >
+            </div>
+            <input
+              type="range"
+              class="likert-slider"
+              name="{{c.id}}_socialCloseness"
+              id="slider_{{ c.id }}"
+              min="{{closeness_min}}"
+              max="{{closeness_max}}"
+              step="1"
+              required
+              oninput="handleSliderInput('{{ c.id }}', this.value)"
+            />
+            <div
+              class="slider-label"
+              style="margin-top: -15px; margin-bottom: 0px"
+            >
+              <p style="color: #999; font-size: 10pt">
+                {% if lan_en %} Selected: {% else %} Ausgewählt: {%endif%}
+                <span
+                  id="sliderValue{{ c.id }}"
+                  style="color: #999; font-size: 10pt"
+                >
+                  <strong>
+                    {% if lan_en %}Please move the slider{% else %}Bitte bewegen
+                    Sie den Schieberegler{% endif %}
+                  </strong>
+                </span>
+              </p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="nav-container">
+    {% if lan_en %}
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+      Continue
+    </button>
+    <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+    {% else %}
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+      Weiter
+    </button>
+    <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+    {% endif %}
+  </div>
+</form>
+
+<script>
+  let slidersTouched = {};
+  let totalSliders = 0;
+
+  function handleSliderInput(field, value) {
+      slidersTouched[field] = true;
+      const numVal = parseInt(value, 10);
+      const span = document.getElementById('sliderValue' + field);
+      if (span) {
+          span.innerHTML = `<strong>${Math.round(value/10)}</strong> / 10`;
+          span.style.color = 'black';
+      }
+
+      // update slider gradient
+      const slider = document.getElementById('slider_' + field);
+      if (slider) {
+          const val = parseFloat(value);
+          const min = parseFloat(slider.min), max = parseFloat(slider.max);
+          const sliderColor = "{{ color }}";
+
+          const l = 0;
+          const r = ((val - min) / (max - min)) * 100;
+
+          slider.style.background = `linear-gradient(to right,
+            #e0e0e0 0%, #e0e0e0 ${l}%,
+            ${sliderColor} ${l}%, ${sliderColor} ${r}%,
+            #e0e0e0 ${r}%, #e0e0e0 100%)`;
+      }
+
+      // enable next button if all touched
+      if (Object.keys(slidersTouched).length === totalSliders) {
+          const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
+          if (nextButton) {
+              nextButton.disabled = false;
+              nextButton.style.opacity = '1';
+          }
+      }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+      totalSliders = document.querySelectorAll('.likert-slider').length;
+
+      const form = document.querySelector('form');
+      if (form) {
+          form.addEventListener('submit', function(e) {
+              if (Object.keys(slidersTouched).length < totalSliders) {
+                  e.preventDefault();
+                  alert({% if lan_en %}'Please move all sliders to select values.'{% else %}'Bitte bewegen Sie alle Schieberegler, um Werte auszuwählen.'{% endif %});
+                  return false;
+              }
+          });
+      }
+      const nextButton = document.getElementById('nextButton') || document.querySelector('.otree-btn-next');
+      if (nextButton) {
+          nextButton.disabled = true;
+          nextButton.style.opacity = '0.5';
+      }
+  });
+</script>
+
+{% endblock %}

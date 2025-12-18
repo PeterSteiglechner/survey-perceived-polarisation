@@ -1,0 +1,173 @@
+{% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'main.css' %}" />
+{% endblock %} {% block content %}
+<script src="{% static 'colors.js' %}"></script>
+<script src="{% static 'global.js' %}"></script>
+
+<h2>{{ page_title }}</h2>
+
+<p>{{ instruction_text }}</p>
+
+<p style="font-size: 11pt; color: grey">
+  {%if lan_en%} Note, the order of the parties is random.{% else %} Die
+  Reihenfolge der Parteien ist zufällig. {% endif %}
+</p>
+
+<p>{{would_respond}}</p>
+
+<form method="post">
+  {% for q in questions %}
+  <div class="question-block">
+    <table class="survey-table-clean">
+      <thead>
+        <tr>
+          <td></td>
+          <th style="width: 67%">
+            <label><strong>{{ q.text }}</strong></label>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="width: 33%"></td>
+          <td style="width: 67%">
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr auto 1fr;
+                margin-top: 5px;
+                width: 100%;
+                column-gap: 10%;
+              "
+            >
+              <span style="font-size: 10pt; color: #000000ff; text-align: left"
+                >{{ first_label }}</span
+              >
+              <span
+                style="font-size: 10pt; color: #000000ff; text-align: center"
+                >{{ neutral_label }}</span
+              >
+              <span style="font-size: 10pt; color: #000000ff; text-align: right"
+                >{{ last_label }}</span
+              >
+            </div>
+          </td>
+        </tr>
+        {% for c in references %}
+        <tr>
+          <td>
+            <label class="form-label"> {{ c.name }} </label>
+          </td>
+          <td>
+            <input
+              type="range"
+              class="likert-slider"
+              name="{{ c.id }}__{{ q.prefix }}"
+              id="slider_{{ q.prefix }}{{ c.id }}"
+              min="-100"
+              max="100"
+              step="1"
+              oninput="handleSliderInput('{{ q.prefix }}{{ c.id }}', '{{c.color}}', '{{c.textcolor}}',  this.value)"
+            />
+            <div id="sliderValue{{ q.prefix }}{{ c.id }}" class="slider-label">
+              {% if lan_en %}Please move the slider{% else %}Bitte bewegen Sie
+              den Schieberegler{% endif %}
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endfor %}
+
+  <div class="nav-container">
+    {% if lan_en %}
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+      Continue
+    </button>
+    <div class="nav-progress">Page {{nslide}}/{{maxslides}}</div>
+    {% else %}
+    <button type="submit" class="otree-btn-next btn btn-primary big-button">
+      Weiter
+    </button>
+    <div class="nav-progress">Seite {{nslide}}/{{maxslides}}</div>
+    {% endif %}
+  </div>
+</form>
+
+<script>
+  let slidersTouched = {};
+  let totalSliders = 0;
+
+  function handleSliderInput(field, color, textcolor, value) {
+      slidersTouched[field] = true;
+      const numVal = parseInt(value, 10);
+      let label = getLikertLabel(value, {% if lan_en %}true{% else %}false{% endif %});
+      // update text under slider
+      const div = document.getElementById("sliderValue" + field);
+      if (div) {
+          div.innerHTML = `<span class='pill' style='background-color: ${color}; color: ${textcolor};'>${label}</span>`;
+          div.style.color = color;
+      }
+
+      // update slider gradient
+      const slider = document.getElementById('slider_' + field);
+      if (slider) {
+          const val = parseFloat(value);
+          const min = parseFloat(slider.min), max = parseFloat(slider.max);
+          const mid = (min + max) / 2;
+          const sliderColor = color;
+
+          const l =
+            val < mid ? Math.max(0, 50 + ((val - mid) / (mid - min)) * 50) : 50;
+          const r =
+            val < mid ? 50 : Math.min(100, 50 + ((val - mid) / (max - mid)) * 50);
+
+          slider.style.background = `linear-gradient(to right,
+            #e0e0e0 0%, #e0e0e0 ${l}%,
+            ${sliderColor} ${l}%, ${sliderColor} ${r}%,
+            #e0e0e0 ${r}%, #e0e0e0 100%)`;
+      }
+
+      // enable next button if all touched
+      if (Object.keys(slidersTouched).length === totalSliders) {
+        const nextButton =
+          document.getElementById("nextButton") ||
+          document.querySelector(".otree-btn-next");
+          if (nextButton) {
+              nextButton.disabled = false;
+              nextButton.style.opacity = "1";
+          }
+      }
+  }
+
+    document.addEventListener("DOMContentLoaded", function () {
+    totalSliders = document.querySelectorAll(".likert-slider").length;
+
+    // Localized alert message
+    const sliderAlertMsg =
+      "{% if lan_en %}Please move all sliders to select values.{% else %}Bitte bewegen Sie alle Schieberegler, um Werte auszuwählen.{% endif %}";
+
+    const form = document.querySelector("form");
+    if (form) {
+      form.addEventListener("submit", function (e) {
+        if (Object.keys(slidersTouched).length < totalSliders) {
+          e.preventDefault();
+          alert(sliderAlertMsg);
+          return false;
+        }
+      });
+    }
+
+    const nextButton =
+      document.getElementById("nextButton") ||
+      document.querySelector(".otree-btn-next");
+    if (nextButton) {
+      nextButton.disabled = true;
+      nextButton.style.opacity = "0.5";
+    }
+  });
+</script>
+
+{% endblock %}
